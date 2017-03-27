@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.Promise.1 = s 'Promise Class'
+	{
+		CLSID = s '{310F737F-B074-46C3-AF4B-6CD06D69C613}'
+	}
+	rtc.Promise = s 'Promise Class'
+	{		
+		CurVer = s 'rtc.Promise.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {310F737F-B074-46C3-AF4B-6CD06D69C613} = s 'Promise Class'
+		{
+			ProgID = s 'rtc.Promise.1'
+			VersionIndependentProgID = s 'rtc.Promise'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

@@ -1,0 +1,32 @@
+HKCR
+{
+	rtc.plugin.1 = s 'Plugin Class'
+	{
+		CLSID = s '{F8CFFADD-7ED1-46E9-BEFD-DE7DE1092074}'
+	}
+	rtc.plugin = s 'Plugin Class'
+	{		
+		CurVer = s 'rtc.plugin.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {F8CFFADD-7ED1-46E9-BEFD-DE7DE1092074} = s 'WebRTC Plugin Class'
+		{
+			ProgID = s 'rtc.plugin.1'
+			VersionIndependentProgID = s 'rtc.plugin'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove Control
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 106'
+			MiscStatus = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

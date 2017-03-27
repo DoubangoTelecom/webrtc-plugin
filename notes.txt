@@ -1,0 +1,16 @@
+cd src
+git checkout branch-heads/58
+set WINDOWSSDKDIR=C:/Program Files (x86)/Windows Kits/10
+gn gen out/Default --args="is_debug=false target_cpu=\"x64\""
+
+== error MSB8011 ==
+1/ Make sure to start VS with admin rights
+2/
+Debug: BoringSSL.DLL is required, in VS2015 -> Debugging  -> Envir -> 
+	PATH=$(VCRedistPaths);..\webrtc-checkout\src\out\x86_debug;%PATH%
+or
+	PATH=$(VCRedistPaths);..\webrtc-checkout\src\out\x64_debug;%PATH%
+
+
+== TODO ==
+Removed support for HTTP/HTTs proxy

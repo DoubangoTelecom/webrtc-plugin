@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.MediaStreamTrack.1 = s 'MediaStreamTrack Class'
+	{
+		CLSID = s '{85C22736-EA22-41BF-A7A2-E25DBD63BA3B}'
+	}
+	rtc.MediaStreamTrack = s 'MediaStreamTrack Class'
+	{		
+		CurVer = s 'rtc.MediaStreamTrack.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {85C22736-EA22-41BF-A7A2-E25DBD63BA3B} = s 'MediaStreamTrack Class'
+		{
+			ProgID = s 'rtc.MediaStreamTrack.1'
+			VersionIndependentProgID = s 'rtc.MediaStreamTrack'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

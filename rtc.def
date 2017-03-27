@@ -1,0 +1,10 @@
+; rtc.def : Declares the module parameters.
+
+LIBRARY rtc.dll
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE
+	DllInstall		PRIVATE

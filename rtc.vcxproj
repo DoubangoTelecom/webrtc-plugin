@@ -1,0 +1,344 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{846F3A95-627B-4934-8C58-A9925E524532}</ProjectGuid>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <Keyword>AtlProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions);WEBRTC_WIN;NOMINMAX</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.;..\webrtc-checkout\src;..\webrtc-checkout\src\third_party;..\webrtc-checkout\src\third_party\webrtc;..\webrtc-checkout\src\webrtc;..\webrtc-checkout\src\third_party\wtl\include;..\webrtc-checkout\src\third_party\jsoncpp\overrides\include;..\webrtc-checkout\src\third_party\jsoncpp\source\include;..\webrtc-checkout\src\third_party\libyuv\include\libyuv;..\webrtc-checkout\src\third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4049</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <HeaderFileName>rtc_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName>rtc_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>rtc_p.c</ProxyFileName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)rtc.tlb</TypeLibraryName>
+      <DllDataFileName />
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\rtc.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>comsuppw.lib;Oleacc.lib;wininet.lib;dnsapi.lib;version.lib;msimg32.lib;ws2_32.lib;usp10.lib;psapi.lib;dbghelp.lib;winmm.lib;shlwapi.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;user32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;credui.lib;netapi32.lib;crypt32.lib;iphlpapi.lib;secur32.lib;dmoguids.lib;wmcodecdspuuid.lib;amstrmid.lib;Strmiids.lib;msdmo.lib;boringssl.dll.lib;obj/third_party/boringssl/boringssl_asm.lib;obj/third_party/expat/expat.lib;obj/third_party/libjpeg_turbo/libjpeg.lib;obj/third_party/libjpeg_turbo/simd.lib;obj/third_party/libjpeg_turbo/simd_asm.lib;obj/third_party/libsrtp/libsrtp.lib;obj/third_party/libvpx/libvpx.lib;obj/third_party/libvpx/libvpx_yasm.lib;obj/third_party/libyuv/libyuv.lib;obj/third_party/openmax_dl/dl/dl.lib;obj/third_party/opus/opus.lib;obj/third_party/protobuf/protobuf_full.lib;obj/third_party/protobuf/protoc_lib.lib;obj/third_party/usrsctp/usrsctp.lib;obj/third_party/winsdk_samples/winsdk_samples.lib;obj/third_party/yasm/yasm_utils.lib;obj/webrtc/api/audio_codecs/builtin_audio_decoder_factory.lib;obj/webrtc/api/libjingle_peerconnection_api.lib;obj/webrtc/audio/audio.lib;obj/webrtc/audio/utility/audio_frame_operations.lib;obj/webrtc/base/rtc_base.lib;obj/webrtc/base/rtc_base_approved.lib;obj/webrtc/base/rtc_numerics.lib;obj/webrtc/base/rtc_task_queue.lib;obj/webrtc/base/rtc_task_runner.lib;obj/webrtc/call/call.lib;obj/webrtc/common_audio/common_audio.lib;obj/webrtc/common_audio/common_audio_sse2.lib;obj/webrtc/common_video/common_video.lib;obj/webrtc/logging/rtc_event_log_impl.lib;obj/webrtc/logging/rtc_event_log_parser.lib;obj/webrtc/logging/rtc_event_log_proto.lib;obj/webrtc/media/rtc_media.lib;obj/webrtc/media/rtc_media_base.lib;obj/webrtc/modules/audio_coding/ana_config_proto.lib;obj/webrtc/modules/audio_coding/ana_debug_dump_proto.lib;obj/webrtc/modules/audio_coding/audio_coding.lib;obj/webrtc/modules/audio_coding/audio_encoder_interface.lib;obj/webrtc/modules/audio_coding/audio_format_conversion.lib;obj/webrtc/modules/audio_coding/audio_network_adaptor.lib;obj/webrtc/modules/audio_coding/builtin_audio_decoder_factory_internal.lib;obj/webrtc/modules/audio_coding/cng.lib;obj/webrtc/modules/audio_coding/g711.lib;obj/webrtc/modules/audio_coding/g722.lib;obj/webrtc/modules/audio_coding/ilbc.lib;obj/webrtc/modules/audio_coding/isac.lib;obj/webrtc/modules/audio_coding/isac_c.lib;obj/webrtc/modules/audio_coding/isac_common.lib;obj/webrtc/modules/audio_coding/isac_fix.lib;obj/webrtc/modules/audio_coding/legacy_encoded_audio_frame.lib;obj/webrtc/modules/audio_coding/neteq.lib;obj/webrtc/modules/audio_coding/neteq_unittest_proto.lib;obj/webrtc/modules/audio_coding/pcm16b.lib;obj/webrtc/modules/audio_coding/red.lib;obj/webrtc/modules/audio_coding/rent_a_codec.lib;obj/webrtc/modules/audio_coding/rtc_event_log_source.lib;obj/webrtc/modules/audio_coding/webrtc_opus.lib;obj/webrtc/modules/audio_conference_mixer/audio_conference_mixer.lib;obj/webrtc/modules/audio_device/audio_device.lib;obj/webrtc/modules/audio_mixer/audio_frame_manipulator.lib;obj/webrtc/modules/audio_mixer/audio_mixer_impl.lib;obj/webrtc/modules/audio_processing/audioproc_debug_proto.lib;obj/webrtc/modules/audio_processing/audioproc_protobuf_utils.lib;obj/webrtc/modules/audio_processing/audioproc_unittest_proto.lib;obj/webrtc/modules/audio_processing/audio_processing.lib;obj/webrtc/modules/audio_processing/audio_processing_sse2.lib;obj/webrtc/modules/bitrate_controller/bitrate_controller.lib;obj/webrtc/modules/congestion_controller/congestion_controller.lib;obj/webrtc/modules/desktop_capture/desktop_capture.lib;obj/webrtc/modules/desktop_capture/desktop_capture_differ_sse2.lib;obj/webrtc/modules/desktop_capture/primitives.lib;obj/webrtc/modules/media_file/media_file.lib;obj/webrtc/modules/pacing/pacing.lib;obj/webrtc/modules/remote_bitrate_estimator/bwe_simulator_lib.lib;obj/webrtc/modules/remote_bitrate_estimator/remote_bitrate_estimator.lib;obj/webrtc/modules/rtp_rtcp/rtp_rtcp.lib;obj/webrtc/modules/utility/utility.lib;obj/webrtc/modules/video_capture/video_capture.lib;obj/webrtc/modules/video_capture/video_capture_internal_impl.lib;obj/webrtc/modules/video_capture/video_capture_module.lib;obj/webrtc/modules/video_coding/video_coding.lib;obj/webrtc/modules/video_coding/video_coding_utility.lib;obj/webrtc/modules/video_coding/webrtc_h264.lib;obj/webrtc/modules/video_coding/webrtc_i420.lib;obj/webrtc/modules/video_coding/webrtc_vp8.lib;obj/webrtc/modules/video_coding/webrtc_vp9.lib;obj/webrtc/modules/video_processing/video_processing.lib;obj/webrtc/modules/video_processing/video_processing_sse2.lib;obj/webrtc/ortc/ortc.lib;obj/webrtc/p2p/libstunprober.lib;obj/webrtc/p2p/rtc_p2p.lib;obj/webrtc/pc/libjingle_peerconnection.lib;obj/webrtc/pc/rtc_pc.lib;obj/webrtc/stats/rtc_stats.lib;obj/webrtc/system_wrappers/field_trial_default.lib;obj/webrtc/system_wrappers/metrics_default.lib;obj/webrtc/system_wrappers/system_wrappers.lib;obj/webrtc/tools/chart_proto.lib;obj/webrtc/tools/command_line_parser.lib;obj/webrtc/tools/event_log_visualizer_utils.lib;obj/webrtc/tools/frame_editing_lib.lib;obj/webrtc/tools/reference_less_video_analysis_lib.lib;obj/webrtc/tools/video_quality_analysis.lib;obj/webrtc/video/video.lib;obj/webrtc/voice_engine/audio_coder.lib;obj/webrtc/voice_engine/channel_transport.lib;obj/webrtc/voice_engine/file_player.lib;obj/webrtc/voice_engine/file_recorder.lib;obj/webrtc/voice_engine/level_indicator.lib;obj/webrtc/voice_engine/voice_engine.lib;obj/webrtc/webrtc.lib;obj/webrtc/webrtc_common.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\webrtc-checkout\src\out\x86_debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_USRDLL;%(PreprocessorDefinitions);WEBRTC_WIN;NOMINMAX</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.;..\webrtc-checkout\src;..\webrtc-checkout\src\third_party;..\webrtc-checkout\src\third_party\webrtc;..\webrtc-checkout\src\webrtc;..\webrtc-checkout\src\third_party\wtl\include;..\webrtc-checkout\src\third_party\jsoncpp\overrides\include;..\webrtc-checkout\src\third_party\jsoncpp\source\include;..\webrtc-checkout\src\third_party\libyuv\include\libyuv;..\webrtc-checkout\src\third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4049</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <HeaderFileName>rtc_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName>rtc_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>rtc_p.c</ProxyFileName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)rtc.tlb</TypeLibraryName>
+      <DllDataFileName />
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\rtc.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>comsuppw.lib;Oleacc.lib;wininet.lib;dnsapi.lib;version.lib;msimg32.lib;ws2_32.lib;usp10.lib;psapi.lib;dbghelp.lib;winmm.lib;shlwapi.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;user32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;credui.lib;netapi32.lib;Strmiids.lib;crypt32.lib;iphlpapi.lib;secur32.lib;dmoguids.lib;wmcodecdspuuid.lib;amstrmid.lib;msdmo.lib;boringssl.dll.lib;obj/third_party/boringssl/boringssl_asm.lib;obj/third_party/expat/expat.lib;obj/third_party/libjpeg_turbo/libjpeg.lib;obj/third_party/libjpeg_turbo/simd.lib;obj/third_party/libjpeg_turbo/simd_asm.lib;obj/third_party/libsrtp/libsrtp.lib;obj/third_party/libvpx/libvpx.lib;obj/third_party/libvpx/libvpx_yasm.lib;obj/third_party/libyuv/libyuv.lib;obj/third_party/openmax_dl/dl/dl.lib;obj/third_party/opus/opus.lib;obj/third_party/protobuf/protobuf_full.lib;obj/third_party/protobuf/protoc_lib.lib;obj/third_party/usrsctp/usrsctp.lib;obj/third_party/winsdk_samples/winsdk_samples.lib;obj/third_party/yasm/yasm_utils.lib;obj/webrtc/api/audio_codecs/builtin_audio_decoder_factory.lib;obj/webrtc/api/libjingle_peerconnection_api.lib;obj/webrtc/audio/audio.lib;obj/webrtc/audio/utility/audio_frame_operations.lib;obj/webrtc/base/rtc_base.lib;obj/webrtc/base/rtc_base_approved.lib;obj/webrtc/base/rtc_numerics.lib;obj/webrtc/base/rtc_task_queue.lib;obj/webrtc/base/rtc_task_runner.lib;obj/webrtc/call/call.lib;obj/webrtc/common_audio/common_audio.lib;obj/webrtc/common_audio/common_audio_sse2.lib;obj/webrtc/common_video/common_video.lib;obj/webrtc/logging/rtc_event_log_impl.lib;obj/webrtc/logging/rtc_event_log_parser.lib;obj/webrtc/logging/rtc_event_log_proto.lib;obj/webrtc/media/rtc_media.lib;obj/webrtc/media/rtc_media_base.lib;obj/webrtc/modules/audio_coding/ana_config_proto.lib;obj/webrtc/modules/audio_coding/ana_debug_dump_proto.lib;obj/webrtc/modules/audio_coding/audio_coding.lib;obj/webrtc/modules/audio_coding/audio_encoder_interface.lib;obj/webrtc/modules/audio_coding/audio_format_conversion.lib;obj/webrtc/modules/audio_coding/audio_network_adaptor.lib;obj/webrtc/modules/audio_coding/builtin_audio_decoder_factory_internal.lib;obj/webrtc/modules/audio_coding/cng.lib;obj/webrtc/modules/audio_coding/g711.lib;obj/webrtc/modules/audio_coding/g722.lib;obj/webrtc/modules/audio_coding/ilbc.lib;obj/webrtc/modules/audio_coding/isac.lib;obj/webrtc/modules/audio_coding/isac_c.lib;obj/webrtc/modules/audio_coding/isac_common.lib;obj/webrtc/modules/audio_coding/isac_fix.lib;obj/webrtc/modules/audio_coding/legacy_encoded_audio_frame.lib;obj/webrtc/modules/audio_coding/neteq.lib;obj/webrtc/modules/audio_coding/neteq_unittest_proto.lib;obj/webrtc/modules/audio_coding/pcm16b.lib;obj/webrtc/modules/audio_coding/red.lib;obj/webrtc/modules/audio_coding/rent_a_codec.lib;obj/webrtc/modules/audio_coding/rtc_event_log_source.lib;obj/webrtc/modules/audio_coding/webrtc_opus.lib;obj/webrtc/modules/audio_conference_mixer/audio_conference_mixer.lib;obj/webrtc/modules/audio_device/audio_device.lib;obj/webrtc/modules/audio_mixer/audio_frame_manipulator.lib;obj/webrtc/modules/audio_mixer/audio_mixer_impl.lib;obj/webrtc/modules/audio_processing/audioproc_debug_proto.lib;obj/webrtc/modules/audio_processing/audioproc_protobuf_utils.lib;obj/webrtc/modules/audio_processing/audioproc_unittest_proto.lib;obj/webrtc/modules/audio_processing/audio_processing.lib;obj/webrtc/modules/audio_processing/audio_processing_sse2.lib;obj/webrtc/modules/bitrate_controller/bitrate_controller.lib;obj/webrtc/modules/congestion_controller/congestion_controller.lib;obj/webrtc/modules/desktop_capture/desktop_capture.lib;obj/webrtc/modules/desktop_capture/desktop_capture_differ_sse2.lib;obj/webrtc/modules/desktop_capture/primitives.lib;obj/webrtc/modules/media_file/media_file.lib;obj/webrtc/modules/pacing/pacing.lib;obj/webrtc/modules/remote_bitrate_estimator/bwe_simulator_lib.lib;obj/webrtc/modules/remote_bitrate_estimator/remote_bitrate_estimator.lib;obj/webrtc/modules/rtp_rtcp/rtp_rtcp.lib;obj/webrtc/modules/utility/utility.lib;obj/webrtc/modules/video_capture/video_capture.lib;obj/webrtc/modules/video_capture/video_capture_internal_impl.lib;obj/webrtc/modules/video_capture/video_capture_module.lib;obj/webrtc/modules/video_coding/video_coding.lib;obj/webrtc/modules/video_coding/video_coding_utility.lib;obj/webrtc/modules/video_coding/webrtc_h264.lib;obj/webrtc/modules/video_coding/webrtc_i420.lib;obj/webrtc/modules/video_coding/webrtc_vp8.lib;obj/webrtc/modules/video_coding/webrtc_vp9.lib;obj/webrtc/modules/video_processing/video_processing.lib;obj/webrtc/modules/video_processing/video_processing_sse2.lib;obj/webrtc/ortc/ortc.lib;obj/webrtc/p2p/libstunprober.lib;obj/webrtc/p2p/rtc_p2p.lib;obj/webrtc/pc/libjingle_peerconnection.lib;obj/webrtc/pc/rtc_pc.lib;obj/webrtc/stats/rtc_stats.lib;obj/webrtc/system_wrappers/field_trial_default.lib;obj/webrtc/system_wrappers/metrics_default.lib;obj/webrtc/system_wrappers/system_wrappers.lib;obj/webrtc/tools/chart_proto.lib;obj/webrtc/tools/command_line_parser.lib;obj/webrtc/tools/event_log_visualizer_utils.lib;obj/webrtc/tools/frame_editing_lib.lib;obj/webrtc/tools/reference_less_video_analysis_lib.lib;obj/webrtc/tools/video_quality_analysis.lib;obj/webrtc/video/video.lib;obj/webrtc/voice_engine/audio_coder.lib;obj/webrtc/voice_engine/channel_transport.lib;obj/webrtc/voice_engine/file_player.lib;obj/webrtc/voice_engine/file_recorder.lib;obj/webrtc/voice_engine/level_indicator.lib;obj/webrtc/voice_engine/voice_engine.lib;obj/webrtc/webrtc.lib;obj/webrtc/webrtc_common.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\webrtc-checkout\src\out\x64_debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions);WEBRTC_WIN;NOMINMAX</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.;..\webrtc-checkout\src;..\webrtc-checkout\src\third_party;..\webrtc-checkout\src\third_party\webrtc;..\webrtc-checkout\src\webrtc;..\webrtc-checkout\src\third_party\wtl\include;..\webrtc-checkout\src\third_party\jsoncpp\overrides\include;..\webrtc-checkout\src\third_party\jsoncpp\source\include;..\webrtc-checkout\src\third_party\libyuv\include\libyuv;..\webrtc-checkout\src\third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4049</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <HeaderFileName>rtc_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName>rtc_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>rtc_p.c</ProxyFileName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)rtc.tlb</TypeLibraryName>
+      <DllDataFileName />
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\rtc.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>comsuppw.lib;Oleacc.lib;wininet.lib;dnsapi.lib;version.lib;msimg32.lib;ws2_32.lib;usp10.lib;psapi.lib;dbghelp.lib;winmm.lib;shlwapi.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;user32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;credui.lib;netapi32.lib;Strmiids.lib;crypt32.lib;iphlpapi.lib;secur32.lib;dmoguids.lib;wmcodecdspuuid.lib;amstrmid.lib;msdmo.lib;obj/third_party/boringssl/boringssl.lib;obj/third_party/boringssl/boringssl_asm.lib;obj/third_party/expat/expat.lib;obj/third_party/libjpeg_turbo/libjpeg.lib;obj/third_party/libjpeg_turbo/simd.lib;obj/third_party/libjpeg_turbo/simd_asm.lib;obj/third_party/libsrtp/libsrtp.lib;obj/third_party/libvpx/libvpx.lib;obj/third_party/libvpx/libvpx_yasm.lib;obj/third_party/libyuv/libyuv.lib;obj/third_party/openmax_dl/dl/dl.lib;obj/third_party/opus/opus.lib;obj/third_party/protobuf/protobuf_full.lib;obj/third_party/protobuf/protobuf_lite.lib;obj/third_party/protobuf/protoc_lib.lib;obj/third_party/usrsctp/usrsctp.lib;obj/third_party/winsdk_samples/winsdk_samples.lib;obj/third_party/yasm/yasm_utils.lib;obj/webrtc/api/audio_codecs/builtin_audio_decoder_factory.lib;obj/webrtc/api/libjingle_peerconnection_api.lib;obj/webrtc/audio/audio.lib;obj/webrtc/audio/utility/audio_frame_operations.lib;obj/webrtc/base/rtc_base.lib;obj/webrtc/base/rtc_base_approved.lib;obj/webrtc/base/rtc_numerics.lib;obj/webrtc/base/rtc_task_queue.lib;obj/webrtc/base/rtc_task_runner.lib;obj/webrtc/call/call.lib;obj/webrtc/common_audio/common_audio.lib;obj/webrtc/common_audio/common_audio_sse2.lib;obj/webrtc/common_video/common_video.lib;obj/webrtc/logging/rtc_event_log_impl.lib;obj/webrtc/logging/rtc_event_log_parser.lib;obj/webrtc/logging/rtc_event_log_proto.lib;obj/webrtc/media/rtc_media.lib;obj/webrtc/media/rtc_media_base.lib;obj/webrtc/modules/audio_coding/ana_config_proto.lib;obj/webrtc/modules/audio_coding/ana_debug_dump_proto.lib;obj/webrtc/modules/audio_coding/audio_coding.lib;obj/webrtc/modules/audio_coding/audio_encoder_interface.lib;obj/webrtc/modules/audio_coding/audio_format_conversion.lib;obj/webrtc/modules/audio_coding/audio_network_adaptor.lib;obj/webrtc/modules/audio_coding/builtin_audio_decoder_factory_internal.lib;obj/webrtc/modules/audio_coding/cng.lib;obj/webrtc/modules/audio_coding/g711.lib;obj/webrtc/modules/audio_coding/g722.lib;obj/webrtc/modules/audio_coding/ilbc.lib;obj/webrtc/modules/audio_coding/isac.lib;obj/webrtc/modules/audio_coding/isac_c.lib;obj/webrtc/modules/audio_coding/isac_common.lib;obj/webrtc/modules/audio_coding/isac_fix.lib;obj/webrtc/modules/audio_coding/legacy_encoded_audio_frame.lib;obj/webrtc/modules/audio_coding/neteq.lib;obj/webrtc/modules/audio_coding/neteq_unittest_proto.lib;obj/webrtc/modules/audio_coding/pcm16b.lib;obj/webrtc/modules/audio_coding/red.lib;obj/webrtc/modules/audio_coding/rent_a_codec.lib;obj/webrtc/modules/audio_coding/rtc_event_log_source.lib;obj/webrtc/modules/audio_coding/webrtc_opus.lib;obj/webrtc/modules/audio_conference_mixer/audio_conference_mixer.lib;obj/webrtc/modules/audio_device/audio_device.lib;obj/webrtc/modules/audio_mixer/audio_frame_manipulator.lib;obj/webrtc/modules/audio_mixer/audio_mixer_impl.lib;obj/webrtc/modules/audio_processing/audioproc_debug_proto.lib;obj/webrtc/modules/audio_processing/audioproc_protobuf_utils.lib;obj/webrtc/modules/audio_processing/audioproc_unittest_proto.lib;obj/webrtc/modules/audio_processing/audio_processing.lib;obj/webrtc/modules/audio_processing/audio_processing_sse2.lib;obj/webrtc/modules/bitrate_controller/bitrate_controller.lib;obj/webrtc/modules/congestion_controller/congestion_controller.lib;obj/webrtc/modules/desktop_capture/desktop_capture.lib;obj/webrtc/modules/desktop_capture/desktop_capture_differ_sse2.lib;obj/webrtc/modules/desktop_capture/primitives.lib;obj/webrtc/modules/media_file/media_file.lib;obj/webrtc/modules/pacing/pacing.lib;obj/webrtc/modules/remote_bitrate_estimator/bwe_simulator_lib.lib;obj/webrtc/modules/remote_bitrate_estimator/remote_bitrate_estimator.lib;obj/webrtc/modules/rtp_rtcp/rtp_rtcp.lib;obj/webrtc/modules/utility/utility.lib;obj/webrtc/modules/video_capture/video_capture.lib;obj/webrtc/modules/video_capture/video_capture_internal_impl.lib;obj/webrtc/modules/video_capture/video_capture_module.lib;obj/webrtc/modules/video_coding/video_coding.lib;obj/webrtc/modules/video_coding/video_coding_utility.lib;obj/webrtc/modules/video_coding/webrtc_h264.lib;obj/webrtc/modules/video_coding/webrtc_i420.lib;obj/webrtc/modules/video_coding/webrtc_vp8.lib;obj/webrtc/modules/video_coding/webrtc_vp9.lib;obj/webrtc/modules/video_processing/video_processing.lib;obj/webrtc/modules/video_processing/video_processing_sse2.lib;obj/webrtc/ortc/ortc.lib;obj/webrtc/p2p/libstunprober.lib;obj/webrtc/p2p/rtc_p2p.lib;obj/webrtc/pc/libjingle_peerconnection.lib;obj/webrtc/pc/rtc_pc.lib;obj/webrtc/stats/rtc_stats.lib;obj/webrtc/system_wrappers/field_trial_default.lib;obj/webrtc/system_wrappers/metrics_default.lib;obj/webrtc/system_wrappers/system_wrappers.lib;obj/webrtc/tools/chart_proto.lib;obj/webrtc/tools/command_line_parser.lib;obj/webrtc/tools/event_log_visualizer_utils.lib;obj/webrtc/tools/frame_editing_lib.lib;obj/webrtc/tools/reference_less_video_analysis_lib.lib;obj/webrtc/tools/video_quality_analysis.lib;obj/webrtc/video/video.lib;obj/webrtc/voice_engine/audio_coder.lib;obj/webrtc/voice_engine/channel_transport.lib;obj/webrtc/voice_engine/file_player.lib;obj/webrtc/voice_engine/file_recorder.lib;obj/webrtc/voice_engine/level_indicator.lib;obj/webrtc/voice_engine/voice_engine.lib;obj/webrtc/webrtc.lib;obj/webrtc/webrtc_common.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\webrtc-checkout\src\out\x86_release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;NDEBUG;_USRDLL;%(PreprocessorDefinitions);WEBRTC_WIN;NOMINMAX</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.;..\webrtc-checkout\src;..\webrtc-checkout\src\third_party;..\webrtc-checkout\src\third_party\webrtc;..\webrtc-checkout\src\webrtc;..\webrtc-checkout\src\third_party\wtl\include;..\webrtc-checkout\src\third_party\jsoncpp\overrides\include;..\webrtc-checkout\src\third_party\jsoncpp\source\include;..\webrtc-checkout\src\third_party\libyuv\include\libyuv;..\webrtc-checkout\src\third_party\libyuv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4049</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <HeaderFileName>rtc_i.h</HeaderFileName>
+      <InterfaceIdentifierFileName>rtc_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>rtc_p.c</ProxyFileName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)rtc.tlb</TypeLibraryName>
+      <DllDataFileName />
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\rtc.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>comsuppw.lib;Oleacc.lib;wininet.lib;dnsapi.lib;version.lib;msimg32.lib;ws2_32.lib;usp10.lib;psapi.lib;dbghelp.lib;winmm.lib;shlwapi.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;user32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;credui.lib;netapi32.lib;Strmiids.lib;crypt32.lib;iphlpapi.lib;secur32.lib;dmoguids.lib;wmcodecdspuuid.lib;amstrmid.lib;msdmo.lib;obj/third_party/boringssl/boringssl.lib;obj/third_party/boringssl/boringssl_asm.lib;obj/third_party/expat/expat.lib;obj/third_party/libjpeg_turbo/libjpeg.lib;obj/third_party/libjpeg_turbo/simd.lib;obj/third_party/libjpeg_turbo/simd_asm.lib;obj/third_party/libsrtp/libsrtp.lib;obj/third_party/libvpx/libvpx.lib;obj/third_party/libvpx/libvpx_yasm.lib;obj/third_party/libyuv/libyuv.lib;obj/third_party/openmax_dl/dl/dl.lib;obj/third_party/opus/opus.lib;obj/third_party/protobuf/protobuf_full.lib;obj/third_party/protobuf/protobuf_lite.lib;obj/third_party/protobuf/protoc_lib.lib;obj/third_party/usrsctp/usrsctp.lib;obj/third_party/winsdk_samples/winsdk_samples.lib;obj/third_party/yasm/yasm_utils.lib;obj/webrtc/api/audio_codecs/builtin_audio_decoder_factory.lib;obj/webrtc/api/libjingle_peerconnection_api.lib;obj/webrtc/audio/audio.lib;obj/webrtc/audio/utility/audio_frame_operations.lib;obj/webrtc/base/rtc_base.lib;obj/webrtc/base/rtc_base_approved.lib;obj/webrtc/base/rtc_numerics.lib;obj/webrtc/base/rtc_task_queue.lib;obj/webrtc/base/rtc_task_runner.lib;obj/webrtc/call/call.lib;obj/webrtc/common_audio/common_audio.lib;obj/webrtc/common_audio/common_audio_sse2.lib;obj/webrtc/common_video/common_video.lib;obj/webrtc/logging/rtc_event_log_impl.lib;obj/webrtc/logging/rtc_event_log_parser.lib;obj/webrtc/logging/rtc_event_log_proto.lib;obj/webrtc/media/rtc_media.lib;obj/webrtc/media/rtc_media_base.lib;obj/webrtc/modules/audio_coding/ana_config_proto.lib;obj/webrtc/modules/audio_coding/ana_debug_dump_proto.lib;obj/webrtc/modules/audio_coding/audio_coding.lib;obj/webrtc/modules/audio_coding/audio_encoder_interface.lib;obj/webrtc/modules/audio_coding/audio_format_conversion.lib;obj/webrtc/modules/audio_coding/audio_network_adaptor.lib;obj/webrtc/modules/audio_coding/builtin_audio_decoder_factory_internal.lib;obj/webrtc/modules/audio_coding/cng.lib;obj/webrtc/modules/audio_coding/g711.lib;obj/webrtc/modules/audio_coding/g722.lib;obj/webrtc/modules/audio_coding/ilbc.lib;obj/webrtc/modules/audio_coding/isac.lib;obj/webrtc/modules/audio_coding/isac_c.lib;obj/webrtc/modules/audio_coding/isac_common.lib;obj/webrtc/modules/audio_coding/isac_fix.lib;obj/webrtc/modules/audio_coding/legacy_encoded_audio_frame.lib;obj/webrtc/modules/audio_coding/neteq.lib;obj/webrtc/modules/audio_coding/neteq_unittest_proto.lib;obj/webrtc/modules/audio_coding/pcm16b.lib;obj/webrtc/modules/audio_coding/red.lib;obj/webrtc/modules/audio_coding/rent_a_codec.lib;obj/webrtc/modules/audio_coding/rtc_event_log_source.lib;obj/webrtc/modules/audio_coding/webrtc_opus.lib;obj/webrtc/modules/audio_conference_mixer/audio_conference_mixer.lib;obj/webrtc/modules/audio_device/audio_device.lib;obj/webrtc/modules/audio_mixer/audio_frame_manipulator.lib;obj/webrtc/modules/audio_mixer/audio_mixer_impl.lib;obj/webrtc/modules/audio_processing/audioproc_debug_proto.lib;obj/webrtc/modules/audio_processing/audioproc_protobuf_utils.lib;obj/webrtc/modules/audio_processing/audioproc_unittest_proto.lib;obj/webrtc/modules/audio_processing/audio_processing.lib;obj/webrtc/modules/audio_processing/audio_processing_sse2.lib;obj/webrtc/modules/bitrate_controller/bitrate_controller.lib;obj/webrtc/modules/congestion_controller/congestion_controller.lib;obj/webrtc/modules/desktop_capture/desktop_capture.lib;obj/webrtc/modules/desktop_capture/desktop_capture_differ_sse2.lib;obj/webrtc/modules/desktop_capture/primitives.lib;obj/webrtc/modules/media_file/media_file.lib;obj/webrtc/modules/pacing/pacing.lib;obj/webrtc/modules/remote_bitrate_estimator/bwe_simulator_lib.lib;obj/webrtc/modules/remote_bitrate_estimator/remote_bitrate_estimator.lib;obj/webrtc/modules/rtp_rtcp/rtp_rtcp.lib;obj/webrtc/modules/utility/utility.lib;obj/webrtc/modules/video_capture/video_capture.lib;obj/webrtc/modules/video_capture/video_capture_internal_impl.lib;obj/webrtc/modules/video_capture/video_capture_module.lib;obj/webrtc/modules/video_coding/video_coding.lib;obj/webrtc/modules/video_coding/video_coding_utility.lib;obj/webrtc/modules/video_coding/webrtc_h264.lib;obj/webrtc/modules/video_coding/webrtc_i420.lib;obj/webrtc/modules/video_coding/webrtc_vp8.lib;obj/webrtc/modules/video_coding/webrtc_vp9.lib;obj/webrtc/modules/video_processing/video_processing.lib;obj/webrtc/modules/video_processing/video_processing_sse2.lib;obj/webrtc/ortc/ortc.lib;obj/webrtc/p2p/libstunprober.lib;obj/webrtc/p2p/rtc_p2p.lib;obj/webrtc/pc/libjingle_peerconnection.lib;obj/webrtc/pc/rtc_pc.lib;obj/webrtc/stats/rtc_stats.lib;obj/webrtc/system_wrappers/field_trial_default.lib;obj/webrtc/system_wrappers/metrics_default.lib;obj/webrtc/system_wrappers/system_wrappers.lib;obj/webrtc/tools/chart_proto.lib;obj/webrtc/tools/command_line_parser.lib;obj/webrtc/tools/event_log_visualizer_utils.lib;obj/webrtc/tools/frame_editing_lib.lib;obj/webrtc/tools/reference_less_video_analysis_lib.lib;obj/webrtc/tools/video_quality_analysis.lib;obj/webrtc/video/video.lib;obj/webrtc/voice_engine/audio_coder.lib;obj/webrtc/voice_engine/channel_transport.lib;obj/webrtc/voice_engine/file_player.lib;obj/webrtc/voice_engine/file_recorder.lib;obj/webrtc/voice_engine/level_indicator.lib;obj/webrtc/voice_engine/voice_engine.lib;obj/webrtc/webrtc.lib;obj/webrtc/webrtc_common.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\webrtc-checkout\src\out\x64_release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AsyncEvent.cxx" />
+    <ClCompile Include="ATLBrowserCallback.cxx" />
+    <ClCompile Include="Buffer.cxx" />
+    <ClCompile Include="Common.cxx" />
+    <ClCompile Include="Display.cxx" />
+    <ClCompile Include="dllmain.cxx">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ErrorMessage.cxx" />
+    <ClCompile Include="ExErrorMessage.cxx" />
+    <ClCompile Include="ExMediaStream.cxx" />
+    <ClCompile Include="ExMediaStreamConstraints.cxx" />
+    <ClCompile Include="ExMediaStreamTrack.cxx" />
+    <ClCompile Include="ExMediaTrackConstraints.cxx" />
+    <ClCompile Include="ExPromise.cxx" />
+    <ClCompile Include="Helper.cxx" />
+    <ClCompile Include="MediaDevices.cxx" />
+    <ClCompile Include="MediaStream.cxx" />
+    <ClCompile Include="MediaStreamTrack.cxx" />
+    <ClCompile Include="MediaTrackConstraints.cxx" />
+    <ClCompile Include="MediaTrackSupportedConstraints.cxx" />
+    <ClCompile Include="Plugin.cxx" />
+    <ClCompile Include="Promise.cxx" />
+    <ClCompile Include="rtc.cxx" />
+    <ClCompile Include="RTCMediaConstraint.cxx" />
+    <ClCompile Include="rtc_i.c">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Utils.cxx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AsyncEvent.h" />
+    <ClInclude Include="ATLBrowserCallback.h" />
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="Display.h" />
+    <ClInclude Include="dllmain.h" />
+    <ClInclude Include="ErrorMessage.h" />
+    <ClInclude Include="ExErrorMessage.h" />
+    <ClInclude Include="ExMediaStream.h" />
+    <ClInclude Include="ExMediaStreamConstraints.h" />
+    <ClInclude Include="ExMediaStreamTrack.h" />
+    <ClInclude Include="ExMediaTrackConstraints.h" />
+    <ClInclude Include="ExPromise.h" />
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="MediaDevices.h" />
+    <ClInclude Include="MediaStream.h" />
+    <ClInclude Include="MediaStreamTrack.h" />
+    <ClInclude Include="MediaTrackConstraints.h" />
+    <ClInclude Include="MediaTrackSupportedConstraints.h" />
+    <ClInclude Include="Plugin.h" />
+    <ClInclude Include="Promise.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RTCMediaConstraints.h" />
+    <ClInclude Include="rtc_i.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="_IPluginEvents_CP.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="rtc.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ErrorMessage.rgs" />
+    <None Include="MediaDevices.rgs" />
+    <None Include="MediaStream.rgs" />
+    <None Include="MediaStreamTrack.rgs" />
+    <None Include="MediaTrackConstraints.rgs" />
+    <None Include="MediaTrackSupportedConstraints.rgs" />
+    <None Include="Plugin.rgs" />
+    <None Include="Promise.rgs" />
+    <None Include="rtc.def" />
+    <None Include="rtc.rgs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="rtc.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Plugin.bmp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

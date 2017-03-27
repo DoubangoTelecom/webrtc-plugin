@@ -1,0 +1,240 @@
+// rtc.idl : IDL source for rtc
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (rtc.tlb) and marshalling code.
+
+#include "olectl.h"
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(E7924A16-1A24-472D-B481-92D7C2533F55),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IPlugin : IDispatch{
+	[propget, id(1), helpstring("property versionName")] HRESULT versionName([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property mediaDevices")] HRESULT mediaDevices([out, retval] VARIANT* pVal);
+	[propget, id(3), helpstring("property isWebRtcPlugin")] HRESULT isWebRtcPlugin([out, retval] VARIANT_BOOL* pVal);
+
+	[id(10), helpstring("method createDisplay")] HRESULT createDisplay([out, retval] IDispatch** ppDisplay);
+	[id(11), helpstring("method createSessionDescription")] HRESULT createSessionDescription([in] VARIANT RTCSessionDescriptionInit, [out, retval] IDispatch** ppSdp);
+	[id(12), helpstring("method createDictOptions")] HRESULT createDictOptions([out, retval] IDispatch** ppDictOptions);
+	[id(13), helpstring("method createPeerConnection")] HRESULT createPeerConnection([in, optional] VARIANT RTCConfiguration, [in, optional]VARIANT MediaConstraints, [out, retval] IDispatch** ppPeerConnection);
+	[id(14), helpstring("method createIceCandidate")] HRESULT createIceCandidate([in] VARIANT RTCIceCandidateInit, [out, retval] IDispatch** ppIceCandidate);
+	[id(15), helpstring("method createMediaStreamTrack")] HRESULT createMediaStreamTrack([out, retval] IDispatch** ppMediaStreamTrack);
+
+	[id(40), helpstring("method bindEventListener")] HRESULT bindEventListener([in] BSTR type, [in, optional]VARIANT listenerCallback, [in, optional]VARIANT useCapture);
+	[id(41), helpstring("method getSources")] HRESULT getSources([in, optional]VARIANT successCallback);
+	[id(42), helpstring("method getWindowList")] HRESULT getWindowList([out, retval] BSTR* winList);
+
+	[propput, id(50), helpstring("property src")] HRESULT src([in] VARIANT newVal);
+	[propget, id(51), helpstring("property videoWidth")] HRESULT videoWidth([out, retval] LONG* pVal);
+	[propget, id(52), helpstring("property videoHeight")] HRESULT videoHeight([out, retval] LONG* pVal);
+	[id(53), helpstring("method fillImageData")] HRESULT fillImageData([in] VARIANT imageData);
+	[id(54), helpstring("method getScreenShot")] HRESULT getScreenShot([out, retval] BSTR* base64BitmapData);
+
+	[propget, id(60), helpstring("property logSeverity")] HRESULT logSeverity([out, retval] BSTR* pVal);
+	[propput, id(60), helpstring("property logSeverity")] HRESULT logSeverity([in] BSTR newVal);
+};
+
+[
+	object,
+	uuid(2785B9BD-CA2D-44DA-879B-FD15F9BA1D5F),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMediaDevices : IDispatch{
+	[id(1), helpstring("method getSupportedConstraints")] HRESULT getSupportedConstraints([out, retval] VARIANT* pConstraints);
+	[id(2), helpstring("method getUserMedia")] HRESULT getUserMedia([in] VARIANT constraints, [out, retval] VARIANT* pPromiseMediaStream);
+};
+[
+	object,
+	uuid(39C30596-997E-434C-8171-85B2730A9CA6),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMediaStreamDoubango : IDispatch{ // IMediaStream already exist in DirectShow base classes (link error : duplicated symbol)
+	[propget, id(1), helpstring("property id")] HRESULT id([out, retval] BSTR* pVal);
+	[id(2), helpstring("method getAudioTracks")] HRESULT getAudioTracks([out, retval] VARIANT* Tracks);
+	[id(3), helpstring("method getVideoTracks")] HRESULT getVideoTracks([out, retval] VARIANT* Tracks);
+	[id(4), helpstring("method getTracks")] HRESULT getTracks([out, retval] VARIANT* Tracks);
+	[id(5), helpstring("method getTrackById")] HRESULT getTrackById([in] BSTR trackId, [out, retval] VARIANT* MediaStreamTrack);
+	[id(6), helpstring("method addTrack")] HRESULT addTrack([in] VARIANT MediaStreamTrack);
+	[id(7), helpstring("method removeTrack")] HRESULT removeTrack([in] VARIANT MediaStreamTrack);
+	[id(8), helpstring("method clone")] HRESULT clone([out, retval] VARIANT* MediaStream);
+	[propget, id(9), helpstring("property active")] HRESULT active([out, retval] VARIANT_BOOL* pVal);	
+	[propget, id(10), helpstring("property onaddtrack")] HRESULT onaddtrack([out, retval] VARIANT* pVal);
+	[propput, id(10), helpstring("property onaddtrack")] HRESULT onaddtrack([in] VARIANT newVal);
+	[propget, id(11), helpstring("property onremovetrack")] HRESULT onremovetrack([out, retval] VARIANT* pVal);
+	[propput, id(11), helpstring("property onremovetrack")] HRESULT onremovetrack([in] VARIANT newVal);
+	[propget, id(12), helpstring("property oninactive")] HRESULT oninactive([out, retval] VARIANT* pVal);
+	[propput, id(12), helpstring("property oninactive")] HRESULT oninactive([in] VARIANT newVal);
+};
+[
+	object,
+	uuid(212555EE-F2DC-4E4A-B27C-517D29E0B7A4),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMediaTrackSupportedConstraints : IDispatch{
+	[propget, id(1), helpstring("property width")] HRESULT width([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(2), helpstring("property height")] HRESULT height([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(3), helpstring("property aspectRatio")] HRESULT aspectRatio([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(4), helpstring("property frameRate")] HRESULT frameRate([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(5), helpstring("property facingMode")] HRESULT facingMode([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(6), helpstring("property volume")] HRESULT volume([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(7), helpstring("property sampleRate")] HRESULT sampleRate([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(8), helpstring("property sampleSize")] HRESULT sampleSize([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(9), helpstring("property echoCancellation")] HRESULT echoCancellation([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(10), helpstring("property latency")] HRESULT latency([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(11), helpstring("property channelCount")] HRESULT channelCount([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(12), helpstring("property deviceId")] HRESULT deviceId([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(13), helpstring("property groupId")] HRESULT groupId([out, retval] VARIANT_BOOL* pVal);
+};
+[
+	object,
+	uuid(59C63051-0B14-4D44-8015-BD42BBCE4964),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IPromise : IDispatch{
+	[id(1), helpstring("method then")] HRESULT then([in, optional] VARIANT onFulfilled, [out, retval] VARIANT* pThePromise);
+	// catch is reserved keyword and hacked using GetIDsOfNames wich means the id **must** be "2"
+	[id(2), helpstring("method catch")] HRESULT catchh([in, optional] VARIANT onRejected, [out, retval] VARIANT* pThePromise);
+};
+[
+	object,
+	uuid(97C09588-9992-4809-900B-E7319C615DB1),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IErrorMessage : IDispatch{
+	[propget, id(1), helpstring("property name")] HRESULT name([out, retval] BSTR* pVal);
+};
+[
+	object,
+	uuid(8F5B0823-989F-4E6F-A486-8ABFD523B22D),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMediaStreamTrack : IDispatch{
+	[propget, id(1), helpstring("property kind")] HRESULT kind([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property id")] HRESULT id([out, retval] BSTR* pVal);
+	[propget, id(3), helpstring("property label")] HRESULT label([out, retval] BSTR* pVal);
+	[propget, id(4), helpstring("property enabled")] HRESULT enabled([out, retval] VARIANT_BOOL* pVal);
+	[propput, id(4), helpstring("property enabled")] HRESULT enabled([in] VARIANT_BOOL newVal);
+	[propget, id(5), helpstring("property muted")] HRESULT muted([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(6), helpstring("property onmute")] HRESULT onmute([out, retval] VARIANT* pVal);
+	[propput, id(6), helpstring("property onmute")] HRESULT onmute([in] VARIANT newVal);
+	[propget, id(7), helpstring("property onunmute")] HRESULT onunmute([out, retval] VARIANT* pVal);
+	[propput, id(7), helpstring("property onunmute")] HRESULT onunmute([in] VARIANT newVal);
+	[propget, id(10), helpstring("property readyState")] HRESULT readyState([out, retval] BSTR* pVal);
+	[propget, id(12), helpstring("property onended")] HRESULT onended([out, retval] VARIANT* pVal);
+	[propput, id(12), helpstring("property onended")] HRESULT onended([in] VARIANT newVal);
+	[id(13), helpstring("method getCapabilities")] HRESULT getCapabilities([out, retval] VARIANT* MediaTrackCapabilities);
+	[id(14), helpstring("method getConstraints")] HRESULT getConstraints([out, retval] VARIANT* MediaTrackConstraints);
+	[id(15), helpstring("method getSettings")] HRESULT getSettings([out, retval] VARIANT* MediaTrackSettings);
+	[id(17), helpstring("method applyConstraints")] HRESULT applyConstraints([in] VARIANT MediaTrackConstraints);
+	[propget, id(18), helpstring("property onoverconstrained")] HRESULT onoverconstrained([out, retval] VARIANT* pVal);
+	[propput, id(18), helpstring("property onoverconstrained")] HRESULT onoverconstrained([in] VARIANT newVal);
+	[id(20), helpstring("method clone")] HRESULT clone([out, retval] VARIANT* MediaStreamTrack);
+	[id(21), helpstring("method stop")] HRESULT stop();
+};
+[
+	object,
+	uuid(CA8FD86D-739E-49E3-81DB-4DE70F63B892),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMediaTrackConstraints : IDispatch{
+};
+[
+	uuid(5701E57F-4D99-450D-8479-BC9871799B8D),
+	version(1.0),
+]
+
+
+
+
+library rtcLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(2D6EAD85-CE94-49DA-BC4F-1C122C3558B3)		
+	]
+	dispinterface _IPluginEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(F8CFFADD-7ED1-46E9-BEFD-DE7DE1092074),		
+		control
+	]
+	coclass Plugin
+	{
+		[default] interface IPlugin;
+		[default, source] dispinterface _IPluginEvents;
+	};
+	[
+		uuid(8715C55C-EB79-40E7-BBAE-CDFC127498C9)		
+	]
+	coclass MediaDevices
+	{
+		[default] interface IMediaDevices;
+	};
+	[
+		uuid(B1F9B307-84D4-49D1-9817-92541F56D9ED)		
+	]
+	coclass MediaStream
+	{
+		[default] interface IMediaStreamDoubango;
+	};
+	[
+		uuid(FC18B94E-A34B-41A4-9ECC-8DC9A935565B)		
+	]
+	coclass MediaTrackSupportedConstraints
+	{
+		[default] interface IMediaTrackSupportedConstraints;
+	};
+	[
+		uuid(310F737F-B074-46C3-AF4B-6CD06D69C613)		
+	]
+	coclass Promise
+	{
+		[default] interface IPromise;
+	};
+	[
+		uuid(751EF633-E34A-4CB7-BA2F-8E8044CFC7FA)		
+	]
+	coclass ErrorMessage
+	{
+		[default] interface IErrorMessage;
+	};
+	[
+		uuid(85C22736-EA22-41BF-A7A2-E25DBD63BA3B)		
+	]
+	coclass MediaStreamTrack
+	{
+		[default] interface IMediaStreamTrack;
+	};
+	[
+		uuid(66EBA785-4C5C-48E3-8087-4F52E252AE92)		
+	]
+	coclass MediaTrackConstraints
+	{
+		[default] interface IMediaTrackConstraints;
+	};
+};
+

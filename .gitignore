@@ -27,3 +27,13 @@
 *.exe
 *.out
 *.app
+*.tlb
+/Debug
+/Release
+*.suo
+/.vs
+/x64
+/ipch
+/*.db
+/*.opendb
+/*.user

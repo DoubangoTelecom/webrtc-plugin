@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.MediaTrackConstraints.1 = s 'MediaTrackConstraints Class'
+	{
+		CLSID = s '{66EBA785-4C5C-48E3-8087-4F52E252AE92}'
+	}
+	rtc.MediaTrackConstraints = s 'MediaTrackConstraints Class'
+	{		
+		CurVer = s 'rtc.MediaTrackConstraints.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {66EBA785-4C5C-48E3-8087-4F52E252AE92} = s 'MediaTrackConstraints Class'
+		{
+			ProgID = s 'rtc.MediaTrackConstraints.1'
+			VersionIndependentProgID = s 'rtc.MediaTrackConstraints'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}
