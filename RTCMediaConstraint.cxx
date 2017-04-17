@@ -33,3 +33,13 @@ bool RTCMediaConstraints::AddMandatory(const std::string& key, const std::string
 	m_mandatory.push_back(webrtc::MediaConstraintsInterface::Constraint(key, value));
 	return true;
 }
+
+void RTCMediaConstraints::RemoveIfNotInList(const std::vector<std::string>& list)
+{
+	m_optional.erase(std::remove_if(m_optional.begin(), m_optional.end(), [list](webrtc::MediaConstraintsInterface::Constraint& constraint) {
+		return (std::find(list.begin(), list.end(), constraint.key) == list.end());
+	}), m_optional.end());
+	m_mandatory.erase(std::remove_if(m_mandatory.begin(), m_mandatory.end(), [list](webrtc::MediaConstraintsInterface::Constraint& constraint) {
+		return (std::find(list.begin(), list.end(), constraint.key) == list.end());
+	}), m_mandatory.end());
+}

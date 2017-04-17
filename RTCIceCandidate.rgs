@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCIceCandidate.1 = s 'RTCIceCandidate Class'
+	{
+		CLSID = s '{20E253DA-1FAB-458B-B73A-E8EFB8793D2A}'
+	}
+	rtc.RTCIceCandidate = s 'RTCIceCandidate Class'
+	{		
+		CurVer = s 'rtc.RTCIceCandidate.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {20E253DA-1FAB-458B-B73A-E8EFB8793D2A} = s 'RTCIceCandidate Class'
+		{
+			ProgID = s 'rtc.RTCIceCandidate.1'
+			VersionIndependentProgID = s 'rtc.RTCIceCandidate'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

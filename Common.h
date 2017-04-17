@@ -2,6 +2,7 @@
 
 #include "Config.h"
 #include "Debug.h"
+#include "CustomAudioDeviceModule.h"
 
 #include "webrtc/api/peerconnectioninterface.h"
 #include "webrtc/api/mediaconstraintsinterface.h"
@@ -10,9 +11,15 @@
 
 class Buffer;
 class ExErrorMessage;
+class ExRTCError;
 class ExMediaStream;
 class ExMediaStreamConstraints;
 class RTCMediaConstraints;
+class ExRTCSessionDescription;
+class ExRTCIceCandidate;
+class ExRTCPeerConnectionIceEvent;
+class ExMediaStreamEvent;
+class ExRTCDataChannelEvent;
 
 typedef void* VoidPtr;
 typedef VoidPtr DtmfSenderInterfacePtr,
@@ -25,8 +32,9 @@ DataChannelInterfacePtr;
 #define RTC_MAX_ARGS_PARAMS 10
 
 // Errors
-#define RTC_ConstraintNotSatisfiedError	"ConstraintNotSatisfiedError"
-#define RTC_PermissionDeniedError		"PermissionDeniedError"
+#define RTC_ConstraintNotSatisfiedError		"ConstraintNotSatisfiedError"
+#define RTC_PermissionDeniedError			"PermissionDeniedError"
+#define RTC_OperationError					"OperationError"
 
 #define RTC_SAFE_RELEASE(ppObj) { if ((ppObj) && *(ppObj)) { (*(ppObj))->Release(); *(ppObj) = NULL; } }
 #define RTC_SAFE_RELEASE_OBJECT(ppObj) { if ((ppObj) && *(ppObj)) { (*(ppObj))->ReleaseObject(); *(ppObj) = NULL; } }
@@ -35,6 +43,7 @@ DataChannelInterfacePtr;
 // In CHECK_HR(x) When (x) is a function it will be executed twice when used in "WE_DEBUG_ERROR(x)" and "If(x)"
 #define RTC_CHECK_HR_BAIL(x) { HRESULT __hr__ = (x); if (FAILED(__hr__)) { RTC_DEBUG_ERROR("Operation Failed (%08x)", __hr__); goto bail; } }
 #define RTC_CHECK_HR_RETURN(x) { HRESULT __hr__ = (x); if (FAILED(__hr__)) { RTC_DEBUG_ERROR("Operation Failed (%08x)", __hr__); return __hr__; } }
+#define RTC_CHECK_HR_NOP(x) { HRESULT __hr__ = (x); if (FAILED(__hr__)) { RTC_DEBUG_ERROR("Operation Failed (%08x)", __hr__); } }
 
 enum TrackTypeFlags {
 	TrackTypeFlagsNone = 0x00,
@@ -47,11 +56,11 @@ enum TrackTypeFlags {
 
 struct RTCIceServer {
 public:
-	std::string uri;
+	std::vector<std::string> urls;
 	std::string username;
 	std::string password;
-	RTCIceServer(std::string _uri, std::string _username = std::string(""), std::string _password = std::string("")) {
-		uri = _uri, username = _username, password = _password;
+	RTCIceServer(std::vector<std::string> _urls, std::string _username = std::string(""), std::string _password = std::string("")) {
+		urls = _urls, username = _username, password = _password;
 	}
 };
 
@@ -65,26 +74,6 @@ public:
 	}
 };
 
-// http://www.w3.org/TR/webrtc/#idl-def-RTCDTMFToneChangeEvent
-struct RTCDTMFToneChangeEvent {
-public:
-	std::string tone; // readonly attribute DOMString tone;
-	RTCDTMFToneChangeEvent(std::string _tone = "") {
-		tone = _tone;
-	}
-};
-
-// http://www.w3.org/TR/webrtc/#idl-def-RTCDataChannelEvent
-#if 0
-struct RTCDataChannelEvent {
-public:
-	std::shared_ptr<RTCDataChannel> channel; // readonly    attribute RTCDataChannel channel;
-	RTCDataChannelEvent(std::shared_ptr<RTCDataChannel>& _channel) {
-		channel = _channel;
-	}
-};
-#endif
-
 // http://www.w3.org/TR/webrtc/#event-datachannel-message
 struct MessageEvent {
 public:
@@ -95,58 +84,80 @@ public:
 };
 
 
-// http://www.w3.org/TR/webrtc/#idl-def-RTCPeerConnectionIceEvent
-#if 0
-struct RTCPeerConnectionIceEvent {
-public:
-	std::shared_ptr<RTCIceCandidate> candidate;
-	RTCPeerConnectionIceEvent(std::shared_ptr<RTCIceCandidate> _candidate = nullptr) {
-		candidate = _candidate;
-	}
-	~RTCPeerConnectionIceEvent() {
-		candidate = nullptr;
-	}
-};
-#endif
-
-// http://www.w3.org/TR/webrtc/#idl-def-MediaStreamEvent
-struct MediaStreamEvent {
-public:
-	std::shared_ptr<ExMediaStream> stream;
-	MediaStreamEvent(std::shared_ptr<ExMediaStream> _stream = nullptr) {
-		stream = _stream;
-	}
-	~MediaStreamEvent() {
-		stream = nullptr;
-	}
-};
-
 // http://www.w3.org/TR/mediacapture-streams/#idl-def-NavigatorUserMediaSuccessCallback
 typedef std::function<void(std::shared_ptr<ExMediaStream> stream)> NavigatorUserMediaSuccessCallback;
 
 // http://www.w3.org/TR/mediacapture-streams/#idl-def-NavigatorUserMediaErrorCallback
 typedef std::function<void(std::shared_ptr<ExErrorMessage> e)> NavigatorUserMediaErrorCallback;
 
+typedef std::function<void()> FunctionCallbackVoid;
+typedef std::function<void(std::shared_ptr<std::string> string)> FunctionCallbackString;
+typedef std::function<void(std::shared_ptr<ExErrorMessage> e)> FunctionCallbackError; // DomError
+typedef std::function<void(std::shared_ptr<ExRTCError> e)> FunctionCallbackRTCError; // RTCError
+typedef std::function<void(std::shared_ptr<ExRTCSessionDescription> e)> FunctionCallbackSessionDescription;
+typedef std::function<void(std::shared_ptr<ExRTCPeerConnectionIceEvent> e)> FunctionCallbackIceCandidate;
+typedef std::function<void(std::shared_ptr<ExMediaStreamEvent> e)> FunctionCallbackStream;
+typedef std::function<void(std::shared_ptr<ExRTCDataChannelEvent> e)> FunctionCallbackDataChannel;
+
+static const std::string kStringEmpty = "";
+
 // https://www.w3.org/TR/mediacapture-streams/#idl-def-MediaStreamTrackState
 static const char kMediaStreamTrackStateLive[] = "live";
 static const char kMediaStreamTrackStateEnded[] = "ended";
 
-// https://www.w3.org/TR/mediacapture-streams/#idl-def-MediaTrackConstraintSet
-typedef std::pair< std::string, std::string> MediaTrackConstraint;
-typedef std::map<std::string, std::string> MediaTrackConstraintSet;
-struct MediaTrackConstraintSets {
+// https://www.w3.org/TR/mediacapture-streams/#idl-def-MediaDeviceKind
+static const char kMediaDeviceKindAudioInput[] = "audioinput";
+static const char kMediaDeviceKindAudioOutput[] = "audiooutput";
+static const char kMediaDeviceKindVideoInput[] = "videoinput";
+
+// https://www.w3.org/TR/webrtc/#dom-rtcsdptype
+static const char kRTCSdpTypeOffer[] = "offer";
+static const char kRTCSdpTypePranswer[] = "pranswer";
+static const char kRTCSdpTypeAnswer[] = "answer";
+static const char kRTCSdpTypeRollback[] = "rollback";
+
+// https://www.w3.org/TR/webrtc/#dom-rtcsignalingstate
+static const char kSignalingStateStable[] = "stable";
+static const char kSignalingStateHaveLocalOffer[] = "have-local-offer";
+static const char kSignalingStateHaveRemoteOffer[] = "have-remote-offer";
+static const char kSignalingStateHaveLocalPrAnswer[] = "have-local-pranswer";
+static const char kSignalingStateHaveRemotePrAnswer[] = "have-remote-pranswer";
+static const char kSignalingStateClosed[] = "closed";
+
+// https://www.w3.org/TR/webrtc/#dom-rtcicegatheringstate
+static const char kRTCIceGatheringStateNew[] = "new";
+static const char kRTCIceGatheringStateGathering[] = "gathering";
+static const char kRTCIceGatheringStateComplete[] = "complete";
+
+// https://www.w3.org/TR/webrtc/#dom-rtciceconnectionstate
+static const char kRTCIceConnectionStateNew[] = "new";
+static const char kRTCIceConnectionStateChecking[] = "checking";
+static const char kRTCIceConnectionStateConnected[] = "connected";
+static const char kRTCIceConnectionStateCompleted[] = "completed";
+static const char kRTCIceConnectionStateFailed[] = "failed";
+static const char kRTCIceConnectionStateDisconnected[] = "disconnected";
+static const char kRTCIceConnectionStateClosed[] = "closed";
+
+// https://www.w3.org/TR/webrtc/#dom-rtcpeerconnectionstate
+static const char kRTCPeerConnectionStateNew[] = "new";
+static const char kRTCPeerConnectionStateConnecting[] = "connecting";
+static const char kRTCPeerConnectionStateConnected[] = "connected";
+static const char kRTCPeerConnectionStateDisconnected[] = "disconnected";
+static const char kRTCPeerConnectionStateFailed[] = "failed";
+static const char kRTCPeerConnectionStateClosed[] = "closed";
+
+// https://www.w3.org/TR/mediacapture-streams/#idl-def-MediaConstraintSet
+typedef std::pair< std::string, std::string> MediaConstraint;
+typedef std::map<std::string, std::string> MediaConstraintSet;
+struct MediaConstraintSets {
 public:
-	std::shared_ptr<MediaTrackConstraintSet> ideal;
-	std::shared_ptr<MediaTrackConstraintSet> exact;
-	MediaTrackConstraintSets(std::shared_ptr<MediaTrackConstraintSet> _ideal = nullptr, std::shared_ptr<MediaTrackConstraintSet> _exact = nullptr) {
+	std::shared_ptr<MediaConstraintSet> ideal;
+	std::shared_ptr<MediaConstraintSet> exact;
+	MediaConstraintSets(std::shared_ptr<MediaConstraintSet> _ideal = nullptr, std::shared_ptr<MediaConstraintSet> _exact = nullptr) {
 		ideal = _ideal;
 		exact = _exact;
 	}
 };
-
-typedef std::function<void()> FunctionCallbackVoid;
-typedef std::function<void(std::shared_ptr<std::string> string)> FunctionCallbackString;
-
 
 template <typename T>
 struct Sequence {
@@ -223,9 +234,10 @@ public:
 };
 
 extern rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> GetPeerConnectionFactory();
+extern rtc::scoped_refptr<webrtc::AudioDeviceModule> GetAudioDeviceModule();
 extern rtc::Thread* GetWorkerThread();
 extern void TakeFakePeerConnectionFactory();
 extern void ReleaseFakePeerConnectionFactory();
-extern rtc::scoped_refptr<RTCMediaConstraints> BuildConstraints(const MediaTrackConstraintSets* constraints = NULL);
+extern rtc::scoped_refptr<RTCMediaConstraints> BuildConstraints(const MediaConstraintSets* constraints = NULL);
 extern webrtc::MediaStreamInterface* BuildMediaStream(const ExMediaStream* stream);
 extern void getUserMedia(const ExMediaStreamConstraints* constraints = NULL, NavigatorUserMediaSuccessCallback successCallback = nullptr, NavigatorUserMediaErrorCallback errorCallback = nullptr);

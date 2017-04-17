@@ -15,17 +15,15 @@ CPromise::CPromise()
 
 HRESULT CPromise::FinalConstruct()
 {
-	/*AsyncEventRaiser::*/SetDispatcher(CPlugin::Singleton());
 	return S_OK;
 }
 
 void CPromise::FinalRelease()
 {
-	/*AsyncEventRaiser::*/SetDispatcher(NULL);
 	m_ex = nullptr;
 }
 
-void CPromise::SetEx(std::shared_ptr<ExPromise> ex)
+void CPromise::SetEx(std::shared_ptr<ExPromiseBase> ex)
 {
 	m_ex = ex;
 }
@@ -46,12 +44,12 @@ STDMETHODIMP CPromise::GetIDsOfNames(
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
-STDMETHODIMP CPromise::then(__in_opt VARIANT onFulfilled, __out VARIANT* pThePromise)
+STDMETHODIMP CPromise::then(__in VARIANT onFulfilled, __in_opt VARIANT onRejected, __out VARIANT* pThePromise)
 {
 	this->AddRef();
 	*pThePromise = CComVariant(this);
 	if (m_ex) {
-		m_ex->then(Utils::VariantToDispatch(onFulfilled));
+		m_ex->then(Utils::VariantToDispatch(onFulfilled), Utils::VariantToDispatch(onRejected));
 	}
 	return S_OK;
 }
@@ -65,24 +63,4 @@ STDMETHODIMP CPromise::catchh(__in_opt VARIANT onRejected, __out VARIANT* pThePr
 		m_ex->catchh(Utils::VariantToDispatch(onRejected));
 	}
 	return S_OK;
-
-#if 0
-	CComPtr<IDispatch> _onRejected = Utils::VariantToDispatch(onRejected);
-	if (_onRejected) {
-		AsyncEventDispatcher* dispatcher = const_cast<AsyncEventDispatcher*>(/*AsyncEventRaiser::*/GetDispatcher());
-		if (dispatcher) {
-			ATLBrowserCallback* cb = new ATLBrowserCallback(RTC_WM_GETUSERMEDIA_ERROR, _onRejected);
-			if (cb) {
-				CComObject<CErrorMessage>* error;
-				hr = Utils::CreateInstanceWithRef(&error);
-				if (SUCCEEDED(hr)) {
-					error->SetName(RTC_PermissionDeniedError);
-					hr = cb->AddDispatch(error);
-				}
-				dispatcher->RaiseCallback(cb);
-				RTC_SAFE_RELEASE_OBJECT(&cb);
-			}
-		}
-	}
-#endif
 }

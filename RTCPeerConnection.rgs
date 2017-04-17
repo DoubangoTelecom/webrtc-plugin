@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCPeerConnection.1 = s 'RTCPeerConnection Class'
+	{
+		CLSID = s '{3325022A-66CE-421A-88A0-45CB438A8A8D}'
+	}
+	rtc.RTCPeerConnection = s 'RTCPeerConnection Class'
+	{		
+		CurVer = s 'rtc.RTCPeerConnection.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {3325022A-66CE-421A-88A0-45CB438A8A8D} = s 'RTCPeerConnection Class'
+		{
+			ProgID = s 'rtc.RTCPeerConnection.1'
+			VersionIndependentProgID = s 'rtc.RTCPeerConnection'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

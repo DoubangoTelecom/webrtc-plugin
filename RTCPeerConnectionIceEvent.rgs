@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCPeerConnectionIceEvent.1 = s 'RTCPeerConnectionIceEvent Class'
+	{
+		CLSID = s '{F0B10277-5D59-428B-8EC1-E63C1D0E0714}'
+	}
+	rtc.RTCPeerConnectionIceEvent = s 'RTCPeerConnectionIceEvent Class'
+	{		
+		CurVer = s 'rtc.RTCPeerConnectionIceEvent.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {F0B10277-5D59-428B-8EC1-E63C1D0E0714} = s 'RTCPeerConnectionIceEvent Class'
+		{
+			ProgID = s 'rtc.RTCPeerConnectionIceEvent.1'
+			VersionIndependentProgID = s 'rtc.RTCPeerConnectionIceEvent'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

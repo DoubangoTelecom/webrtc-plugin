@@ -45,11 +45,11 @@ public:
 	void onstartedSet(FunctionCallbackVoid onstarted) { m_onstarted = onstarted; } // attribute EventHandler onstarted;
 	void onendedSet(FunctionCallbackVoid onended) { m_onended = onended; } // attribute EventHandler onended;
 
-	std::shared_ptr<ExMediaTrackConstraints> getConstraints() { return m_pConstraints; } // MediaTrackConstraints? constraints ();
+	std::shared_ptr<ExMediaTrackConstraints> getConstraints() { return m_pConstraints; } // MediaConstraints? constraints ();
 #if 0
 	virtual std::shared_ptr<_AllCapabilities> getCapabilities() = 0; // MediaTrackCapabilities getCapabilities ();
 #endif
-	virtual void applyConstraints(const ExMediaTrackConstraints* constrains) = 0; // void applyConstraints(MediaTrackConstraints constraints);
+	virtual void applyConstraints(const ExMediaTrackConstraints* constrains) = 0; // void applyConstraints(MediaConstraints constraints);
 
 	void onoverconstrainedSet(FunctionCallbackVoid onoverconstrained) { m_onoverconstrained = onoverconstrained; }; // attribute EventHandler onoverconstrained;
 
@@ -154,7 +154,14 @@ public:
 
 	// _MediaStreamTrackBase Interface
 	virtual webrtc::MediaStreamTrackInterface* _track() override { return track(); }
+	virtual void stop();
+
+private:
+	void StartOnWorkerThread(const ExMediaTrackConstraints* constrains);
+	void StopOnWorkerThread();
 
 private:
 	rtc::scoped_refptr<webrtc::VideoTrackInterface> m_track;
+	rtc::Thread* m_workerThread;
+	static std::map<std::string/*label*/, cricket::VideoCapturer* > s_capturerWeakRef;
 };

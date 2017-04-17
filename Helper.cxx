@@ -64,6 +64,12 @@ HRESULT Helper::DeInitialize(void)
 	return S_OK;
 }
 
+rtc::Thread* Helper::GetPluginThread()
+{
+	// Defined in Helper::Initialize
+	return rtc::ThreadManager::Instance()->CurrentThread();
+}
+
 std::string Helper::ToString(long val)
 {
 	char str[22];
@@ -168,14 +174,22 @@ LRESULT CALLBACK Helper::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case RTC_WM_ERROR:
 	case RTC_WM_GETUSERMEDIA_SUCESS:
 	case RTC_WM_GETUSERMEDIA_ERROR:
+	case RTC_WM_ENUMERATEDEVICES_SUCESS:
+	case RTC_WM_ENUMERATEDEVICES_ERROR:
 	case RTC_WM_CREATEOFFER_SUCCESS:
 	case RTC_WM_CREATEOFFER_ERROR:
+	case RTC_WM_CREATEANSWER_SUCCESS:
+	case RTC_WM_CREATEANSWER_ERROR:
 	case RTC_WM_ONNEGOTIATIONNEEDED:
 	case RTC_WM_ONICECANDIDATE:
 	case RTC_WM_ONSIGNALINGSTATECHANGE:
 	case RTC_WM_ONADDSTREAM:
 	case RTC_WM_ONREMOVESTREAM:
 	case RTC_WM_ONICECONNECTIONSTATECHANGE:
+	case RTC_WM_ONICEGATHERINGSTATECHANGE:
+	case RTC_WM_ONCONNECTIONSTATECHANGE:
+	case RTC_WM_ONFINGERPRINTFAILURE:
+	case RTC_WM_ONDATACHANNEL:
 	{
 		BrowserCallback* cb = reinterpret_cast<BrowserCallback*>(wParam);
 		if (cb) {

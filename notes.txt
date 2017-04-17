@@ -1,7 +1,7 @@
 cd src
 git checkout branch-heads/58
 set WINDOWSSDKDIR=C:/Program Files (x86)/Windows Kits/10
-gn gen out/Default --args="is_debug=false target_cpu=\"x64\""
+gn gen out/x86+debug --args="is_debug=true target_cpu=\"x86\" ffmpeg_branding=\"Chrome\" proprietary_codecs=true"
 
 == error MSB8011 ==
 1/ Make sure to start VS with admin rights
@@ -11,6 +11,22 @@ Debug: BoringSSL.DLL is required, in VS2015 -> Debugging  -> Envir ->
 or
 	PATH=$(VCRedistPaths);..\webrtc-checkout\src\out\x64_debug;%PATH%
 
+== Patch ==
+Need to Apply patches
+
 
 == TODO ==
 Removed support for HTTP/HTTs proxy
+
+== Samples ==
+Basic getUserMedia demo: https://doubango.org/rtc-plugin/samples/src/content/getusermedia/gum/
+getUserMedia with resolution constraints: https://doubango.org/rtc-plugin/samples/src/content/getusermedia/resolution/
+getUserMedia with camera, mic and speaker selection: https://doubango.org/rtc-plugin/samples/src/content/devices/input-output/
+
+Basic peer connection: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/pc1/
+Multiple peer connections at once: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/multiple/
+Forward output of one peer connection into another: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/multiple-relay/
+Munge SDP parameters: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/munge-sdp/
+Use pranswer when setting up a peer connection: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/pr-answer/
+Display peer connection states: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/states/
+Trickle ICE: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/trickle-ice/

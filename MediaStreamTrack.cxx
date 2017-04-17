@@ -28,8 +28,6 @@ void CMediaStreamTrack::FinalRelease()
 	m_callback_onoverconstrained = NULL;
 
 	m_ex = nullptr;
-
-	SetDispatcher(NULL);
 }
 
 void CMediaStreamTrack::SetEx(std::shared_ptr<ExMediaStreamTrack> ex)
@@ -50,50 +48,34 @@ std::shared_ptr<ExMediaStreamTrack> CMediaStreamTrack::GetEx()
 void CMediaStreamTrack::onmute()
 {
 	if (m_callback_onmute) {
-		ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_SUCCESS, m_callback_onmute);
-		if (bcb) {
-			this->RaiseCallback(bcb);
-			RTC_SAFE_RELEASE_OBJECT(&bcb);
-		}
+		RTC_CHECK_HR_NOP(Utils::RaiseEventVoid(m_callback_onmute, RTC_WM_SUCCESS));
 	}
 }
 
 void CMediaStreamTrack::onunmute()
 {
 	if (m_callback_onunmute) {
-		ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_SUCCESS, m_callback_onunmute);
-		if (bcb) {
-			this->RaiseCallback(bcb);
-			RTC_SAFE_RELEASE_OBJECT(&bcb);
-		}
+		RTC_CHECK_HR_NOP(Utils::RaiseEventVoid(m_callback_onunmute, RTC_WM_SUCCESS));
 	}
 }
 
 void CMediaStreamTrack::onended()
 {
 	if (m_callback_onended) {
-		ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_SUCCESS, m_callback_onended);
-		if (bcb) {
-			this->RaiseCallback(bcb);
-			RTC_SAFE_RELEASE_OBJECT(&bcb);
-		}
+		RTC_CHECK_HR_NOP(Utils::RaiseEventVoid(m_callback_onended, RTC_WM_SUCCESS));
 	}
 }
 
 void CMediaStreamTrack::onoverconstrained()
 {
 	if (m_callback_onoverconstrained) {
-		ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_SUCCESS, m_callback_onoverconstrained);
-		if (bcb) {
-			this->RaiseCallback(bcb);
-			RTC_SAFE_RELEASE_OBJECT(&bcb);
-		}
+		RTC_CHECK_HR_NOP(Utils::RaiseEventVoid(m_callback_onoverconstrained, RTC_WM_SUCCESS));
 	}
 }
 
 STDMETHODIMP CMediaStreamTrack::get_kind(__out BSTR* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return Utils::CopyAnsiStr(m_ex->kind(), pVal);
@@ -101,7 +83,7 @@ STDMETHODIMP CMediaStreamTrack::get_kind(__out BSTR* pVal)
 
 STDMETHODIMP CMediaStreamTrack::get_id(__out BSTR* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return Utils::CopyAnsiStr(m_ex->id(), pVal);
@@ -109,7 +91,7 @@ STDMETHODIMP CMediaStreamTrack::get_id(__out BSTR* pVal)
 
 STDMETHODIMP CMediaStreamTrack::get_label(__out BSTR* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return Utils::CopyAnsiStr(m_ex->label(), pVal);
@@ -117,7 +99,7 @@ STDMETHODIMP CMediaStreamTrack::get_label(__out BSTR* pVal)
 
 STDMETHODIMP CMediaStreamTrack::get_enabled(__out VARIANT_BOOL* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 
@@ -127,7 +109,7 @@ STDMETHODIMP CMediaStreamTrack::get_enabled(__out VARIANT_BOOL* pVal)
 
 STDMETHODIMP CMediaStreamTrack::put_enabled(__in VARIANT_BOOL newVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return m_ex->enabledSet(newVal != VARIANT_FALSE) ? S_OK : E_FAIL;
@@ -135,7 +117,7 @@ STDMETHODIMP CMediaStreamTrack::put_enabled(__in VARIANT_BOOL newVal)
 
 STDMETHODIMP CMediaStreamTrack::get_muted(__out VARIANT_BOOL* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	*pVal = m_ex->muted() ? VARIANT_TRUE : VARIANT_FALSE;
@@ -144,7 +126,7 @@ STDMETHODIMP CMediaStreamTrack::get_muted(__out VARIANT_BOOL* pVal)
 
 STDMETHODIMP CMediaStreamTrack::get_onmute(__out VARIANT* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	*pVal = CComVariant(m_callback_onmute);
@@ -153,7 +135,7 @@ STDMETHODIMP CMediaStreamTrack::get_onmute(__out VARIANT* pVal)
 
 STDMETHODIMP CMediaStreamTrack::put_onmute(__in VARIANT newVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	m_callback_onmute = Utils::VariantToDispatch(newVal);
@@ -162,7 +144,7 @@ STDMETHODIMP CMediaStreamTrack::put_onmute(__in VARIANT newVal)
 
 STDMETHODIMP CMediaStreamTrack::get_onunmute(__out VARIANT* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	*pVal = CComVariant(m_callback_onunmute);
@@ -171,7 +153,7 @@ STDMETHODIMP CMediaStreamTrack::get_onunmute(__out VARIANT* pVal)
 
 STDMETHODIMP CMediaStreamTrack::put_onunmute(__in VARIANT newVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	m_callback_onunmute = Utils::VariantToDispatch(newVal);
@@ -180,7 +162,7 @@ STDMETHODIMP CMediaStreamTrack::put_onunmute(__in VARIANT newVal)
 
 STDMETHODIMP CMediaStreamTrack::get_readyState(__out BSTR* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return Utils::CopyAnsiStr(m_ex->readyState(), pVal);
@@ -188,7 +170,7 @@ STDMETHODIMP CMediaStreamTrack::get_readyState(__out BSTR* pVal)
 
 STDMETHODIMP CMediaStreamTrack::get_onended(__out VARIANT* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	*pVal = CComVariant(m_callback_onended);
@@ -197,7 +179,7 @@ STDMETHODIMP CMediaStreamTrack::get_onended(__out VARIANT* pVal)
 
 STDMETHODIMP CMediaStreamTrack::put_onended(__in VARIANT newVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	m_callback_onended = Utils::VariantToDispatch(newVal);
@@ -206,15 +188,15 @@ STDMETHODIMP CMediaStreamTrack::put_onended(__in VARIANT newVal)
 
 STDMETHODIMP CMediaStreamTrack::getCapabilities(__out VARIANT* MediaTrackCapabilities)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return (E_NOTIMPL);
 }
 
-STDMETHODIMP CMediaStreamTrack::getConstraints(__out VARIANT* MediaTrackConstraints)
+STDMETHODIMP CMediaStreamTrack::getConstraints(__out VARIANT* MediaConstraints)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return (E_NOTIMPL);
@@ -222,15 +204,15 @@ STDMETHODIMP CMediaStreamTrack::getConstraints(__out VARIANT* MediaTrackConstrai
 
 STDMETHODIMP CMediaStreamTrack::getSettings(__out VARIANT* MediaTrackSettings)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return (E_NOTIMPL);
 }
 
-STDMETHODIMP CMediaStreamTrack::applyConstraints(__in VARIANT MediaTrackConstraints)
+STDMETHODIMP CMediaStreamTrack::applyConstraints(__in VARIANT MediaConstraints)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return (E_NOTIMPL);
@@ -238,7 +220,7 @@ STDMETHODIMP CMediaStreamTrack::applyConstraints(__in VARIANT MediaTrackConstrai
 
 STDMETHODIMP CMediaStreamTrack::get_onoverconstrained(__out VARIANT* pVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	*pVal = CComVariant(m_callback_onoverconstrained);
@@ -247,7 +229,7 @@ STDMETHODIMP CMediaStreamTrack::get_onoverconstrained(__out VARIANT* pVal)
 
 STDMETHODIMP CMediaStreamTrack::put_onoverconstrained(__in VARIANT newVal)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	m_callback_onoverconstrained = Utils::VariantToDispatch(newVal);
@@ -256,7 +238,7 @@ STDMETHODIMP CMediaStreamTrack::put_onoverconstrained(__in VARIANT newVal)
 
 STDMETHODIMP CMediaStreamTrack::clone(__out VARIANT* MediaStreamTrack)
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	return (E_NOTIMPL);
@@ -264,7 +246,7 @@ STDMETHODIMP CMediaStreamTrack::clone(__out VARIANT* MediaStreamTrack)
 
 STDMETHODIMP CMediaStreamTrack::stop()
 {
-	if (!m_ex) {
+	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 	m_ex->stop();

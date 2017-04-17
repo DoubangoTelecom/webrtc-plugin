@@ -19,6 +19,8 @@ public:
 	void AddOptional(const std::string& key, const std::string& value);
 	bool AddMandatory(const std::string& key, const std::string& value, bool override_if_exists = true);
 
+	void RemoveIfNotInList(const std::vector<std::string>& list);
+
 private:
 	Constraints m_mandatory;
 	Constraints m_optional;

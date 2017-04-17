@@ -2,6 +2,8 @@
 #include "Plugin.h"
 #include "MediaDevices.h"
 #include "MediaStream.h"
+#include "RTCPeerConnection.h"
+#include "RTCIceCandidate.h"
 #include "Promise.h"
 #include "Common.h"
 #include "Utils.h"
@@ -17,9 +19,7 @@ CPlugin* CPlugin::s_Singleton = NULL;
 CPlugin::CPlugin()
 	: AsyncEventDispatcher()
 	, Display()
-#if 0
-	, m_pTempVideoBuff(NULL)
-#endif
+	, m_TempVideoBuff(nullptr)
 	, m_spPresentSite(NULL)
 	, m_spContainer(NULL)
 	, m_spDoc(NULL)
@@ -42,15 +42,12 @@ HRESULT CPlugin::FinalConstruct()
 
 void CPlugin::FinalRelease()
 {
-#if 0
-	StopVideoRenderer();
-#endif
+	m_callbacks_onplay.clear();
+
+	StopVideoSink();
 	SetDispatcher(NULL);
 
-	m_callbacks_onplay.clear();
-#if 0
-	SafeDelete(&m_pTempVideoBuff);
-#endif
+	m_TempVideoBuff = nullptr;
 	m_spPresentSite = NULL;
 	m_spContainer = NULL;
 	m_spDoc = NULL;
@@ -93,12 +90,16 @@ void CPlugin::OnStartVideoSink()
 {
 	if (m_callbacks_onplay.size()) {
 		for (size_t i = 0; i < m_callbacks_onplay.size(); ++i) {
+#if 0
+			RTC_CHECK_HR_NOP(Utils::RaiseEventVoid(m_callbacks_onplay[i], RTC_WM_SUCCESS));
+#else
 			ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_SUCCESS, m_callbacks_onplay[i]);
 			if (bcb) {
 				bcb->AddDispatch(this); // not part of the standard: no arg to the callback
 				dynamic_cast<AsyncEventDispatcher*>(this)->RaiseCallback(bcb);
 				RTC_SAFE_RELEASE_OBJECT(&bcb);
 			}
+#endif
 		}
 	}
 	m_bVideoRendererStarted = TRUE;
@@ -250,6 +251,11 @@ LRESULT CPlugin::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 	return S_OK;
 }
 
+LRESULT CPlugin::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	return S_OK;
+}
+
 LRESULT CPlugin::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	return S_OK;
@@ -373,14 +379,67 @@ STDMETHODIMP CPlugin::createDictOptions(IDispatch** ppDictOptions)
 	return E_NOTIMPL;
 }
 
-STDMETHODIMP CPlugin::createPeerConnection(VARIANT RTCConfiguration, VARIANT MediaConstraints, IDispatch** ppPeerConnection)
+STDMETHODIMP CPlugin::createPeerConnection(__in_opt VARIANT varRTCConfiguration, __in_opt VARIANT varMediaConstraints, __out IDispatch** ppDispPeerConnection)
 {
-	return E_NOTIMPL;
+	HRESULT hr = S_OK;
+
+	std::shared_ptr<RTCConfiguration> rtcConf;
+	RTC_CHECK_HR_RETURN(hr = Utils::BuildRTCConfiguration(varRTCConfiguration, rtcConf));
+
+	std::shared_ptr<MediaConstraintSets> mediaConstraints;
+	RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraintsObjs(varMediaConstraints, mediaConstraints));
+
+	std::shared_ptr<ExRTCPeerConnection> ex(new ExRTCPeerConnection(rtcConf.get(), mediaConstraints.get()));
+	if (!ex.get()) {
+		RTC_DEBUG_ERROR("Failed to create ExRTCPeerConnection");
+		RTC_CHECK_HR_RETURN(hr = E_OUTOFMEMORY);
+	}
+	if (!ex->isValid()) {
+		RTC_DEBUG_ERROR("Invalid ExRTCPeerConnection object returned");
+		RTC_CHECK_HR_RETURN(hr = E_POINTER);
+	}
+
+	CComObject<CRTCPeerConnection>* pPeerConnection;
+	hr = Utils::CreateInstanceWithRef(&pPeerConnection, ex);
+	if (SUCCEEDED(hr)) {
+		*ppDispPeerConnection = pPeerConnection;
+	}
+	return hr;
 }
 
 STDMETHODIMP CPlugin::createIceCandidate(VARIANT RTCIceCandidateInit, IDispatch** ppIceCandidate)
 {
-	return E_NOTIMPL;
+	// RTCIceCandidateInit: https://www.w3.org/TR/webrtc/#dom-rtcicecandidateinit
+	HRESULT hr = S_OK;
+	CComPtr<IDispatch> spRTCIceCandidateInit = Utils::VariantToDispatch(RTCIceCandidateInit);
+	std::shared_ptr<ExRTCIceCandidate> exIceCandidate;
+	if (spRTCIceCandidateInit) {
+		BSTR bstrCandidate;
+		HRESULT hr = Utils::DispatchGetPropBSTR(spRTCIceCandidateInit, L"candidate", bstrCandidate);
+		if (SUCCEEDED(hr)) {
+			BSTR bstrSdpMid;
+			hr = Utils::DispatchGetPropBSTR(spRTCIceCandidateInit, L"sdpMid", bstrSdpMid);
+			if (SUCCEEDED(hr)) {
+				long longSdpMLineIndex;
+				hr = Utils::DispatchGetPropInteger(spRTCIceCandidateInit, L"sdpMLineIndex", longSdpMLineIndex);
+				if (SUCCEEDED(hr)) {
+					std::string strCandidate, strSdpMid;
+					if (SUCCEEDED(Utils::ToString(&bstrCandidate, strCandidate) && SUCCEEDED(Utils::ToString(&bstrSdpMid, strSdpMid)))) {
+						webrtc::SdpParseError error;
+						exIceCandidate = std::make_shared<ExRTCIceCandidate>(strSdpMid, static_cast<int>(longSdpMLineIndex), strCandidate, &error);
+					}
+				}
+			}
+		}
+	}
+	if (exIceCandidate.get()) {
+		CComObject<CRTCIceCandidate>* atlIceCandidate;
+		hr = Utils::CreateInstanceWithRef(&atlIceCandidate, exIceCandidate);
+		if (SUCCEEDED(hr)) {
+			*ppIceCandidate = atlIceCandidate;
+		}
+	}
+	return hr;
 }
 
 STDMETHODIMP CPlugin::createMediaStreamTrack(__out IDispatch** ppMediaStreamTrack)
@@ -396,23 +455,13 @@ STDMETHODIMP CPlugin::getSources(__in_opt VARIANT successCallback)
 
 STDMETHODIMP CPlugin::put_src(__in VARIANT newVal)
 {
-	CComPtr<IDispatch>mediaStream = Utils::VariantToDispatch(newVal);
-	if (mediaStream) {
-		CComPtr<IMediaStreamDoubango> _mediaStream = NULL;
-		HRESULT hr;
-		RTC_CHECK_HR_RETURN(hr = mediaStream->QueryInterface(&_mediaStream));
-
-		CMediaStream* pStream = dynamic_cast<CMediaStream*>(_mediaStream.p);
-		if (!pStream) {
-			RTC_CHECK_HR_RETURN(E_INVALIDARG);
+	StopVideoSink();
+	if (newVal.vt == VT_DISPATCH && newVal.pdispVal) { // check not null
+		std::shared_ptr<ExMediaStream> exMediaStream;
+		RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamDoubango, CMediaStream, ExMediaStream>(newVal, exMediaStream)));
+		if (exMediaStream.get()) {
+			StartVideoSink(exMediaStream->GetVideoTrack());
 		}
-		std::shared_ptr<ExMediaStream> stream = pStream->GetEx();
-		if (stream) {
-			StartVideoSink(stream->GetVideoTrack());
-		}
-	}
-	else {
-		StopVideoSink();
 	}
 	return S_OK;
 }

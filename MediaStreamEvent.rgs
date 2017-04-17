@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.MediaStreamEvent.1 = s 'MediaStreamEvent Class'
+	{
+		CLSID = s '{FB701742-2F19-435F-83A5-BECF5D06E3B2}'
+	}
+	rtc.MediaStreamEvent = s 'MediaStreamEvent Class'
+	{		
+		CurVer = s 'rtc.MediaStreamEvent.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {FB701742-2F19-435F-83A5-BECF5D06E3B2} = s 'MediaStreamEvent Class'
+		{
+			ProgID = s 'rtc.MediaStreamEvent.1'
+			VersionIndependentProgID = s 'rtc.MediaStreamEvent'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

@@ -9,7 +9,7 @@ ExMediaTrackConstraints::ExMediaTrackConstraints(bool bVal)
 {
 }
 
-ExMediaTrackConstraints::ExMediaTrackConstraints(std::shared_ptr<MediaTrackConstraintSet> exact /*= nullptr*/, std::shared_ptr<MediaTrackConstraintSet> ideal /*= nullptr*/)
+ExMediaTrackConstraints::ExMediaTrackConstraints(std::shared_ptr<MediaConstraintSet> exact /*= nullptr*/, std::shared_ptr<MediaConstraintSet> ideal /*= nullptr*/)
 	: m_exact(exact)
 	, m_ideal(ideal)
 	, m_eType(ExMediaTrackConstraintsType_Composite)

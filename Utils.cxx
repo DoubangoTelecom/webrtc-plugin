@@ -39,7 +39,7 @@ HRESULT Utils::CopyAnsiString(__in std::string str, __out BSTR* bstr)
 
 CComPtr<IDispatch> Utils::VariantToDispatch(VARIANT var)
 {
-	CComPtr<IDispatch> disp = (var.vt == VT_DISPATCH && var.pdispVal) ? var.pdispVal : NULL;
+	CComPtr<IDispatch> disp = (var.vt == VT_DISPATCH && var.pdispVal) ? var.pdispVal : nullptr;
 	return disp;
 }
 
@@ -296,8 +296,8 @@ HRESULT Utils::CreateJsArray(__in CComPtr<IDispatch> spDispatch, __in std::vecto
 	return Utils::CreateJsArrayEx(spDispatch, vecValues, L"Array", spArray);
 }
 
-// e.g. varConstraints =  "{ maxWidth: 320, maxHeight : 180 }"
-HRESULT Utils::BuildMediaConstraints(__in VARIANT varConstraints, __out std::shared_ptr<MediaTrackConstraintSet>& constraints)
+// e.g. varConstraints =  "{ exact: 320 }"
+HRESULT Utils::BuildMediaConstraints(__in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSet>& constraints)
 {
 	if (varConstraints.vt == VT_EMPTY || varConstraints.vt == VT_NULL || varConstraints.vt == VT_ERROR /* optional parameter */) {
 		return S_OK;
@@ -309,7 +309,7 @@ HRESULT Utils::BuildMediaConstraints(__in VARIANT varConstraints, __out std::sha
 	}
 
 	if (!constraints) {
-		constraints = std::make_shared<MediaTrackConstraintSet>();
+		constraints = std::make_shared<MediaConstraintSet>();
 	}
 
 	CComVariant var;
@@ -358,6 +358,79 @@ HRESULT Utils::BuildMediaConstraints(__in VARIANT varConstraints, __out std::sha
 	return S_OK;
 }
 
+HRESULT Utils::BuildMediaConstraintsUnKnown(const std::string& name, __in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSet>& optional, __out std::shared_ptr<MediaConstraintSet>& mandatory)
+{
+	MediaConstraintSet::iterator it;
+	std::shared_ptr<MediaConstraintSet> curr;
+	RTC_CHECK_HR_RETURN(Utils::BuildMediaConstraints(varConstraints, curr));
+	if (curr) {
+		if ((it = curr->find("exact")) != curr->end()) {
+			if (!mandatory) {
+				mandatory = std::make_shared<MediaConstraintSet>();
+			}
+			mandatory->insert(std::pair<std::string, std::string>(name, it->second));
+		}
+		else if ((it = curr->find("ideal")) != curr->end()) {
+			if (!optional) {
+				optional = std::make_shared<MediaConstraintSet>();
+			}
+			optional->insert(std::pair<std::string, std::string>(name, it->second));
+		}
+	}
+	return S_OK;
+}
+
+// width, height
+HRESULT Utils::BuildMediaConstraintsWellKnown(const std::string& name, __in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSet>& optional, __out std::shared_ptr<MediaConstraintSet>& mandatory)
+{
+	const char *nameMin, *nameMax;
+	if (name.compare("width") == 0) {
+		nameMin = webrtc::MediaConstraintsInterface::kMinWidth;
+		nameMax = webrtc::MediaConstraintsInterface::kMaxWidth;
+	}
+	else if (name.compare("height") == 0) {
+		nameMin = webrtc::MediaConstraintsInterface::kMinHeight;
+		nameMax = webrtc::MediaConstraintsInterface::kMaxHeight;
+	}
+	else if (name.compare("frameRate") == 0) {
+		nameMin = webrtc::MediaConstraintsInterface::kMinFrameRate;
+		nameMax = webrtc::MediaConstraintsInterface::kMaxFrameRate;
+	}
+	else {
+		RTC_DEBUG_ERROR("Not implemented: %s", name.c_str());
+		return S_FALSE;
+	}
+	
+	MediaConstraintSet::iterator it0, it1;
+	std::shared_ptr<MediaConstraintSet> curr;
+	RTC_CHECK_HR_RETURN(Utils::BuildMediaConstraints(varConstraints, curr));
+	if (curr) {
+		if ((it0 = curr->find("min")) != curr->end() && (it1 = curr->find("max")) != curr->end()) {
+			if (!optional) {
+				optional = std::make_shared<MediaConstraintSet>();
+			}
+			optional->insert(std::pair<std::string, std::string>(nameMin, it0->second));
+			optional->insert(std::pair<std::string, std::string>(nameMax, it1->second));
+		}
+		else if ((it0 = curr->find("exact")) != curr->end()) {
+			if (!mandatory) {
+				mandatory = std::make_shared<MediaConstraintSet>();
+			}
+			mandatory->insert(std::pair<std::string, std::string>(nameMin, it0->second));
+			mandatory->insert(std::pair<std::string, std::string>(nameMax, it0->second));
+		}
+		else if ((it0 = curr->find("ideal")) != curr->end()) {
+			if (!optional) {
+				optional = std::make_shared<MediaConstraintSet>();
+			}
+			optional->insert(std::pair<std::string, std::string>(nameMin, it0->second));
+			optional->insert(std::pair<std::string, std::string>(nameMax, it0->second));
+		}
+	}
+
+	return S_OK;
+}
+
 HRESULT Utils::BuildMediaStreamConstraints(__in VARIANT varConstraints, __out std::shared_ptr<ExMediaStreamConstraints> &constraints)
 {
 	if (varConstraints.vt == VT_EMPTY || varConstraints.vt == VT_NULL || varConstraints.vt == VT_ERROR /* optional parameter */) {
@@ -373,6 +446,9 @@ HRESULT Utils::BuildMediaStreamConstraints(__in VARIANT varConstraints, __out st
 	std::shared_ptr<ExMediaTrackConstraints> audio;
 	std::shared_ptr<ExMediaTrackConstraints> video;
 	CComVariant var;
+	CComBSTR bstrName;
+	std::string strName;
+	DISPID dispid;
 
 	hr = Utils::DispatchGetProp(spConstraints.p, L"video", &var);
 	if (SUCCEEDED(hr)) {
@@ -380,19 +456,24 @@ HRESULT Utils::BuildMediaStreamConstraints(__in VARIANT varConstraints, __out st
 			video = std::make_shared<ExMediaTrackConstraints>(var.boolVal != VARIANT_FALSE);
 		}
 		else {
-			std::shared_ptr<MediaTrackConstraintSet> mandatory;
-			std::shared_ptr<MediaTrackConstraintSet> optional;
+			std::shared_ptr<MediaConstraintSet> mandatory;
+			std::shared_ptr<MediaConstraintSet> optional;
 			CComQIPtr<IDispatchEx> spVideo = CComQIPtr<IDispatchEx>(Utils::VariantToDispatch(var));
 			if (!spVideo) {
-				RTC_CHECK_HR_RETURN(E_NOINTERFACE);
+				RTC_CHECK_HR_RETURN(hr = E_NOINTERFACE);
 			}
-			hr = Utils::DispatchGetProp(spVideo.p, L"mandatory", &var);
-			if (SUCCEEDED(hr)) {
-				RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraints(var, mandatory));
-			}
-			hr = Utils::DispatchGetProp(spVideo.p, L"optional", &var);
-			if (SUCCEEDED(hr)) {
-				RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraints(var, optional));
+			hr = spVideo->GetNextDispID(fdexEnumAll, DISPID_STARTENUM, &dispid);
+			while (hr != S_FALSE) {
+				RTC_CHECK_HR_RETURN(hr = spVideo->GetMemberName(dispid, &bstrName));
+				RTC_CHECK_HR_RETURN(hr = Utils::DispatchGetProp(spVideo.p, bstrName, &var));
+				RTC_CHECK_HR_RETURN(hr = Utils::ToString(&bstrName, strName));
+				if (strName.compare("width") == 0 || strName.compare("height") == 0 || strName.compare("frameRate") == 0) {
+					RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraintsWellKnown(strName, var, optional, mandatory));
+				}
+				else {
+					RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraintsUnKnown(strName, var, optional, mandatory));
+				}
+				hr = spVideo->GetNextDispID(fdexEnumAll, dispid, &dispid);
 			}
 			video = std::make_shared<ExMediaTrackConstraints>(mandatory, optional);
 		}
@@ -403,19 +484,19 @@ HRESULT Utils::BuildMediaStreamConstraints(__in VARIANT varConstraints, __out st
 			audio = std::make_shared<ExMediaTrackConstraints>(var.boolVal != VARIANT_FALSE);
 		}
 		else {
-			std::shared_ptr<MediaTrackConstraintSet> mandatory;
-			std::shared_ptr<MediaTrackConstraintSet> optional;
+			std::shared_ptr<MediaConstraintSet> mandatory;
+			std::shared_ptr<MediaConstraintSet> optional;
 			CComQIPtr<IDispatchEx> spAudio = CComQIPtr<IDispatchEx>(Utils::VariantToDispatch(var));
 			if (!spAudio) {
 				RTC_CHECK_HR_RETURN(E_NOINTERFACE);
 			}
-			hr = Utils::DispatchGetProp(spAudio.p, L"mandatory", &var);
-			if (SUCCEEDED(hr)) {
-				RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraints(var, mandatory));
-			}
-			hr = Utils::DispatchGetProp(spAudio.p, L"optional", &var);
-			if (SUCCEEDED(hr)) {
-				RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraints(var, optional));
+			hr = spAudio->GetNextDispID(fdexEnumAll, DISPID_STARTENUM, &dispid);
+			while (hr != S_FALSE) {
+				RTC_CHECK_HR_RETURN(hr = spAudio->GetMemberName(dispid, &bstrName));
+				RTC_CHECK_HR_RETURN(hr = Utils::DispatchGetProp(spAudio.p, bstrName, &var));
+				RTC_CHECK_HR_RETURN(hr = Utils::ToString(&bstrName, strName));
+				RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraintsUnKnown(strName, var, optional, mandatory));
+				hr = spAudio->GetNextDispID(fdexEnumAll, dispid, &dispid);
 			}
 			audio = std::make_shared<ExMediaTrackConstraints>(mandatory, optional);
 		}
@@ -425,7 +506,7 @@ HRESULT Utils::BuildMediaStreamConstraints(__in VARIANT varConstraints, __out st
 	return S_OK;
 }
 
-HRESULT Utils::BuildMediaConstraintsObjs(__in VARIANT varConstraints, __out std::shared_ptr<MediaTrackConstraintSets> &constraints)
+HRESULT Utils::BuildMediaConstraintsObjs(__in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSets> &constraints)
 {
 	HRESULT hr;
 
@@ -438,8 +519,8 @@ HRESULT Utils::BuildMediaConstraintsObjs(__in VARIANT varConstraints, __out std:
 		RTC_CHECK_HR_RETURN(E_NOINTERFACE);
 	}
 
-	std::shared_ptr<MediaTrackConstraintSet> mandatory;
-	std::shared_ptr<MediaTrackConstraintSet> optional;
+	std::shared_ptr<MediaConstraintSet> mandatory;
+	std::shared_ptr<MediaConstraintSet> optional;
 	VARIANT var;
 	hr = Utils::DispatchGetProp(spConstraints.p, L"mandatory", &var);
 	if (SUCCEEDED(hr)) {
@@ -450,7 +531,7 @@ HRESULT Utils::BuildMediaConstraintsObjs(__in VARIANT varConstraints, __out std:
 		RTC_CHECK_HR_RETURN(hr = Utils::BuildMediaConstraints(var, optional));
 	}
 
-	constraints = std::make_shared<MediaTrackConstraintSets>(optional, mandatory);
+	constraints = std::make_shared<MediaConstraintSets>(optional, mandatory);
 	return S_OK;
 }
 
@@ -467,7 +548,7 @@ HRESULT Utils::BuildRTCConfiguration(__in VARIANT varConfiguration, __out std::s
 
 	configuration = std::make_shared<RTCConfiguration>();
 
-	VARIANT varIceServers;
+	VARIANT varIceServers, varUrls;
 	HRESULT hr;
 	hr = Utils::DispatchGetProp(spConfiguration.p, L"iceServers", &varIceServers);
 	if (SUCCEEDED(hr)) {
@@ -479,11 +560,29 @@ HRESULT Utils::BuildRTCConfiguration(__in VARIANT varConfiguration, __out std::s
 				dispServer = Utils::VariantToDispatch(vectIceServers[i]);
 				if (dispServer) {
 					BSTR bstr;
-					std::string uri, username, password;
-					hr = Utils::DispatchGetPropBSTR(dispServer, L"url", bstr);
+					std::vector<std::string> urls; // DOMString or sequence<DOMString>: https://www.w3.org/TR/webrtc/#dom-rtciceserver-urls
+					std::string url, username, password;
+					hr = Utils::DispatchGetProp(dispServer, L"urls", &varUrls);
 					if (SUCCEEDED(hr)) {
-						RTC_CHECK_HR_RETURN(hr = Utils::ToString(&bstr, uri));
+						if (varUrls.vt == VT_BSTR) {
+							RTC_CHECK_HR_RETURN(hr = Utils::ToString(&varUrls.bstrVal, url));
+							urls.push_back(url);
+						}
+						else {
+							std::vector<CComVariant>vectUrls;
+							hr = Utils::VariantToArray(varUrls, vectUrls);
+							if (SUCCEEDED(hr)) {
+								for (unsigned k = 0; k < vectUrls.size(); k++) {
+									hr = Utils::VariantToBSTR(vectUrls[i], bstr);
+									if (SUCCEEDED(hr)) {
+										RTC_CHECK_HR_RETURN(hr = Utils::ToString(&bstr, url));
+										urls.push_back(url);
+									}
+								}
+							}
+						}
 					}
+					
 					hr = Utils::DispatchGetPropBSTR(dispServer, L"username", bstr);
 					if (SUCCEEDED(hr)) {
 						RTC_CHECK_HR_RETURN(hr = Utils::ToString(&bstr, username));
@@ -492,12 +591,37 @@ HRESULT Utils::BuildRTCConfiguration(__in VARIANT varConfiguration, __out std::s
 					if (SUCCEEDED(hr)) {
 						RTC_CHECK_HR_RETURN(hr = Utils::ToString(&bstr, password));
 					}
-					configuration->iceServers.push_back(RTCIceServer(uri, username, password));
+					configuration->iceServers.push_back(RTCIceServer(urls, username, password));
 				}
 			}
 		}
 	}
 
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#dom-rtcofferoptions
+// https://www.w3.org/TR/webrtc/#dom-rtcansweroptions
+HRESULT Utils::BuildRTCOfferAnswerOptions(__in VARIANT varOptions, __out std::shared_ptr<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions> &options)
+{
+	options = std::make_shared<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions>(); // always create one (required!!)
+	if (varOptions.vt == VT_EMPTY || varOptions.vt == VT_NULL || varOptions.vt == VT_ERROR /* optional parameter */) {
+		return S_OK;
+	}
+	std::shared_ptr<MediaConstraintSet> opts;
+	RTC_CHECK_HR_RETURN(Utils::BuildMediaConstraints(varOptions, opts));
+	if (opts && opts.get()) {
+		MediaConstraintSet::iterator it;
+		if ((it = opts->find("iceRestart")) != opts->end()) {
+			options->ice_restart = !(it->second.compare("false") == 0 || it->second.compare("0") == 0);
+		}
+		if ((it = opts->find("offerToReceiveAudio")) != opts->end()) {
+			options->offer_to_receive_audio = !(it->second.compare("false") == 0 || it->second.compare("0") == 0);
+		}
+		if ((it = opts->find("offerToReceiveVideo")) != opts->end()) {
+			options->offer_to_receive_video = !(it->second.compare("false") == 0 || it->second.compare("0") == 0);
+		}
+	}
 	return S_OK;
 }
 

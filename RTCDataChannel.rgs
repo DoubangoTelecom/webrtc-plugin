@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCDataChannel.1 = s 'RTCDataChannel Class'
+	{
+		CLSID = s '{18001236-9A8E-4C9B-A8B4-097F9D674C22}'
+	}
+	rtc.RTCDataChannel = s 'RTCDataChannel Class'
+	{		
+		CurVer = s 'rtc.RTCDataChannel.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {18001236-9A8E-4C9B-A8B4-097F9D674C22} = s 'RTCDataChannel Class'
+		{
+			ProgID = s 'rtc.RTCDataChannel.1'
+			VersionIndependentProgID = s 'rtc.RTCDataChannel'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

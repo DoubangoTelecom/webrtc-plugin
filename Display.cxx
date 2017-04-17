@@ -391,7 +391,7 @@ void Display::StopVideoSink()
 		m_renderer->SetHwnd(m_renderer->GetHwnd(), NULL);
 	}
 
-	m_renderer = NULL;
+	m_renderer = nullptr;
 	OnStopVideoSink();
 }
 

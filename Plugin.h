@@ -24,6 +24,7 @@ class ATL_NO_VTABLE CPlugin :
 	public Display,
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public IDispatchImpl<IPlugin, &IID_IPlugin, &LIBID_rtcLib, /*wMajor =*/ 1, /*wMinor =*/ 0>,
+	public IPersistStreamInitImpl<CPlugin>,
 	public IOleControlImpl<CPlugin>,
 	public IOleObjectImpl<CPlugin>,
 	public IOleInPlaceActiveObjectImpl<CPlugin>,
@@ -32,18 +33,20 @@ class ATL_NO_VTABLE CPlugin :
 	public ISupportErrorInfo,
 	public IConnectionPointContainerImpl<CPlugin>,
 	public CProxy_IPluginEvents<CPlugin>,
-	public IObjectWithSiteImpl<CPlugin>,
-	public IServiceProviderImpl<CPlugin>,
-	public IPersistPropertyBagImpl<CPlugin>,
 	public IPersistStorageImpl<CPlugin>,
+	public IPersistPropertyBagImpl<CPlugin>,
+	public ISpecifyPropertyPagesImpl<CPlugin>,
 	public IQuickActivateImpl<CPlugin>,
 #ifndef _WIN32_WCE
 	public IDataObjectImpl<CPlugin>,
 #endif
 	public IProvideClassInfo2Impl<&CLSID_Plugin, &__uuidof(_IPluginEvents), &LIBID_rtcLib>,
+#ifdef _WIN32_WCE // IObjectSafety is required on Windows CE for the control to be loaded correctly
 	public IObjectSafetyImpl<CPlugin, INTERFACESAFE_FOR_UNTRUSTED_CALLER>,
+#endif
 	public CComCoClass<CPlugin, &CLSID_Plugin>,
-	public CComControl<CPlugin>
+	public CComControl<CPlugin>,
+	public IObjectSafetyImpl<CPlugin, INTERFACESAFE_FOR_UNTRUSTED_CALLER | INTERFACESAFE_FOR_UNTRUSTED_DATA>
 {
 public:
 
@@ -77,18 +80,23 @@ BEGIN_COM_MAP(CPlugin)
 	COM_INTERFACE_ENTRY(IOleInPlaceActiveObject)
 	COM_INTERFACE_ENTRY(IOleControl)
 	COM_INTERFACE_ENTRY(IOleObject)
+	COM_INTERFACE_ENTRY(IPersistStreamInit)
+	COM_INTERFACE_ENTRY2(IPersist, IPersistStreamInit)
 	COM_INTERFACE_ENTRY(ISupportErrorInfo)
 	COM_INTERFACE_ENTRY(IConnectionPointContainer)
+	COM_INTERFACE_ENTRY(ISpecifyPropertyPages)
 	COM_INTERFACE_ENTRY(IQuickActivate)
 	COM_INTERFACE_ENTRY(IPersistStorage)
+	COM_INTERFACE_ENTRY(IPersistPropertyBag)
 #ifndef _WIN32_WCE
 	COM_INTERFACE_ENTRY(IDataObject)
 #endif
 	COM_INTERFACE_ENTRY(IProvideClassInfo)
 	COM_INTERFACE_ENTRY(IProvideClassInfo2)
-	COM_INTERFACE_ENTRY(IObjectWithSite)
-	COM_INTERFACE_ENTRY(IServiceProvider)
+#ifdef _WIN32_WCE // IObjectSafety is required on Windows CE for the control to be loaded correctly
 	COM_INTERFACE_ENTRY_IID(IID_IObjectSafety, IObjectSafety)
+#endif
+	COM_INTERFACE_ENTRY(IObjectSafety)
 END_COM_MAP()
 
 BEGIN_PROP_MAP(CPlugin)
@@ -104,9 +112,11 @@ BEGIN_CONNECTION_POINT_MAP(CPlugin)
 END_CONNECTION_POINT_MAP()
 
 BEGIN_MSG_MAP(CPlugin)
+	CHAIN_MSG_MAP(CComControl<CPlugin>)
+	DEFAULT_REFLECTION_HANDLER()
 	MESSAGE_HANDLER(WM_CREATE, OnCreate)
 	MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
-	CHAIN_MSG_MAP(CComControl<CPlugin>)
+	MESSAGE_HANDLER(WM_CLOSE, OnClose)
 ALT_MSG_MAP(1)
 	// Replace this with message map entries for superclassed Static
 END_MSG_MAP()
@@ -159,6 +169,7 @@ END_MSG_MAP()
 	static CPlugin* Singleton();
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	// Display implementation
@@ -177,10 +188,10 @@ END_MSG_MAP()
 
 	STDMETHOD(getWindowList)(__out BSTR* winList) override;
 	STDMETHOD(createDisplay)(__out IDispatch** ppDisplay) override;
-	STDMETHOD(createSessionDescription)(VARIANT RTCSessionDescriptionInit, IDispatch** ppSdp) override;
-	STDMETHOD(createDictOptions)(IDispatch** ppDictOptions) override;
-	STDMETHOD(createPeerConnection)(VARIANT RTCConfiguration, VARIANT MediaConstraints, IDispatch** ppPeerConnection) override;
-	STDMETHOD(createIceCandidate)(VARIANT RTCIceCandidateInit, IDispatch** ppIceCandidate) override;
+	STDMETHOD(createSessionDescription)(__in VARIANT RTCSessionDescriptionInit, __out IDispatch** ppSdp) override;
+	STDMETHOD(createDictOptions)(__out IDispatch** ppDictOptions) override;
+	STDMETHOD(createPeerConnection)(__in_opt VARIANT RTCConfiguration, __in_opt VARIANT MediaConstraints, __out IDispatch** ppPeerConnection) override;
+	STDMETHOD(createIceCandidate)(__in VARIANT RTCIceCandidateInit, __out IDispatch** ppIceCandidate) override;
 	STDMETHOD(createMediaStreamTrack)(__out IDispatch** ppMediaStreamTrack) override;
 
 	STDMETHOD(getSources)(__in_opt VARIANT successCallback) override;

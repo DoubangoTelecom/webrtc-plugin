@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.Empty.1 = s 'Empty Class'
+	{
+		CLSID = s '{B162422C-E96D-41CF-804E-C5BF4252813C}'
+	}
+	rtc.Empty = s 'Empty Class'
+	{		
+		CurVer = s 'rtc.Empty.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {B162422C-E96D-41CF-804E-C5BF4252813C} = s 'Empty Class'
+		{
+			ProgID = s 'rtc.Empty.1'
+			VersionIndependentProgID = s 'rtc.Empty'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

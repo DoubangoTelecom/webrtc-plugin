@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCSessionDescription.1 = s 'RTCSessionDescription Class'
+	{
+		CLSID = s '{146F17F4-9310-454C-9179-4D719975C815}'
+	}
+	rtc.RTCSessionDescription = s 'RTCSessionDescription Class'
+	{		
+		CurVer = s 'rtc.RTCSessionDescription.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {146F17F4-9310-454C-9179-4D719975C815} = s 'RTCSessionDescription Class'
+		{
+			ProgID = s 'rtc.RTCSessionDescription.1'
+			VersionIndependentProgID = s 'rtc.RTCSessionDescription'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

@@ -15,7 +15,6 @@ using namespace ATL;
 // CMediaStream
 
 class ATL_NO_VTABLE CMediaStream :
-	public AsyncEventRaiser,
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CMediaStream, &CLSID_MediaStream>,
 	public IDispatchImpl<IMediaStreamDoubango, &IID_IMediaStreamDoubango, &LIBID_rtcLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
@@ -39,8 +38,6 @@ END_COM_MAP()
 	void FinalRelease();
 	void SetEx(std::shared_ptr<ExMediaStream> ex);
 	std::shared_ptr<ExMediaStream> GetEx();
-	void onaddtrack();
-	void onremovetrack();
 
 	STDMETHOD(get_id)(__out BSTR* pVal) override;
 	STDMETHOD(getAudioTracks)(__out VARIANT* Tracks) override;
@@ -59,6 +56,8 @@ END_COM_MAP()
 	STDMETHOD(put_oninactive)(__in VARIANT newVal) override;
 
 private:
+	void onaddtrack();
+	void onremovetrack();
 	HRESULT getTracks(TrackTypeFlags type, VARIANT* Tracks);
 
 private:

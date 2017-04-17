@@ -4,12 +4,14 @@
 #include "ExErrorMessage.h"
 #include "ExMediaStreamTrack.h"
 #include "RTCMediaConstraints.h"
+#include "CustomAudioDeviceModule.h"
 
 #include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 #include "webrtc/p2p/client/basicportallocator.h"
 
 static rtc::Thread* _worker_thread = NULL;
-static rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> _fake_peer_connection = NULL; // TODO: "getUserMedia" fails if no PeerconnectionFactory instance exists. Why?
+static rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> _fake_peer_connection = nullptr; // TODO: "getUserMedia" fails if no PeerconnectionFactory instance exists. Why?
+static rtc::scoped_refptr<webrtc::AudioDeviceModule> _fake_adm = nullptr;
 static webrtc::CriticalSectionWrapper* _fake_peer_connection_cs = webrtc::CriticalSectionWrapper::CreateCriticalSection();
 
 static const char kAutoDetectPattern[] = "";
@@ -24,6 +26,14 @@ rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> GetPeerConnectionFact
 	return _peer;
 }
 
+rtc::scoped_refptr<webrtc::AudioDeviceModule> GetAudioDeviceModule()
+{
+	_fake_peer_connection_cs->Enter();
+	rtc::scoped_refptr<webrtc::AudioDeviceModule> _adm = _fake_adm;
+	_fake_peer_connection_cs->Leave();
+	return _adm;
+}
+
 void TakeFakePeerConnectionFactory()
 {
 	_fake_peer_connection_cs->Enter();
@@ -34,7 +44,12 @@ void TakeFakePeerConnectionFactory()
 		}
 	}
 	if (!_fake_peer_connection) {
-		_fake_peer_connection = webrtc::CreatePeerConnectionFactory(_worker_thread, _worker_thread, NULL, NULL, NULL);
+		if (!_fake_adm) {
+			_fake_adm = _worker_thread->Invoke<rtc::scoped_refptr<webrtc::AudioDeviceModule>>(RTC_FROM_HERE, []() {
+				return webrtc::CustomAudioDeviceModule::Create(0, webrtc::AudioDeviceModule::AudioLayer::kPlatformDefaultAudio);
+			});
+		}
+		_fake_peer_connection = webrtc::CreatePeerConnectionFactory(_worker_thread, _worker_thread, _fake_adm, NULL, NULL);
 	}
 	else {
 		_fake_peer_connection->AddRef();
@@ -55,6 +70,9 @@ void ReleaseFakePeerConnectionFactory()
 			_port_allocator_factory = NULL;
 #endif
 			if (_worker_thread) {
+				_worker_thread->Invoke<void>(RTC_FROM_HERE, []() {
+					_fake_adm = nullptr;
+				});
 				delete _worker_thread, _worker_thread = NULL;
 			}
 		}
@@ -70,11 +88,11 @@ rtc::Thread* GetWorkerThread()
 	return _worker_thread;
 }
 
-rtc::scoped_refptr<RTCMediaConstraints> BuildConstraints(const MediaTrackConstraintSets* constraints /*= NULL*/)
+rtc::scoped_refptr<RTCMediaConstraints> BuildConstraints(const MediaConstraintSets* constraints /*= NULL*/)
 {
 	rtc::scoped_refptr<RTCMediaConstraints> contraints = new rtc::RefCountedObject<RTCMediaConstraints>();
 
-	MediaTrackConstraintSet::const_iterator it;
+	MediaConstraintSet::const_iterator it;
 
 	if (constraints) {
 		if (constraints->ideal) {
@@ -94,7 +112,7 @@ rtc::scoped_refptr<RTCMediaConstraints> BuildConstraints(const MediaTrackConstra
 webrtc::MediaStreamInterface* BuildMediaStream(const ExMediaStream* stream)
 {
 	if (!stream) {
-		return NULL;
+		return nullptr;
 	}
 	return dynamic_cast<webrtc::MediaStreamInterface*>((webrtc::MediaStreamInterface*)stream->GetWrappedStream());
 }

@@ -29,5 +29,5 @@ STDMETHODIMP CErrorMessage::get_name(BSTR* pVal)
 	if (m_ex) {
 		return Utils::CopyAnsiStr(m_ex->name().c_str(), pVal);
 	}
-	return E_ILLEGAL_METHOD_CALL;
+	return E_POINTER;
 }

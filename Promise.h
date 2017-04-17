@@ -3,7 +3,6 @@
 #pragma once
 #include "resource.h"       // main symbols
 #include "rtc_i.h"
-#include "AsyncEvent.h"
 #include "ExPromise.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
@@ -16,7 +15,6 @@ using namespace ATL;
 // CPromise
 
 class ATL_NO_VTABLE CPromise :
-	public AsyncEventRaiser,
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CPromise, &CLSID_Promise>,
 	public IDispatchImpl<IPromise, &IID_IPromise, &LIBID_rtcLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
@@ -35,10 +33,8 @@ END_COM_MAP()
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
 
 	HRESULT FinalConstruct();
-
 	void FinalRelease();
-
-	void SetEx(std::shared_ptr<ExPromise> ex);
+	void SetEx(std::shared_ptr<ExPromiseBase> ex);
 
 	STDMETHOD(GetIDsOfNames)(
 		_In_ REFIID riid,
@@ -47,11 +43,11 @@ END_COM_MAP()
 		LCID lcid,
 		_Out_ DISPID* rgdispid);
 
-	STDMETHOD(then)(__in_opt VARIANT onFulfilled, __out VARIANT* pThePromise);
+	STDMETHOD(then)(__in VARIANT onFulfilled, __in_opt VARIANT onRejected, __out VARIANT* pThePromise);
 	STDMETHOD(catchh)(__in_opt VARIANT onRejected, __out VARIANT* pThePromise); // 'catch' is reserved name
 
 private:
-	std::shared_ptr<ExPromise> m_ex;
+	std::shared_ptr<ExPromiseBase> m_ex;
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(Promise), CPromise)

@@ -4,6 +4,8 @@
 #include "Promise.h"
 #include "Utils.h"
 #include "MediaTrackSupportedConstraints.h"
+#include "MediaStream.h"
+#include "ErrorMessage.h"
 
 CMediaDevices::CMediaDevices()
 {
@@ -39,12 +41,37 @@ STDMETHODIMP CMediaDevices::getUserMedia(__in VARIANT constraints, __out VARIANT
 	std::shared_ptr<ExMediaStreamConstraints> mediaStreamConstraints;
 	hr = Utils::BuildMediaStreamConstraints(constraints, mediaStreamConstraints);
 	if (SUCCEEDED(hr)) {
-		hr = Utils::CreateInstanceWithRef(&promiseMediaStream);
+		std::shared_ptr<ExPromiseAtl<CMediaStream, ExMediaStream, CErrorMessage, ExErrorMessage> > atlPromise =
+			std::make_shared<ExPromiseAtl<CMediaStream, ExMediaStream, CErrorMessage, ExErrorMessage> >(RTC_WM_GETUSERMEDIA_SUCESS, RTC_WM_GETUSERMEDIA_ERROR);
+		std::weak_ptr<ExPromiseAtl<CMediaStream, ExMediaStream, CErrorMessage, ExErrorMessage> > atlPromiseWeak(atlPromise);
+		auto funcCore = [atlPromiseWeak](std::shared_ptr<ExMediaStreamConstraints> mediaStreamConstraints_) -> HRESULT {
+			auto atlPromisePtr = atlPromiseWeak.lock();
+			if (atlPromisePtr) {
+				::getUserMedia(
+					mediaStreamConstraints_.get(),
+					[=](std::shared_ptr<ExMediaStream> stream) { atlPromisePtr->raiseOnFulfilled(stream); },
+					[=](std::shared_ptr<ExErrorMessage> e) { atlPromisePtr->raiseOnRejected(e); }
+				);
+			}
+			return S_OK;
+		};
+		hr = Utils::CreateInstanceWithRef(&promiseMediaStream, atlPromise->Bind(std::bind(funcCore, mediaStreamConstraints)));
 		if (SUCCEEDED(hr)) {
-			std::shared_ptr<ExPromiseGetUserMedia> ex(new ExPromiseGetUserMedia(mediaStreamConstraints));
-			promiseMediaStream->SetEx(ex);
 			*pPromiseMediaStream = CComVariant(promiseMediaStream);
 		}
 	}
 	return hr;
 }
+
+// Promise<sequence<MediaDeviceInfo>> enumerateDevices ();
+STDMETHODIMP CMediaDevices::enumerateDevices(__out VARIANT* pPromiseSequenceMediaDeviceInfo)
+{
+	CComObject<CPromise>* promisePromiseSequenceMediaDeviceInfo;
+	HRESULT hr = S_OK;
+	hr = Utils::CreateInstanceWithRef(&promisePromiseSequenceMediaDeviceInfo, std::make_shared<ExPromiseEnumerateDevices>());
+	if (SUCCEEDED(hr)) {
+		*pPromiseSequenceMediaDeviceInfo = CComVariant(promisePromiseSequenceMediaDeviceInfo);
+	}	
+	return hr;
+}
+

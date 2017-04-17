@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.MediaDeviceInfo.1 = s 'MediaDeviceInfo Class'
+	{
+		CLSID = s '{B99DCC2F-D37C-4053-9C8F-82E7E5F1EDB1}'
+	}
+	rtc.MediaDeviceInfo = s 'MediaDeviceInfo Class'
+	{		
+		CurVer = s 'rtc.MediaDeviceInfo.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {B99DCC2F-D37C-4053-9C8F-82E7E5F1EDB1} = s 'MediaDeviceInfo Class'
+		{
+			ProgID = s 'rtc.MediaDeviceInfo.1'
+			VersionIndependentProgID = s 'rtc.MediaDeviceInfo'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

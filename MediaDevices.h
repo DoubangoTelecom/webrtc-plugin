@@ -35,6 +35,7 @@ END_COM_MAP()
 
 	STDMETHOD(getSupportedConstraints)(__out VARIANT* pConstraints) override;
 	STDMETHOD(getUserMedia)(__in VARIANT constraints, __out VARIANT* pPromiseMediaStream) override;
+	STDMETHOD(enumerateDevices)(__out VARIANT* pPromiseSequenceMediaDeviceInfo) override;
 
 private:
 

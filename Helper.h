@@ -10,6 +10,8 @@ public:
 	static HRESULT Initialize();
 	static HRESULT DeInitialize(void);
 
+	static rtc::Thread* GetPluginThread();
+
 	static std::string ToString(long val);
 
 	static bool RaiseCallback(LONGLONG handle, BrowserCallback* cb);

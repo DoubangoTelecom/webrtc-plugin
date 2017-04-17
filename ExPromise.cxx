@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "ExPromise.h"
 #include "ExMediaStreamConstraints.h"
+#include "ExMediaDevices.h"
+#include "ExRTCPeerConnection.h"
+#include "ExRTCSessionDescription.h"
 
 #include "ATLBrowserCallback.h"
 #include "AsyncEvent.h"
@@ -8,26 +11,34 @@
 #include "Plugin.h"
 #include "MediaStream.h"
 #include "ErrorMessage.h"
+#include "RTCError.h"
+#include "MediaDeviceInfo.h"
+#include "RTCSessionDescription.h"
 
 //
 //	ExPromise
 //
 
 ExPromise::ExPromise(ExPromiseType eType)
-	: m_eType(eType)
+	: ExPromiseBase()
+	, m_eType(eType)
+
 {
 
 }
 
 ExPromise::~ExPromise()
 {
-	m_callback_onRejected = NULL;
-	m_callback_onFulfilled = NULL;
+	m_callback_onRejected = nullptr;
+	m_callback_onFulfilled = nullptr;
 }
 
-HRESULT ExPromise::then(CComPtr<IDispatch> onFulfilled)
+HRESULT ExPromise::then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected /*= nullptr*/)
 {
 	m_callback_onFulfilled = onFulfilled;
+	if (onRejected) {
+		m_callback_onRejected = onRejected;
+	}
 	return S_OK;
 }
 
@@ -38,108 +49,43 @@ HRESULT ExPromise::catchh(CComPtr<IDispatch> onRejected)
 }
 
 //
-//	ExPromiseGetUserMedia
+//	ExPromiseEnumerateDevices
 //
 
-ExPromiseGetUserMedia::ExPromiseGetUserMedia(std::shared_ptr<ExMediaStreamConstraints> constraints /*= nullptr*/)
-	: ExPromise(ExPromiseType_GetUserMedia)
-	, m_constraints(constraints)
-	, m_raised(false)
+ExPromiseEnumerateDevices::ExPromiseEnumerateDevices()
+	: ExPromise(ExPromiseType_EnumerateDevices)
 {
 
 }
-	
-ExPromiseGetUserMedia::~ExPromiseGetUserMedia()
+
+ExPromiseEnumerateDevices::~ExPromiseEnumerateDevices()
 {
-	m_constraints = nullptr;
+
 }
 
-HRESULT ExPromiseGetUserMedia::then(CComPtr<IDispatch> onFulfilled) /* override(ExPromise)*/
+HRESULT ExPromiseEnumerateDevices::then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected /*= nullptr*/)
 {
-	RTC_CHECK_HR_RETURN(ExPromise::then(onFulfilled)); // call base class implementation
-	RTC_CHECK_HR_RETURN(Start());
-	return S_OK;
-}
+	RTC_CHECK_HR_RETURN(ExPromise::then(onFulfilled, onRejected)); // call base class implementation
 
-HRESULT ExPromiseGetUserMedia::catchh(CComPtr<IDispatch> onRejected) /* override(ExPromise)*/
-{
-	RTC_CHECK_HR_RETURN(ExPromise::catchh(onRejected)); // call base class implementation
-	RTC_CHECK_HR_RETURN(Start());
-	return S_OK;
-}
-
-HRESULT ExPromiseGetUserMedia::Start()
-{
-	if (m_raised) {
-		if (m_onFulfilledPendingStream) {
-			RTC_CHECK_HR_RETURN(RaiseOnFulfilled(m_onFulfilledPendingStream));
-			m_onFulfilledPendingStream = nullptr;
-		}
-		if (m_onRejectedPendingError) {
-			RTC_CHECK_HR_RETURN(RaiseOnRejected(m_onRejectedPendingError));
-			m_onRejectedPendingError = nullptr;
-		}
-		return S_OK;
-	}
-	m_raised = true;
-	m_onFulfilledPendingStream = nullptr;
-	m_onRejectedPendingError = nullptr;
-
-	getUserMedia(
-			m_constraints.get(),
-			[this](std::shared_ptr<ExMediaStream> stream) {
-				RaiseOnFulfilled(stream);
-			},
-			[this](std::shared_ptr<ExErrorMessage> e) {
-				RaiseOnRejected(e);
-			});
-
-	return S_OK;
-}
-
-HRESULT ExPromiseGetUserMedia::RaiseOnFulfilled(std::shared_ptr<ExMediaStream> exStream)
-{
 	HRESULT hr = S_OK;
 	if (m_callback_onFulfilled) {
-		CComObject<CMediaStream>* stream;
-		hr = Utils::CreateInstanceWithRef(&stream);
-		if (SUCCEEDED(hr)) {
-			ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_GETUSERMEDIA_SUCESS, m_callback_onFulfilled);
-			if (bcb) {
-				stream->SetEx(exStream);
-				stream->SetDispatcher(CPlugin::Singleton());
-				bcb->AddDispatch(stream);
-				dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
-				RTC_SAFE_RELEASE_OBJECT(&bcb);
-			}
-			RTC_SAFE_RELEASE(&stream);
+		CComQIPtr<IDispatchEx> spDevices;
+		CComPtr<IDispatch> spDispatch;
+		RTC_CHECK_HR_RETURN(hr = CPlugin::Singleton()->GetDispatch(spDispatch));
+		RTC_CHECK_HR_RETURN(hr = ExMediaDevices::enumerateDevices(spDispatch, spDevices));
+		ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_ENUMERATEDEVICES_SUCESS, m_callback_onFulfilled);
+		if (bcb) {
+			bcb->AddDispatch(spDevices.Detach());
+			dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
+			RTC_SAFE_RELEASE_OBJECT(&bcb);
 		}
-	}
-	else {
-		m_onFulfilledPendingStream = exStream;
 	}
 	return hr;
 }
 
-HRESULT ExPromiseGetUserMedia::RaiseOnRejected(std::shared_ptr<ExErrorMessage> exError)
+HRESULT ExPromiseEnumerateDevices::catchh(CComPtr<IDispatch> onRejected)
 {
-	HRESULT hr = S_OK;
-	if (m_callback_onRejected) {
-		CComObject<CErrorMessage>* error;
-		hr = Utils::CreateInstanceWithRef(&error);
-		if (SUCCEEDED(hr)) {
-			ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_GETUSERMEDIA_ERROR, m_callback_onRejected);
-			if (bcb) {
-				error->SetEx(exError);
-				bcb->AddDispatch(error);
-				dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
-				RTC_SAFE_RELEASE_OBJECT(&bcb);
-			}
-			RTC_SAFE_RELEASE(&error);
-		}
-	}
-	else {
-		m_onRejectedPendingError = exError;
-	}
-	return hr;
+	RTC_CHECK_HR_RETURN(ExPromise::catchh(onRejected)); // call base class implementation
+	//RTC_CHECK_HR_RETURN(Start());
+	return S_OK;
 }

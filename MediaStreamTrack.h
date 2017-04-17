@@ -14,7 +14,6 @@ using namespace ATL;
 // CMediaStreamTrack
 
 class ATL_NO_VTABLE CMediaStreamTrack :
-	public AsyncEventRaiser,
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CMediaStreamTrack, &CLSID_MediaStreamTrack>,
 	public IDispatchImpl<IMediaStreamTrack, &IID_IMediaStreamTrack, &LIBID_rtcLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
@@ -51,9 +50,9 @@ END_COM_MAP()
 	STDMETHOD(get_onended)(__out VARIANT* pVal) override;
 	STDMETHOD(put_onended)(__in VARIANT newVal) override;
 	STDMETHOD(getCapabilities)(__out VARIANT* MediaTrackCapabilities) override;
-	STDMETHOD(getConstraints)(__out VARIANT* MediaTrackConstraints) override;
+	STDMETHOD(getConstraints)(__out VARIANT* MediaConstraints) override;
 	STDMETHOD(getSettings)(__out VARIANT* MediaTrackSettings) override;
-	STDMETHOD(applyConstraints)(__in VARIANT MediaTrackConstraints) override;
+	STDMETHOD(applyConstraints)(__in VARIANT MediaConstraints) override;
 	STDMETHOD(get_onoverconstrained)(__out VARIANT* pVal) override;
 	STDMETHOD(put_onoverconstrained)(__in VARIANT newVal) override;
 	STDMETHOD(clone)(__out VARIANT* MediaStreamTrack) override;

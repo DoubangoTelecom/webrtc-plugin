@@ -237,6 +237,7 @@
     <ClCompile Include="ATLBrowserCallback.cxx" />
     <ClCompile Include="Buffer.cxx" />
     <ClCompile Include="Common.cxx" />
+    <ClCompile Include="CustomAudioDeviceModule.cxx" />
     <ClCompile Include="Display.cxx" />
     <ClCompile Include="dllmain.cxx">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -252,23 +253,44 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Empty.cxx" />
     <ClCompile Include="ErrorMessage.cxx" />
+    <ClCompile Include="ExEmpty.cxx" />
     <ClCompile Include="ExErrorMessage.cxx" />
+    <ClCompile Include="ExMediaDeviceInfo.cxx" />
+    <ClCompile Include="ExMediaDevices.cxx" />
     <ClCompile Include="ExMediaStream.cxx" />
     <ClCompile Include="ExMediaStreamConstraints.cxx" />
+    <ClCompile Include="ExMediaStreamEvent.cxx" />
     <ClCompile Include="ExMediaStreamTrack.cxx" />
     <ClCompile Include="ExMediaTrackConstraints.cxx" />
     <ClCompile Include="ExPromise.cxx" />
+    <ClCompile Include="ExRTCDataChannel.cxx" />
+    <ClCompile Include="ExRTCDataChannelEvent.cxx" />
+    <ClCompile Include="ExRTCError.cxx" />
+    <ClCompile Include="ExRTCIceCandidate.cxx" />
+    <ClCompile Include="ExRTCPeerConnection.cxx" />
+    <ClCompile Include="ExRTCPeerConnectionIceEvent.cxx" />
+    <ClCompile Include="ExRTCSessionDescription.cxx" />
     <ClCompile Include="Helper.cxx" />
+    <ClCompile Include="MediaDeviceInfo.cxx" />
     <ClCompile Include="MediaDevices.cxx" />
     <ClCompile Include="MediaStream.cxx" />
+    <ClCompile Include="MediaStreamEvent.cxx" />
     <ClCompile Include="MediaStreamTrack.cxx" />
     <ClCompile Include="MediaTrackConstraints.cxx" />
     <ClCompile Include="MediaTrackSupportedConstraints.cxx" />
     <ClCompile Include="Plugin.cxx" />
     <ClCompile Include="Promise.cxx" />
     <ClCompile Include="rtc.cxx" />
+    <ClCompile Include="RTCDataChannel.cxx" />
+    <ClCompile Include="RTCDataChannelEvent.cxx" />
+    <ClCompile Include="RTCError.cxx" />
+    <ClCompile Include="RTCIceCandidate.cxx" />
     <ClCompile Include="RTCMediaConstraint.cxx" />
+    <ClCompile Include="RTCPeerConnection.cxx" />
+    <ClCompile Include="RTCPeerConnectionIceEvent.cxx" />
+    <ClCompile Include="RTCSessionDescription.cxx" />
     <ClCompile Include="rtc_i.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -291,26 +313,48 @@
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="CustomAudioDeviceModule.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Display.h" />
     <ClInclude Include="dllmain.h" />
+    <ClInclude Include="Empty.h" />
     <ClInclude Include="ErrorMessage.h" />
+    <ClInclude Include="ExEmpty.h" />
     <ClInclude Include="ExErrorMessage.h" />
+    <ClInclude Include="ExMediaDeviceInfo.h" />
+    <ClInclude Include="ExMediaDevices.h" />
     <ClInclude Include="ExMediaStream.h" />
     <ClInclude Include="ExMediaStreamConstraints.h" />
+    <ClInclude Include="ExMediaStreamEvent.h" />
     <ClInclude Include="ExMediaStreamTrack.h" />
     <ClInclude Include="ExMediaTrackConstraints.h" />
     <ClInclude Include="ExPromise.h" />
+    <ClInclude Include="ExRTCDataChannel.h" />
+    <ClInclude Include="ExRTCDataChannelEvent.h" />
+    <ClInclude Include="ExRTCError.h" />
+    <ClInclude Include="ExRTCIceCandidate.h" />
+    <ClInclude Include="ExRTCPeerConnection.h" />
+    <ClInclude Include="ExRTCPeerConnectionIceEvent.h" />
+    <ClInclude Include="ExRTCSessionDescription.h" />
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="MediaDeviceInfo.h" />
     <ClInclude Include="MediaDevices.h" />
     <ClInclude Include="MediaStream.h" />
+    <ClInclude Include="MediaStreamEvent.h" />
     <ClInclude Include="MediaStreamTrack.h" />
     <ClInclude Include="MediaTrackConstraints.h" />
     <ClInclude Include="MediaTrackSupportedConstraints.h" />
     <ClInclude Include="Plugin.h" />
     <ClInclude Include="Promise.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="RTCDataChannel.h" />
+    <ClInclude Include="RTCDataChannelEvent.h" />
+    <ClInclude Include="RTCError.h" />
+    <ClInclude Include="RTCIceCandidate.h" />
     <ClInclude Include="RTCMediaConstraints.h" />
+    <ClInclude Include="RTCPeerConnection.h" />
+    <ClInclude Include="RTCPeerConnectionIceEvent.h" />
+    <ClInclude Include="RTCSessionDescription.h" />
     <ClInclude Include="rtc_i.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -321,9 +365,12 @@
     <ResourceCompile Include="rtc.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Empty.rgs" />
     <None Include="ErrorMessage.rgs" />
+    <None Include="MediaDeviceInfo.rgs" />
     <None Include="MediaDevices.rgs" />
     <None Include="MediaStream.rgs" />
+    <None Include="MediaStreamEvent.rgs" />
     <None Include="MediaStreamTrack.rgs" />
     <None Include="MediaTrackConstraints.rgs" />
     <None Include="MediaTrackSupportedConstraints.rgs" />
@@ -331,6 +378,13 @@
     <None Include="Promise.rgs" />
     <None Include="rtc.def" />
     <None Include="rtc.rgs" />
+    <None Include="RTCDataChannel.rgs" />
+    <None Include="RTCDataChannelEvent.rgs" />
+    <None Include="RTCError.rgs" />
+    <None Include="RTCIceCandidate.rgs" />
+    <None Include="RTCPeerConnection.rgs" />
+    <None Include="RTCPeerConnectionIceEvent.rgs" />
+    <None Include="RTCSessionDescription.rgs" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="rtc.idl" />

@@ -5,6 +5,9 @@
 
 #include "webrtc/media/engine/webrtcvideocapturerfactory.h"
 #include "webrtc/modules/video_capture/video_capture_factory.h"
+#include "webrtc/media/base/videocapturer.h"
+#include "webrtc/media/engine/webrtcvideocapturer.h"
+#include "webrtc/media/engine/webrtcvideoframe.h"
 
 //
 //	ExMediaStreamTrack
@@ -32,12 +35,12 @@ ExMediaStreamTrack::~ExMediaStreamTrack()
 ExMediaStreamTrackBase::ExMediaStreamTrackBase(ExMediaStreamTrackType eType, MediaStreamTrackInterfacePtr track /*= NULL*/, const ExMediaTrackConstraints* constrains /*= NULL*/)
 	: ExMediaStreamTrack(eType, track, constrains)
 {
-	
+
 }
 
 ExMediaStreamTrackBase::~ExMediaStreamTrackBase()
 {
-	
+
 }
 
 void ExMediaStreamTrackBase::InitLocalVarsToAvoidDanglingPointerIssue()
@@ -86,7 +89,7 @@ const char* ExMediaStreamTrackBase::readyState()
 	return "unknown";
 }
 
-// https://www.w3.org/TR/mediacapture-streams/#widl-MediaStreamTrack-applyConstraints-Promise-void--MediaTrackConstraints-constraints
+// https://www.w3.org/TR/mediacapture-streams/#widl-MediaStreamTrack-applyConstraints-Promise-void--MediaConstraints-constraints
 void ExMediaStreamTrackBase::applyConstraints(const ExMediaTrackConstraints* constrains)
 {
 	if (_track()) {
@@ -108,6 +111,7 @@ std::shared_ptr<ExMediaStreamTrack> ExMediaStreamTrackBase::clone()
 
 void ExMediaStreamTrackBase::stop()
 {
+	// Overrided in ExMediaStreamTrackVideo
 	if (_track()) {
 		enabledSet(false);
 		_track()->set_enabled(false);
@@ -115,6 +119,7 @@ void ExMediaStreamTrackBase::stop()
 		if (m_eType == ExMediaStreamTrackType_Video) {
 			rtc::scoped_refptr<webrtc::VideoTrackSourceInterface> videoSrc = dynamic_cast<ExMediaStreamTrackVideo*>(this)->track() ? dynamic_cast<ExMediaStreamTrackVideo*>(this)->track()->GetSource() : NULL;
 			if (videoSrc) {
+
 #if 0
 				// stop cricket::VideoCapturer
 				videoSrc->Stop();
@@ -144,7 +149,7 @@ ExMediaStreamTrackAudio::ExMediaStreamTrackAudio(rtc::scoped_refptr<webrtc::Audi
 		rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory = GetPeerConnectionFactory();
 		if (peer_connection_factory) {
 			m_label += "_audio_track";
-			MediaTrackConstraintSets constrainSets(constrains ? constrains->ideal() : nullptr, constrains ? constrains->exact() : nullptr);
+			MediaConstraintSets constrainSets(constrains ? constrains->ideal() : nullptr, constrains ? constrains->exact() : nullptr);
 			m_track = peer_connection_factory->CreateAudioTrack(m_label, peer_connection_factory->CreateAudioSource(BuildConstraints(&constrainSets)));
 		}
 	}
@@ -175,31 +180,17 @@ int ExMediaStreamTrackAudio::micLevel()
 //
 //	ExMediaStreamTrackVideo
 //
-static std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(std::string _deviceId, std::string _windowId = "");
+static cricket::VideoCapturer* OpenVideoCaptureDevice(std::string _deviceId, std::string _windowId /*= ""*/);
+
+std::map<std::string/*label*/, cricket::VideoCapturer* > ExMediaStreamTrackVideo::s_capturerWeakRef;
 
 ExMediaStreamTrackVideo::ExMediaStreamTrackVideo(rtc::scoped_refptr<webrtc::VideoTrackInterface> track /*= NULL*/, const ExMediaTrackConstraints* constrains /*= NULL*/)
 	: ExMediaStreamTrackBase(ExMediaStreamTrackType_Video, track, constrains)
 	, m_track(track)
+	, m_workerThread(GetWorkerThread())
 {
 	if (!m_track) {
-		rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory = GetPeerConnectionFactory();
-		if (peer_connection_factory) {
-			MediaTrackConstraintSets constrainSets(constrains ? constrains->ideal() : nullptr, constrains ? constrains->exact() : nullptr);
-			rtc::scoped_refptr<RTCMediaConstraints> rtcConstrains = BuildConstraints(&constrainSets);
-			std::string sourceId;
-			std::string windowId; // for screenCast (when sourceId is equal to kDoubangoScreenshareSourceId)
-			if (rtcConstrains) {
-				if (!rtcConstrains->GetMandatory().FindFirst("sourceId", &sourceId)) {
-					rtcConstrains->GetOptional().FindFirst("sourceId", &sourceId);
-				}
-				if (!rtcConstrains->GetMandatory().FindFirst("windowId", &windowId)) {
-					rtcConstrains->GetOptional().FindFirst("windowId", &windowId);
-				}
-			}
-			// OpenVideoCaptureDevice returns 'std::unique_ptr' which must not be used as local variable (crash when ExmediaStream)
-			m_label += "_video_track";
-			m_track = peer_connection_factory->CreateVideoTrack(m_label, peer_connection_factory->CreateVideoSource(OpenVideoCaptureDevice(sourceId, windowId), rtcConstrains));
-		}
+		m_workerThread->Invoke<void>(RTC_FROM_HERE, rtc::Bind(&ExMediaStreamTrackVideo::StartOnWorkerThread, this, constrains));
 	}
 	InitLocalVarsToAvoidDanglingPointerIssue();
 }
@@ -207,12 +198,79 @@ ExMediaStreamTrackVideo::ExMediaStreamTrackVideo(rtc::scoped_refptr<webrtc::Vide
 
 ExMediaStreamTrackVideo:: ~ExMediaStreamTrackVideo()
 {
-	m_track = NULL;
+	if (m_track) {
+		m_track->AddRef();
+		if (m_track->Release() == 1) {
+			s_capturerWeakRef.erase(m_track->id());
+		}
+		m_track = nullptr;
+	}
 
 	RTC_DEBUG_INFO("ExMediaStreamTrackVideo::~ExMediaStreamTrackVideo");
 }
 
-static std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(std::string _deviceId, std::string _windowId /*= ""*/)
+void ExMediaStreamTrackVideo::stop() // Overrides ExMediaStreamTrackBase::stop()
+{
+	m_workerThread->Invoke<void>(RTC_FROM_HERE, rtc::Bind(&ExMediaStreamTrackVideo::StopOnWorkerThread, this));
+}
+
+void ExMediaStreamTrackVideo::StartOnWorkerThread(const ExMediaTrackConstraints* constrains)
+{
+	rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory = GetPeerConnectionFactory();
+	if (peer_connection_factory) {
+		MediaConstraintSets constrainSets(constrains ? constrains->ideal() : nullptr, constrains ? constrains->exact() : nullptr);
+		rtc::scoped_refptr<RTCMediaConstraints> rtcConstrains = BuildConstraints(&constrainSets);
+		std::string sourceId;
+		std::string windowId; // for screenCast (when sourceId is equal to kDoubangoScreenshareSourceId)
+		if (rtcConstrains) {
+			if (!rtcConstrains->GetMandatory().FindFirst("deviceId", &sourceId)) {
+				rtcConstrains->GetOptional().FindFirst("deviceId", &sourceId);
+			}
+			if (!rtcConstrains->GetMandatory().FindFirst("windowId", &windowId)) {
+				rtcConstrains->GetOptional().FindFirst("windowId", &windowId);
+			}
+		}
+
+		// We must use supported constraints only, otherwise, NewFormatWithConstraints function (in videocapturertracksource.cc)
+		// will filter all formats
+		static const std::string kKnownConstraints[] = {
+			webrtc::MediaConstraintsInterface::kMinWidth,
+			webrtc::MediaConstraintsInterface::kMaxWidth,
+			webrtc::MediaConstraintsInterface::kMinHeight,
+			webrtc::MediaConstraintsInterface::kMaxHeight,
+			webrtc::MediaConstraintsInterface::kMinFrameRate,
+			webrtc::MediaConstraintsInterface::kMaxFrameRate,
+			webrtc::MediaConstraintsInterface::kMinAspectRatio,
+			webrtc::MediaConstraintsInterface::kMaxAspectRatio,
+			webrtc::MediaConstraintsInterface::kNoiseReduction
+		};
+		static std::vector<std::string> vecKnownConstraints;
+		if (vecKnownConstraints.empty()) {
+			vecKnownConstraints.assign(kKnownConstraints, kKnownConstraints + (sizeof(kKnownConstraints) / sizeof(kKnownConstraints[0])));
+		}
+		rtcConstrains->RemoveIfNotInList(vecKnownConstraints);
+
+		// GetVideoCaptureDevice returns 'std::unique_ptr' which must not be used as local variable (crash when ExmediaStream)
+		m_label += "_video_track";
+		cricket::VideoCapturer* capturerWeakRef = OpenVideoCaptureDevice(sourceId, windowId);
+		if (capturerWeakRef) {
+			m_track = peer_connection_factory->CreateVideoTrack(m_label, peer_connection_factory->CreateVideoSource(capturerWeakRef, rtcConstrains));
+			s_capturerWeakRef[m_track->id()] = capturerWeakRef;
+		}
+	}
+}
+
+void ExMediaStreamTrackVideo::StopOnWorkerThread()
+{
+	if (m_track) {
+		std::map<std::string/*label*/, cricket::VideoCapturer* >::iterator capturerWeakRef = s_capturerWeakRef.find(m_track->id());
+		if (capturerWeakRef != s_capturerWeakRef.end() && capturerWeakRef->second) {
+			capturerWeakRef->second->Stop();
+		}
+	}
+}
+
+static cricket::VideoCapturer* OpenVideoCaptureDevice(std::string _deviceId, std::string _windowId /*= ""*/)
 {
 	std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
 		webrtc::VideoCaptureFactory::CreateDeviceInfo());
@@ -220,23 +278,34 @@ static std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(std::strin
 		return nullptr;
 	}
 
-	std::vector<std::string> device_names;
+	std::vector<cricket::Device> devices;
 	int num_devices = info->NumberOfDevices();
 	for (int i = 0; i < num_devices; ++i) {
 		const uint32_t kSize = 256;
 		char name[kSize] = { 0 };
 		char id[kSize] = { 0 };
 		if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
-			device_names.push_back(name);
+			devices.push_back(cricket::Device(name, id));
 		}
 	}
-
+#if 0
 	cricket::WebRtcVideoDeviceCapturerFactory factory;
-	std::unique_ptr<cricket::VideoCapturer> capturer;
+#endif
+	cricket::WebRtcVideoCapturer* capturer = nullptr;
 	if (!_deviceId.empty()) {
-		for (const auto& name : device_names) {
-			if (name.compare(_deviceId) == 0) {
-				capturer = factory.Create(cricket::Device(name, 0));
+		for (const auto& device : devices) {
+			if (device.id.compare(_deviceId) == 0) {
+#if 0
+				capturer = factory.Create(device);
+#else
+				capturer = new cricket::WebRtcVideoCapturer();
+				if (capturer) {
+					if (!(capturer->Init(device))) {
+						delete capturer;
+						capturer = nullptr;
+					}
+				}
+#endif
 				if (capturer) {
 					break;
 				}
@@ -244,18 +313,23 @@ static std::unique_ptr<cricket::VideoCapturer> OpenVideoCaptureDevice(std::strin
 		}
 	}
 	if (!capturer) {
-		for (const auto& name : device_names) {
+		for (const auto& device : devices) {
+#if 0
 			capturer = factory.Create(cricket::Device(name, 0));
+#else
+			capturer = new cricket::WebRtcVideoCapturer();
+			if (capturer) {
+				if (!(capturer->Init(device))) {
+					delete capturer;
+					capturer = nullptr;
+				}
+			}
+#endif
 			if (capturer) {
 				break;
 			}
 		}
 	}
-#if 0
-	if (capturer) {
-		const cricket::VideoFormat& capture_format = *capturer->GetSupportedFormats()->begin();
-		capturer->Start(capture_format);
-	}
-#endif
 	return capturer;
 }
+

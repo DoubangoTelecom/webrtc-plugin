@@ -1,6 +1,8 @@
 #pragma once
 #include "Config.h"
 #include "Common.h"
+#include "ATLBrowserCallback.h"
+#include "Plugin.h"
 
 #include <atlctl.h>
 #include <comutil.h>
@@ -32,10 +34,16 @@ public:
 	static HRESULT CreateJsObject(__in CComPtr<IDispatch> spDispatch, __in LPOLESTR className, __out CComQIPtr<IDispatchEx>& spObject);
 	static HRESULT CreateJsArrayEx(__in CComPtr<IDispatch> spDispatch, __in std::vector<CComVariant> &vecValues, __in LPOLESTR arrayClassName, __out CComQIPtr<IDispatchEx>& spArray);
 	static HRESULT CreateJsArray(__in CComPtr<IDispatch> spDispatch, __in std::vector<CComVariant> &vecValues, __out CComQIPtr<IDispatchEx>& spArray);
-	static HRESULT BuildMediaConstraints(__in VARIANT varConstraints, __out std::shared_ptr<MediaTrackConstraintSet>& constraints);
+	static HRESULT BuildMediaConstraints(__in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSet>& constraints);
+
+	static HRESULT BuildMediaConstraintsUnKnown(const std::string& name, __in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSet>& optional, __out std::shared_ptr<MediaConstraintSet>& mandatory);
+	static HRESULT BuildMediaConstraintsWellKnown(const std::string& name, __in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSet>& optional, __out std::shared_ptr<MediaConstraintSet>& mandatory);
+	
 	static HRESULT BuildMediaStreamConstraints(__in VARIANT varConstraints, __out std::shared_ptr<ExMediaStreamConstraints> &constraints);
-	static HRESULT BuildMediaConstraintsObjs(__in VARIANT varConstraints, __out std::shared_ptr<MediaTrackConstraintSets> &constraints);
+	static HRESULT BuildMediaConstraintsObjs(__in VARIANT varConstraints, __out std::shared_ptr<MediaConstraintSets> &constraints);
 	static HRESULT BuildRTCConfiguration(__in VARIANT varConfiguration, __out std::shared_ptr<RTCConfiguration> &configuration);
+	static HRESULT BuildRTCOfferAnswerOptions(__in VARIANT varOptions, __out std::shared_ptr<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions> &options);
+
 #if 0
 	static HRESULT BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out std::shared_ptr<_RTCDataChannelInit> &configuration);
 	static HRESULT BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varData, __out std::shared_ptr<_Buffer> &data);
@@ -47,16 +55,92 @@ public:
 
 	static HRESULT InstallScripts(__in CComPtr<IHTMLWindow2> spWindow);
 
-	template <class T>
-	static HRESULT CreateInstanceWithRef(T** ppObject)
+	template <typename ClassType>
+	static HRESULT CreateInstanceWithRef(__out ClassType** ppObject)
 	{
-		CComObject<T> *pObject;
-		HRESULT hr = CComObject<T>::CreateInstance(&pObject);
+		CComObject<ClassType> *pObject;
+		HRESULT hr = CComObject<ClassType>::CreateInstance(&pObject);
 		if (SUCCEEDED(hr)) {
 			pObject->AddRef();
 			*ppObject = pObject;
 		}
 		return hr;
+	}
+
+	template <typename ClassType, typename ExType>
+	static HRESULT CreateInstanceWithRef(__out ClassType** ppObject, __in std::shared_ptr<ExType> ex) {
+		CComObject<ClassType> *pObject;
+		HRESULT hr = CComObject<ClassType>::CreateInstance(&pObject);
+		if (SUCCEEDED(hr)) {
+			pObject->AddRef();
+			pObject->SetEx(ex);
+			*ppObject = pObject;
+		}
+		return hr;
+	}
+
+	template <typename InterfaceType, typename ClassType, typename ExType>
+	static HRESULT QueryEx(__in VARIANT var, __out std::shared_ptr<ExType>& ex) {
+		CComPtr<IDispatch> sp = Utils::VariantToDispatch(var);
+		if (!sp) {
+			RTC_CHECK_HR_RETURN(E_INVALIDARG);
+		}
+		CComPtr<InterfaceType> intf = NULL;
+		RTC_CHECK_HR_RETURN(sp->QueryInterface(&intf));
+		ClassType* pClazz = dynamic_cast<ClassType*>(intf.p);
+		if (!pClazz) {
+			RTC_CHECK_HR_RETURN(E_INVALIDARG);
+		}
+		ex = pClazz->GetEx();
+		return S_OK;
+	}
+
+	template <typename ClassType, typename ExType>
+	static HRESULT RaiseEvent(__in CComPtr<IDispatch> evt, __in int evtId, __in std::shared_ptr<ExType> exArg) {
+		if (evt) {
+			CComObject<ClassType>* arg;
+			HRESULT _hr = Utils::CreateInstanceWithRef(&arg);
+			if (SUCCEEDED(_hr)) {
+				arg->SetEx(exArg);
+				ATLBrowserCallback* bcb = new ATLBrowserCallback(static_cast<unsigned>(evtId), evt);
+				if (bcb) {
+					bcb->AddDispatch(arg);
+					dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
+					RTC_SAFE_RELEASE_OBJECT(&bcb);
+				}
+				RTC_SAFE_RELEASE(&arg);
+			}
+		}
+		return S_OK;
+	}
+
+	template <typename ClassType>
+	static HRESULT RaiseEvent(__in CComPtr<IDispatch> evt, __in int evtId) {
+		if (evt) {
+			CComObject<ClassType>* arg;
+			HRESULT _hr = Utils::CreateInstanceWithRef(&arg);
+			if (SUCCEEDED(_hr)) {
+				ATLBrowserCallback* bcb = new ATLBrowserCallback(static_cast<unsigned>(evtId), evt);
+				if (bcb) {
+					bcb->AddDispatch(arg);
+					dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
+					RTC_SAFE_RELEASE_OBJECT(&bcb);
+				}
+				RTC_SAFE_RELEASE(&arg);
+			}
+		}
+		return S_OK;
+	}
+
+	static HRESULT RaiseEventVoid(__in CComPtr<IDispatch> evt, __in int evtId) {
+		if (evt) {
+			ATLBrowserCallback* bcb = new ATLBrowserCallback(static_cast<unsigned>(evtId), evt);
+			if (bcb) {
+				dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
+				RTC_SAFE_RELEASE_OBJECT(&bcb);
+			}		
+		}
+		return S_OK;
 	}
 
 private:

@@ -23,7 +23,7 @@ interface IPlugin : IDispatch{
 	[id(10), helpstring("method createDisplay")] HRESULT createDisplay([out, retval] IDispatch** ppDisplay);
 	[id(11), helpstring("method createSessionDescription")] HRESULT createSessionDescription([in] VARIANT RTCSessionDescriptionInit, [out, retval] IDispatch** ppSdp);
 	[id(12), helpstring("method createDictOptions")] HRESULT createDictOptions([out, retval] IDispatch** ppDictOptions);
-	[id(13), helpstring("method createPeerConnection")] HRESULT createPeerConnection([in, optional] VARIANT RTCConfiguration, [in, optional]VARIANT MediaConstraints, [out, retval] IDispatch** ppPeerConnection);
+	[id(13), helpstring("method createPeerConnection")] HRESULT createPeerConnection([in, optional] VARIANT RTCConfiguration, [in, optional] VARIANT MediaConstraints, [out, retval] IDispatch** ppPeerConnection);
 	[id(14), helpstring("method createIceCandidate")] HRESULT createIceCandidate([in] VARIANT RTCIceCandidateInit, [out, retval] IDispatch** ppIceCandidate);
 	[id(15), helpstring("method createMediaStreamTrack")] HRESULT createMediaStreamTrack([out, retval] IDispatch** ppMediaStreamTrack);
 
@@ -51,6 +51,7 @@ interface IPlugin : IDispatch{
 interface IMediaDevices : IDispatch{
 	[id(1), helpstring("method getSupportedConstraints")] HRESULT getSupportedConstraints([out, retval] VARIANT* pConstraints);
 	[id(2), helpstring("method getUserMedia")] HRESULT getUserMedia([in] VARIANT constraints, [out, retval] VARIANT* pPromiseMediaStream);
+	[id(3), helpstring("method enumerateDevices")] HRESULT enumerateDevices([out, retval] VARIANT* pPromiseSequenceMediaDeviceInfo);
 };
 [
 	object,
@@ -106,7 +107,7 @@ interface IMediaTrackSupportedConstraints : IDispatch{
 	pointer_default(unique)
 ]
 interface IPromise : IDispatch{
-	[id(1), helpstring("method then")] HRESULT then([in, optional] VARIANT onFulfilled, [out, retval] VARIANT* pThePromise);
+	[id(1), helpstring("method then")] HRESULT then([in] VARIANT onFulfilled, [in, optional] VARIANT onRejected, [out, retval] VARIANT* pThePromise);
 	// catch is reserved keyword and hacked using GetIDsOfNames wich means the id **must** be "2"
 	[id(2), helpstring("method catch")] HRESULT catchh([in, optional] VARIANT onRejected, [out, retval] VARIANT* pThePromise);
 };
@@ -158,6 +159,175 @@ interface IMediaStreamTrack : IDispatch{
 	pointer_default(unique)
 ]
 interface IMediaTrackConstraints : IDispatch{
+};
+[
+	object,
+	uuid(CAD81D85-1B8C-4E1D-AD79-0B90D0FD6421),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMediaDeviceInfo : IDispatch{
+	[propget, id(1), helpstring("property deviceId")] HRESULT deviceId([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property kind")] HRESULT kind([out, retval] BSTR* pVal);
+	[propget, id(3), helpstring("property label")] HRESULT label([out, retval] BSTR* pVal);
+	[propget, id(4), helpstring("property groupId")] HRESULT groupId([out, retval] BSTR* pVal);
+};
+[
+	object,
+	uuid(B2B753B0-85A5-400F-B4F6-2E04E8DF3AE7),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCPeerConnection : IDispatch{
+	// === https://www.w3.org/TR/webrtc/#interface-definition === //
+	[id(1), helpstring("method createOffer")] HRESULT createOffer([in, optional] VARIANT RTCOfferOptions, [out, retval] VARIANT* pPromiseRTCSessionDescriptionInit);
+	[id(2), helpstring("method createAnswer")] HRESULT createAnswer([in, optional] VARIANT RTCAnswerOptions, [out, retval] VARIANT* pPromiseRTCSessionDescriptionInit);
+	[id(3), helpstring("method setLocalDescription")] HRESULT setLocalDescription([in] VARIANT RTCSessionDescriptionInit, [out, retval] VARIANT* pPromiseVoid);
+	[propget, id(4), helpstring("property localDescription")] HRESULT localDescription([out, retval] VARIANT* RTCSessionDescription);
+	[propget, id(5), helpstring("property currentLocalDescription")] HRESULT currentLocalDescription([out, retval] VARIANT* RTCSessionDescription);
+	[propget, id(6), helpstring("property pendingLocalDescription")] HRESULT pendingLocalDescription([out, retval] VARIANT* RTCSessionDescription);
+	[id(7), helpstring("method setRemoteDescription")] HRESULT setRemoteDescription([in] VARIANT RTCSessionDescriptionInit, [out, retval] VARIANT* pPromiseVoid);
+	[propget, id(8), helpstring("property remoteDescription")] HRESULT remoteDescription([out, retval] VARIANT* RTCSessionDescription);
+	[propget, id(9), helpstring("property currentRemoteDescription")] HRESULT currentRemoteDescription([out, retval] VARIANT* RTCSessionDescription);
+	[propget, id(10), helpstring("property pendingRemoteDescription")] HRESULT pendingRemoteDescription([out, retval] VARIANT* RTCSessionDescription);
+	[id(11), helpstring("method addIceCandidate")] HRESULT addIceCandidate([in] VARIANT RTCIceCandidateInit, [out, retval] VARIANT* pPromiseVoid);
+	[propget, id(12), helpstring("property signalingState")] HRESULT signalingState([out, retval] BSTR* RTCSignalingState);
+	[propget, id(13), helpstring("property iceGatheringState")] HRESULT iceGatheringState([out, retval] BSTR* RTCIceGatheringState);
+	[propget, id(14), helpstring("property iceConnectionState")] HRESULT iceConnectionState([out, retval] BSTR* RTCIceConnectionState);
+	[propget, id(15), helpstring("property connectionState")] HRESULT connectionState([out, retval] BSTR* RTCPeerConnectionState);
+	[propget, id(16), helpstring("property canTrickleIceCandidates")] HRESULT canTrickleIceCandidates([out, retval] VARIANT_BOOL* BooleanVal);
+	// id 17 reserved for defaultIceServers which is implemented in JavaScript code
+	[id(18), helpstring("method getConfiguration")] HRESULT getConfiguration([out, retval] VARIANT* RTCConfiguration);
+	[id(19), helpstring("method setConfiguration")] HRESULT setConfiguration([in] VARIANT RTCConfiguration);
+	[id(20), helpstring("method close")] HRESULT close();
+	[id(21), helpstring("method addStream (Shim not part of the standard)")] HRESULT addStream([in] VARIANT MediaStream);
+	[id(22), helpstring("method removeStream (Shim not part of the standard)")] HRESULT removeStream([in] VARIANT MediaStream);
+	[propget, id(31), helpstring("property onnegotiationneeded")] HRESULT onnegotiationneeded([out, retval] VARIANT* pVal);
+	[propput, id(31), helpstring("property onnegotiationneeded")] HRESULT onnegotiationneeded([in] VARIANT newVal);
+	[propget, id(32), helpstring("property onicecandidate")] HRESULT onicecandidate([out, retval] VARIANT* pVal);
+	[propput, id(32), helpstring("property onicecandidate")] HRESULT onicecandidate([in] VARIANT newVal);
+	[propget, id(33), helpstring("property onicecandidateerror")] HRESULT onicecandidateerror([out, retval] VARIANT* pVal);
+	[propput, id(33), helpstring("property onicecandidateerror")] HRESULT onicecandidateerror([in] VARIANT newVal);
+	[propget, id(34), helpstring("property onsignalingstatechange")] HRESULT onsignalingstatechange([out, retval] VARIANT* pVal);
+	[propput, id(34), helpstring("property onsignalingstatechange")] HRESULT onsignalingstatechange([in] VARIANT newVal);
+	[propget, id(35), helpstring("property oniceconnectionstatechange")] HRESULT oniceconnectionstatechange([out, retval] VARIANT* pVal);
+	[propput, id(35), helpstring("property oniceconnectionstatechange")] HRESULT oniceconnectionstatechange([in] VARIANT newVal);
+	[propget, id(36), helpstring("property onicegatheringstatechange")] HRESULT onicegatheringstatechange([out, retval] VARIANT* pVal);
+	[propput, id(36), helpstring("property onicegatheringstatechange")] HRESULT onicegatheringstatechange([in] VARIANT newVal);
+	[propget, id(37), helpstring("property onconnectionstatechange")] HRESULT onconnectionstatechange([out, retval] VARIANT* pVal);
+	[propput, id(37), helpstring("property onconnectionstatechange")] HRESULT onconnectionstatechange([in] VARIANT newVal);
+	[propget, id(38), helpstring("property onfingerprintfailure")] HRESULT onfingerprintfailure([out, retval] VARIANT* pVal);
+	[propput, id(38), helpstring("property onfingerprintfailure")] HRESULT onfingerprintfailure([in] VARIANT newVal);
+	[propget, id(39), helpstring("property onaddstream (Shim not part of the standard)")] HRESULT onaddstream([out, retval] VARIANT* pVal);
+	[propput, id(39), helpstring("property onaddstream (Shim not part of the standard)")] HRESULT onaddstream([in] VARIANT newVal);
+
+	// The Peer-to-peer data API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
+	[propget, id(50), helpstring("property ondatachannel")] HRESULT ondatachannel([out, retval] VARIANT* pVal);
+	[propput, id(50), helpstring("property ondatachannel")] HRESULT ondatachannel([in] VARIANT newVal);
+	
+};
+[
+	object,
+	uuid(C3F56FD7-937E-42A6-8B00-65CB297FB8AA),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCSessionDescription : IDispatch{
+	[propget, id(1), helpstring("property type")] HRESULT type([out, retval] BSTR* pVal);
+	[propput, id(1), helpstring("property type")] HRESULT type([in] BSTR newVal); // ReadWrite instead of readOnly to emulate RTCSessionDescriptionInit 
+	[propget, id(2), helpstring("property sdp")] HRESULT sdp([out, retval] BSTR* pVal);
+	[propput, id(2), helpstring("property sdp")] HRESULT sdp([in] BSTR newVal); // ReadWrite instead of readOnly to emulate RTCSessionDescriptionInit 
+};
+[
+	object,
+	uuid(48ACEE72-5B42-463A-A31D-34AD55E61DE1),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCError : IDispatch{
+	[propget, id(1), helpstring("property name")] HRESULT name([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property message")] HRESULT message([out, retval] BSTR* pVal);
+	[propget, id(3), helpstring("property errorDetail")] HRESULT errorDetail([out, retval] BSTR* pVal);
+	[propget, id(4), helpstring("property sdpLineNumber")] HRESULT sdpLineNumber([out, retval] LONG* pVal);
+	[propget, id(5), helpstring("property httpRequestStatusCode")] HRESULT httpRequestStatusCode([out, retval] LONG* pVal);
+
+	[id(10), helpstring("method toString")] HRESULT toString([out, retval] BSTR* String);
+};
+[
+	object,
+	uuid(4814FA61-92BC-4EBD-9C1E-D9B3ADB22E5A),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCIceCandidate : IDispatch{
+	[propget, id(1), helpstring("property candidate")] HRESULT candidate([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property sdpMid")] HRESULT sdpMid([out, retval] BSTR* pVal);
+	[propget, id(3), helpstring("property sdpMLineIndex")] HRESULT sdpMLineIndex([out, retval] USHORT* pVal);
+	[propget, id(4), helpstring("property foundation")] HRESULT foundation([out, retval] BSTR* pVal);
+	[propget, id(5), helpstring("property priority")] HRESULT priority([out, retval] ULONG* pVal);
+	[propget, id(6), helpstring("property protocol")] HRESULT protocol([out, retval] BSTR* pVal);
+	[propget, id(7), helpstring("property port")] HRESULT port([out, retval] USHORT* pVal);
+	[propget, id(8), helpstring("property type")] HRESULT type([out, retval] BSTR* pVal);
+	[propget, id(9), helpstring("property tcpType")] HRESULT tcpType([out, retval] BSTR* pVal);
+	[propget, id(10), helpstring("property relatedAddress")] HRESULT relatedAddress([out, retval] BSTR* pVal);
+	[propget, id(11), helpstring("property relatedPort")] HRESULT relatedPort([out, retval] USHORT* pVal);
+	[propget, id(12), helpstring("property ufrag")] HRESULT ufrag([out, retval] BSTR* pVal);
+
+	[id(20), helpstring("method toString")] HRESULT toString([out, retval] BSTR* String);
+};
+[
+	object,
+	uuid(CA821F0E-3D50-40B7-8684-60FC3DAFC262),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCPeerConnectionIceEvent : IDispatch{
+	[propget, id(1), helpstring("property type")] HRESULT type([out, retval] BSTR* pVal);
+	[propget, id(2), helpstring("property candidate")] HRESULT candidate([out, retval] VARIANT* RTCIceCandidate);
+	[propget, id(3), helpstring("property url")] HRESULT url([out, retval] BSTR* pVal);
+};
+[
+	object,
+	uuid(5480960F-4930-4981-8661-018094DB19E9),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMediaStreamEvent : IDispatch{
+	[propget, id(1), helpstring("method stream")] HRESULT stream([out, retval] VARIANT* MediaStream);
+};
+[
+	object,
+	uuid(528305BD-AF6E-4E7A-AD37-88C1363F0A70),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IEmpty : IDispatch{
+};
+[
+	object,
+	uuid(83C443DF-10BB-46DE-B5C6-5673512C660F),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCDataChannel : IDispatch{
+};
+[
+	object,
+	uuid(08D4E0DC-A254-4FAE-8B72-1CA4F89E5873),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCDataChannelEvent : IDispatch{
 };
 [
 	uuid(5701E57F-4D99-450D-8479-BC9871799B8D),
@@ -235,6 +405,76 @@ library rtcLib
 	coclass MediaTrackConstraints
 	{
 		[default] interface IMediaTrackConstraints;
+	};
+	[
+		uuid(B99DCC2F-D37C-4053-9C8F-82E7E5F1EDB1)		
+	]
+	coclass MediaDeviceInfo
+	{
+		[default] interface IMediaDeviceInfo;
+	};
+	[
+		uuid(3325022A-66CE-421A-88A0-45CB438A8A8D)		
+	]
+	coclass RTCPeerConnection
+	{
+		[default] interface IRTCPeerConnection;
+	};
+	[
+		uuid(146F17F4-9310-454C-9179-4D719975C815)		
+	]
+	coclass RTCSessionDescription
+	{
+		[default] interface IRTCSessionDescription;
+	};
+	[
+		uuid(A7D9F96B-0FC1-4165-ADA5-BA790246BE4F)		
+	]
+	coclass RTCError
+	{
+		[default] interface IRTCError;
+	};
+	[
+		uuid(20E253DA-1FAB-458B-B73A-E8EFB8793D2A)		
+	]
+	coclass RTCIceCandidate
+	{
+		[default] interface IRTCIceCandidate;
+	};
+	[
+		uuid(F0B10277-5D59-428B-8EC1-E63C1D0E0714)		
+	]
+	coclass RTCPeerConnectionIceEvent
+	{
+		[default] interface IRTCPeerConnectionIceEvent;
+	};
+	[
+		uuid(FB701742-2F19-435F-83A5-BECF5D06E3B2)		
+	]
+	coclass MediaStreamEvent
+	{
+		[default] interface IMediaStreamEvent;
+	};
+	[
+		uuid(B162422C-E96D-41CF-804E-C5BF4252813C)		
+	]
+	coclass Empty
+	{
+		[default] interface IEmpty;
+	};
+	[
+		uuid(18001236-9A8E-4C9B-A8B4-097F9D674C22)		
+	]
+	coclass RTCDataChannel
+	{
+		[default] interface IRTCDataChannel;
+	};
+	[
+		uuid(F7312F73-98C4-4317-B5BE-092EE286EF25)		
+	]
+	coclass RTCDataChannelEvent
+	{
+		[default] interface IRTCDataChannelEvent;
 	};
 };
 
