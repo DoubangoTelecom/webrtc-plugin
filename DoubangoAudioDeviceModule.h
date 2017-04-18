@@ -21,7 +21,7 @@ namespace webrtc {
 	class AudioManager;
 	class CriticalSectionWrapper;
 
-	class CustomAudioDeviceModule : public AudioDeviceModule {
+	class DoubangoAudioDeviceModule : public AudioDeviceModule {
 	public:
 		enum PlatformType {
 			kPlatformNotSupported = 0,
@@ -37,8 +37,8 @@ namespace webrtc {
 		int32_t CreatePlatformSpecificObjects();
 		int32_t AttachAudioBuffer();
 
-		CustomAudioDeviceModule(const int32_t id, const AudioLayer audioLayer);
-		~CustomAudioDeviceModule() override;
+		DoubangoAudioDeviceModule(const int32_t id, const AudioLayer audioLayer);
+		~DoubangoAudioDeviceModule() override;
 
 		int64_t TimeUntilNextProcess() override;
 		void Process() override;

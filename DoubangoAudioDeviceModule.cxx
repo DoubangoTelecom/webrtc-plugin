@@ -7,7 +7,7 @@
 *  in the file PATENTS.  All contributing project authors may
 *  be found in the AUTHORS file in the root of the source tree.
 */
-#include "CustomAudioDeviceModule.h"
+#include "DoubangoAudioDeviceModule.h"
 #include "webrtc/base/checks.h"
 #include "webrtc/base/logging.h"
 #include "webrtc/base/checks.h"
@@ -83,8 +83,8 @@ namespace webrtc {
 		const AudioLayer audio_layer) {
 		LOG(INFO) << __FUNCTION__;
 		// Create the generic ref counted (platform independent) implementation.
-		rtc::scoped_refptr<CustomAudioDeviceModule> audioDevice(
-			new rtc::RefCountedObject<CustomAudioDeviceModule>(id, audio_layer));
+		rtc::scoped_refptr<DoubangoAudioDeviceModule> audioDevice(
+			new rtc::RefCountedObject<DoubangoAudioDeviceModule>(id, audio_layer));
 
 		// Ensure that the current platform is supported.
 		if (audioDevice->CheckPlatform() == -1) {
@@ -112,10 +112,10 @@ namespace webrtc {
 	// ============================================================================
 
 	// ----------------------------------------------------------------------------
-	//  CustomAudioDeviceModule - ctor
+	//  DoubangoAudioDeviceModule - ctor
 	// ----------------------------------------------------------------------------
 
-	CustomAudioDeviceModule::CustomAudioDeviceModule(const int32_t id,
+	DoubangoAudioDeviceModule::DoubangoAudioDeviceModule(const int32_t id,
 		const AudioLayer audioLayer)
 		: _critSect(*CriticalSectionWrapper::CreateCriticalSection()),
 		_critSectEventCb(*CriticalSectionWrapper::CreateCriticalSection()),
@@ -135,7 +135,7 @@ namespace webrtc {
 	//  CheckPlatform
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::CheckPlatform() {
+	int32_t DoubangoAudioDeviceModule::CheckPlatform() {
 		LOG(INFO) << __FUNCTION__;
 
 		// Ensure that the current platform is supported
@@ -176,7 +176,7 @@ namespace webrtc {
 	//  CreatePlatformSpecificObjects
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::CreatePlatformSpecificObjects() {
+	int32_t DoubangoAudioDeviceModule::CreatePlatformSpecificObjects() {
 		LOG(INFO) << __FUNCTION__;
 
 		AudioDeviceGeneric* ptrAudioDevice(NULL);
@@ -351,7 +351,7 @@ namespace webrtc {
 	//  number of channels in this function call.
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::AttachAudioBuffer() {
+	int32_t DoubangoAudioDeviceModule::AttachAudioBuffer() {
 		LOG(INFO) << __FUNCTION__;
 
 		_audioDeviceBuffer.SetId(_id);
@@ -360,10 +360,10 @@ namespace webrtc {
 	}
 
 	// ----------------------------------------------------------------------------
-	//  ~CustomAudioDeviceModule - dtor
+	//  ~DoubangoAudioDeviceModule - dtor
 	// ----------------------------------------------------------------------------
 
-	CustomAudioDeviceModule::~CustomAudioDeviceModule() {
+	DoubangoAudioDeviceModule::~DoubangoAudioDeviceModule() {
 		LOG(INFO) << __FUNCTION__;
 
 		if (_ptrAudioDevice) {
@@ -387,7 +387,7 @@ namespace webrtc {
 	//  to call Process().
 	// ----------------------------------------------------------------------------
 
-	int64_t CustomAudioDeviceModule::TimeUntilNextProcess() {
+	int64_t DoubangoAudioDeviceModule::TimeUntilNextProcess() {
 		int64_t now = rtc::TimeMillis();
 		int64_t deltaProcess = kAdmMaxIdleTimeProcess - (now - _lastProcessTime);
 		return deltaProcess;
@@ -400,7 +400,7 @@ namespace webrtc {
 	//  new reports exists.
 	// ----------------------------------------------------------------------------
 
-	void CustomAudioDeviceModule::Process() {
+	void DoubangoAudioDeviceModule::Process() {
 		_lastProcessTime = rtc::TimeMillis();
 
 		// kPlayoutWarning
@@ -456,7 +456,7 @@ namespace webrtc {
 	//  ActiveAudioLayer
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::ActiveAudioLayer(AudioLayer* audioLayer) const {
+	int32_t DoubangoAudioDeviceModule::ActiveAudioLayer(AudioLayer* audioLayer) const {
 		LOG(INFO) << __FUNCTION__;
 		AudioLayer activeAudio;
 		if (_ptrAudioDevice->ActiveAudioLayer(activeAudio) == -1) {
@@ -470,7 +470,7 @@ namespace webrtc {
 	//  LastError
 	// ----------------------------------------------------------------------------
 
-	AudioDeviceModule::ErrorCode CustomAudioDeviceModule::LastError() const {
+	AudioDeviceModule::ErrorCode DoubangoAudioDeviceModule::LastError() const {
 		LOG(INFO) << __FUNCTION__;
 		return _lastError;
 	}
@@ -479,7 +479,7 @@ namespace webrtc {
 	//  Init
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::Init() {
+	int32_t DoubangoAudioDeviceModule::Init() {
 		LOG(INFO) << __FUNCTION__;
 		if (_initialized)
 			return 0;
@@ -502,7 +502,7 @@ namespace webrtc {
 	//  Terminate
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::Terminate() {
+	int32_t DoubangoAudioDeviceModule::Terminate() {
 		LOG(INFO) << __FUNCTION__;
 		if (!_initialized)
 			return 0;
@@ -519,7 +519,7 @@ namespace webrtc {
 	//  Initialized
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::Initialized() const {
+	bool DoubangoAudioDeviceModule::Initialized() const {
 		LOG(INFO) << __FUNCTION__ << ": " << _initialized;
 		return (_initialized);
 	}
@@ -528,7 +528,7 @@ namespace webrtc {
 	//  InitSpeaker
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::InitSpeaker() {
+	int32_t DoubangoAudioDeviceModule::InitSpeaker() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->InitSpeaker());
@@ -538,7 +538,7 @@ namespace webrtc {
 	//  InitMicrophone
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::InitMicrophone() {
+	int32_t DoubangoAudioDeviceModule::InitMicrophone() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->InitMicrophone());
@@ -548,7 +548,7 @@ namespace webrtc {
 	//  SpeakerVolumeIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SpeakerVolumeIsAvailable(bool* available) {
+	int32_t DoubangoAudioDeviceModule::SpeakerVolumeIsAvailable(bool* available) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -567,7 +567,7 @@ namespace webrtc {
 	//  SetSpeakerVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetSpeakerVolume(uint32_t volume) {
+	int32_t DoubangoAudioDeviceModule::SetSpeakerVolume(uint32_t volume) {
 		LOG(INFO) << __FUNCTION__ << "(" << volume << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetSpeakerVolume(volume));
@@ -577,7 +577,7 @@ namespace webrtc {
 	//  SpeakerVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SpeakerVolume(uint32_t* volume) const {
+	int32_t DoubangoAudioDeviceModule::SpeakerVolume(uint32_t* volume) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -596,7 +596,7 @@ namespace webrtc {
 	//  SetWaveOutVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetWaveOutVolume(uint16_t volumeLeft,
+	int32_t DoubangoAudioDeviceModule::SetWaveOutVolume(uint16_t volumeLeft,
 		uint16_t volumeRight) {
 		LOG(INFO) << __FUNCTION__ << "(" << volumeLeft << ", " << volumeRight << ")";
 		CHECK_INITIALIZED();
@@ -607,7 +607,7 @@ namespace webrtc {
 	//  WaveOutVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::WaveOutVolume(uint16_t* volumeLeft,
+	int32_t DoubangoAudioDeviceModule::WaveOutVolume(uint16_t* volumeLeft,
 		uint16_t* volumeRight) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -630,7 +630,7 @@ namespace webrtc {
 	//  SpeakerIsInitialized
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::SpeakerIsInitialized() const {
+	bool DoubangoAudioDeviceModule::SpeakerIsInitialized() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 
@@ -643,7 +643,7 @@ namespace webrtc {
 	//  MicrophoneIsInitialized
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::MicrophoneIsInitialized() const {
+	bool DoubangoAudioDeviceModule::MicrophoneIsInitialized() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 
@@ -656,7 +656,7 @@ namespace webrtc {
 	//  MaxSpeakerVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MaxSpeakerVolume(uint32_t* maxVolume) const {
+	int32_t DoubangoAudioDeviceModule::MaxSpeakerVolume(uint32_t* maxVolume) const {
 		CHECK_INITIALIZED();
 
 		uint32_t maxVol(0);
@@ -673,7 +673,7 @@ namespace webrtc {
 	//  MinSpeakerVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MinSpeakerVolume(uint32_t* minVolume) const {
+	int32_t DoubangoAudioDeviceModule::MinSpeakerVolume(uint32_t* minVolume) const {
 		CHECK_INITIALIZED();
 
 		uint32_t minVol(0);
@@ -690,7 +690,7 @@ namespace webrtc {
 	//  SpeakerVolumeStepSize
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SpeakerVolumeStepSize(uint16_t* stepSize) const {
+	int32_t DoubangoAudioDeviceModule::SpeakerVolumeStepSize(uint16_t* stepSize) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -710,7 +710,7 @@ namespace webrtc {
 	//  SpeakerMuteIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SpeakerMuteIsAvailable(bool* available) {
+	int32_t DoubangoAudioDeviceModule::SpeakerMuteIsAvailable(bool* available) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -729,7 +729,7 @@ namespace webrtc {
 	//  SetSpeakerMute
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetSpeakerMute(bool enable) {
+	int32_t DoubangoAudioDeviceModule::SetSpeakerMute(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetSpeakerMute(enable));
@@ -739,7 +739,7 @@ namespace webrtc {
 	//  SpeakerMute
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SpeakerMute(bool* enabled) const {
+	int32_t DoubangoAudioDeviceModule::SpeakerMute(bool* enabled) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -758,7 +758,7 @@ namespace webrtc {
 	//  MicrophoneMuteIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MicrophoneMuteIsAvailable(bool* available) {
+	int32_t DoubangoAudioDeviceModule::MicrophoneMuteIsAvailable(bool* available) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -777,7 +777,7 @@ namespace webrtc {
 	//  SetMicrophoneMute
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetMicrophoneMute(bool enable) {
+	int32_t DoubangoAudioDeviceModule::SetMicrophoneMute(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetMicrophoneMute(enable));
@@ -787,7 +787,7 @@ namespace webrtc {
 	//  MicrophoneMute
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MicrophoneMute(bool* enabled) const {
+	int32_t DoubangoAudioDeviceModule::MicrophoneMute(bool* enabled) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -806,7 +806,7 @@ namespace webrtc {
 	//  MicrophoneBoostIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MicrophoneBoostIsAvailable(bool* available) {
+	int32_t DoubangoAudioDeviceModule::MicrophoneBoostIsAvailable(bool* available) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -825,7 +825,7 @@ namespace webrtc {
 	//  SetMicrophoneBoost
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetMicrophoneBoost(bool enable) {
+	int32_t DoubangoAudioDeviceModule::SetMicrophoneBoost(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetMicrophoneBoost(enable));
@@ -835,7 +835,7 @@ namespace webrtc {
 	//  MicrophoneBoost
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MicrophoneBoost(bool* enabled) const {
+	int32_t DoubangoAudioDeviceModule::MicrophoneBoost(bool* enabled) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -854,7 +854,7 @@ namespace webrtc {
 	//  MicrophoneVolumeIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MicrophoneVolumeIsAvailable(bool* available) {
+	int32_t DoubangoAudioDeviceModule::MicrophoneVolumeIsAvailable(bool* available) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -873,7 +873,7 @@ namespace webrtc {
 	//  SetMicrophoneVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetMicrophoneVolume(uint32_t volume) {
+	int32_t DoubangoAudioDeviceModule::SetMicrophoneVolume(uint32_t volume) {
 		LOG(INFO) << __FUNCTION__ << "(" << volume << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetMicrophoneVolume(volume));
@@ -883,7 +883,7 @@ namespace webrtc {
 	//  MicrophoneVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MicrophoneVolume(uint32_t* volume) const {
+	int32_t DoubangoAudioDeviceModule::MicrophoneVolume(uint32_t* volume) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -902,7 +902,7 @@ namespace webrtc {
 	//  StereoRecordingIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StereoRecordingIsAvailable(
+	int32_t DoubangoAudioDeviceModule::StereoRecordingIsAvailable(
 		bool* available) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -922,7 +922,7 @@ namespace webrtc {
 	//  SetStereoRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetStereoRecording(bool enable) {
+	int32_t DoubangoAudioDeviceModule::SetStereoRecording(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 
@@ -949,7 +949,7 @@ namespace webrtc {
 	//  StereoRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StereoRecording(bool* enabled) const {
+	int32_t DoubangoAudioDeviceModule::StereoRecording(bool* enabled) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -968,7 +968,7 @@ namespace webrtc {
 	//  SetRecordingChannel
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetRecordingChannel(const ChannelType channel) {
+	int32_t DoubangoAudioDeviceModule::SetRecordingChannel(const ChannelType channel) {
 		if (channel == kChannelBoth) {
 			LOG(INFO) << __FUNCTION__ << "(both)";
 		}
@@ -994,7 +994,7 @@ namespace webrtc {
 	//  RecordingChannel
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::RecordingChannel(ChannelType* channel) const {
+	int32_t DoubangoAudioDeviceModule::RecordingChannel(ChannelType* channel) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1021,7 +1021,7 @@ namespace webrtc {
 	//  StereoPlayoutIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StereoPlayoutIsAvailable(bool* available) const {
+	int32_t DoubangoAudioDeviceModule::StereoPlayoutIsAvailable(bool* available) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1040,7 +1040,7 @@ namespace webrtc {
 	//  SetStereoPlayout
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetStereoPlayout(bool enable) {
+	int32_t DoubangoAudioDeviceModule::SetStereoPlayout(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 
@@ -1068,7 +1068,7 @@ namespace webrtc {
 	//  StereoPlayout
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StereoPlayout(bool* enabled) const {
+	int32_t DoubangoAudioDeviceModule::StereoPlayout(bool* enabled) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1087,7 +1087,7 @@ namespace webrtc {
 	//  SetAGC
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetAGC(bool enable) {
+	int32_t DoubangoAudioDeviceModule::SetAGC(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetAGC(enable));
@@ -1097,7 +1097,7 @@ namespace webrtc {
 	//  AGC
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::AGC() const {
+	bool DoubangoAudioDeviceModule::AGC() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		return (_ptrAudioDevice->AGC());
@@ -1107,7 +1107,7 @@ namespace webrtc {
 	//  PlayoutIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::PlayoutIsAvailable(bool* available) {
+	int32_t DoubangoAudioDeviceModule::PlayoutIsAvailable(bool* available) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1126,7 +1126,7 @@ namespace webrtc {
 	//  RecordingIsAvailable
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::RecordingIsAvailable(bool* available) {
+	int32_t DoubangoAudioDeviceModule::RecordingIsAvailable(bool* available) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1145,7 +1145,7 @@ namespace webrtc {
 	//  MaxMicrophoneVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MaxMicrophoneVolume(uint32_t* maxVolume) const {
+	int32_t DoubangoAudioDeviceModule::MaxMicrophoneVolume(uint32_t* maxVolume) const {
 		CHECK_INITIALIZED();
 
 		uint32_t maxVol(0);
@@ -1162,7 +1162,7 @@ namespace webrtc {
 	//  MinMicrophoneVolume
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MinMicrophoneVolume(uint32_t* minVolume) const {
+	int32_t DoubangoAudioDeviceModule::MinMicrophoneVolume(uint32_t* minVolume) const {
 		CHECK_INITIALIZED();
 
 		uint32_t minVol(0);
@@ -1179,7 +1179,7 @@ namespace webrtc {
 	//  MicrophoneVolumeStepSize
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::MicrophoneVolumeStepSize(
+	int32_t DoubangoAudioDeviceModule::MicrophoneVolumeStepSize(
 		uint16_t* stepSize) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -1199,7 +1199,7 @@ namespace webrtc {
 	//  PlayoutDevices
 	// ----------------------------------------------------------------------------
 
-	int16_t CustomAudioDeviceModule::PlayoutDevices() {
+	int16_t DoubangoAudioDeviceModule::PlayoutDevices() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1212,7 +1212,7 @@ namespace webrtc {
 	//  SetPlayoutDevice I (II)
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetPlayoutDevice(uint16_t index) {
+	int32_t DoubangoAudioDeviceModule::SetPlayoutDevice(uint16_t index) {
 		LOG(INFO) << __FUNCTION__ << "(" << index << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetPlayoutDevice(index));
@@ -1222,7 +1222,7 @@ namespace webrtc {
 	//  SetPlayoutDevice II (II)
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetPlayoutDevice(WindowsDeviceType device) {
+	int32_t DoubangoAudioDeviceModule::SetPlayoutDevice(WindowsDeviceType device) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1233,7 +1233,7 @@ namespace webrtc {
 	//  PlayoutDeviceName
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::PlayoutDeviceName(
+	int32_t DoubangoAudioDeviceModule::PlayoutDeviceName(
 		uint16_t index,
 		char name[kAdmMaxDeviceNameSize],
 		char guid[kAdmMaxGuidSize]) {
@@ -1263,7 +1263,7 @@ namespace webrtc {
 	//  RecordingDeviceName
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::RecordingDeviceName(
+	int32_t DoubangoAudioDeviceModule::RecordingDeviceName(
 		uint16_t index,
 		char name[kAdmMaxDeviceNameSize],
 		char guid[kAdmMaxGuidSize]) {
@@ -1293,7 +1293,7 @@ namespace webrtc {
 	//  RecordingDevices
 	// ----------------------------------------------------------------------------
 
-	int16_t CustomAudioDeviceModule::RecordingDevices() {
+	int16_t DoubangoAudioDeviceModule::RecordingDevices() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1307,7 +1307,7 @@ namespace webrtc {
 	//  SetRecordingDevice I (II)
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetRecordingDevice(uint16_t index) {
+	int32_t DoubangoAudioDeviceModule::SetRecordingDevice(uint16_t index) {
 		LOG(INFO) << __FUNCTION__ << "(" << index << ")";
 		CHECK_INITIALIZED();
 		return (_ptrAudioDevice->SetRecordingDevice(index));
@@ -1317,7 +1317,7 @@ namespace webrtc {
 	//  SetRecordingDevice II (II)
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetRecordingDevice(WindowsDeviceType device) {
+	int32_t DoubangoAudioDeviceModule::SetRecordingDevice(WindowsDeviceType device) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1328,7 +1328,7 @@ namespace webrtc {
 	//  InitPlayout
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::InitPlayout() {
+	int32_t DoubangoAudioDeviceModule::InitPlayout() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		if (PlayoutIsInitialized()) {
@@ -1345,7 +1345,7 @@ namespace webrtc {
 	//  InitRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::InitRecording() {
+	int32_t DoubangoAudioDeviceModule::InitRecording() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		if (RecordingIsInitialized()) {
@@ -1362,7 +1362,7 @@ namespace webrtc {
 	//  PlayoutIsInitialized
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::PlayoutIsInitialized() const {
+	bool DoubangoAudioDeviceModule::PlayoutIsInitialized() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		return (_ptrAudioDevice->PlayoutIsInitialized());
@@ -1372,7 +1372,7 @@ namespace webrtc {
 	//  RecordingIsInitialized
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::RecordingIsInitialized() const {
+	bool DoubangoAudioDeviceModule::RecordingIsInitialized() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		return (_ptrAudioDevice->RecordingIsInitialized());
@@ -1382,7 +1382,7 @@ namespace webrtc {
 	//  StartPlayout
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StartPlayout() {
+	int32_t DoubangoAudioDeviceModule::StartPlayout() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		if (Playing()) {
@@ -1400,7 +1400,7 @@ namespace webrtc {
 	//  StopPlayout
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StopPlayout() {
+	int32_t DoubangoAudioDeviceModule::StopPlayout() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		int32_t result = _ptrAudioDevice->StopPlayout();
@@ -1415,7 +1415,7 @@ namespace webrtc {
 	//  Playing
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::Playing() const {
+	bool DoubangoAudioDeviceModule::Playing() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		return (_ptrAudioDevice->Playing());
@@ -1425,7 +1425,7 @@ namespace webrtc {
 	//  StartRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StartRecording() {
+	int32_t DoubangoAudioDeviceModule::StartRecording() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		if (Recording()) {
@@ -1442,7 +1442,7 @@ namespace webrtc {
 	//  StopRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StopRecording() {
+	int32_t DoubangoAudioDeviceModule::StopRecording() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		int32_t result = _ptrAudioDevice->StopRecording();
@@ -1457,7 +1457,7 @@ namespace webrtc {
 	//  Recording
 	// ----------------------------------------------------------------------------
 
-	bool CustomAudioDeviceModule::Recording() const {
+	bool DoubangoAudioDeviceModule::Recording() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		return (_ptrAudioDevice->Recording());
@@ -1467,7 +1467,7 @@ namespace webrtc {
 	//  RegisterEventObserver
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::RegisterEventObserver(
+	int32_t DoubangoAudioDeviceModule::RegisterEventObserver(
 		AudioDeviceObserver* eventCallback) {
 		LOG(INFO) << __FUNCTION__;
 		CriticalSectionScoped lock(&_critSectEventCb);
@@ -1480,7 +1480,7 @@ namespace webrtc {
 	//  RegisterAudioCallback
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::RegisterAudioCallback(
+	int32_t DoubangoAudioDeviceModule::RegisterAudioCallback(
 		AudioTransport* audioCallback) {
 		LOG(INFO) << __FUNCTION__;
 		CriticalSectionScoped lock(&_critSectAudioCb);
@@ -1491,7 +1491,7 @@ namespace webrtc {
 	//  StartRawInputFileRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StartRawInputFileRecording(
+	int32_t DoubangoAudioDeviceModule::StartRawInputFileRecording(
 		const char pcmFileNameUTF8[kAdmMaxFileNameSize]) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -1507,7 +1507,7 @@ namespace webrtc {
 	//  StopRawInputFileRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StopRawInputFileRecording() {
+	int32_t DoubangoAudioDeviceModule::StopRawInputFileRecording() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1518,7 +1518,7 @@ namespace webrtc {
 	//  StartRawOutputFileRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StartRawOutputFileRecording(
+	int32_t DoubangoAudioDeviceModule::StartRawOutputFileRecording(
 		const char pcmFileNameUTF8[kAdmMaxFileNameSize]) {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -1534,7 +1534,7 @@ namespace webrtc {
 	//  StopRawOutputFileRecording
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::StopRawOutputFileRecording() {
+	int32_t DoubangoAudioDeviceModule::StopRawOutputFileRecording() {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1545,7 +1545,7 @@ namespace webrtc {
 	//  SetPlayoutBuffer
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetPlayoutBuffer(const BufferType type,
+	int32_t DoubangoAudioDeviceModule::SetPlayoutBuffer(const BufferType type,
 		uint16_t sizeMS) {
 		if (type == kFixedBufferSize) {
 			LOG(INFO) << __FUNCTION__ << "(fixed buffer, " << sizeMS << "ms)";
@@ -1586,7 +1586,7 @@ namespace webrtc {
 	//  PlayoutBuffer
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::PlayoutBuffer(BufferType* type,
+	int32_t DoubangoAudioDeviceModule::PlayoutBuffer(BufferType* type,
 		uint16_t* sizeMS) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -1610,7 +1610,7 @@ namespace webrtc {
 	//  PlayoutDelay
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::PlayoutDelay(uint16_t* delayMS) const {
+	int32_t DoubangoAudioDeviceModule::PlayoutDelay(uint16_t* delayMS) const {
 		CHECK_INITIALIZED();
 
 		uint16_t delay(0);
@@ -1628,7 +1628,7 @@ namespace webrtc {
 	//  RecordingDelay
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::RecordingDelay(uint16_t* delayMS) const {
+	int32_t DoubangoAudioDeviceModule::RecordingDelay(uint16_t* delayMS) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1648,7 +1648,7 @@ namespace webrtc {
 	//  CPULoad
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::CPULoad(uint16_t* load) const {
+	int32_t DoubangoAudioDeviceModule::CPULoad(uint16_t* load) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 
@@ -1668,7 +1668,7 @@ namespace webrtc {
 	//  SetRecordingSampleRate
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetRecordingSampleRate(
+	int32_t DoubangoAudioDeviceModule::SetRecordingSampleRate(
 		const uint32_t samplesPerSec) {
 		LOG(INFO) << __FUNCTION__ << "(" << samplesPerSec << ")";
 		CHECK_INITIALIZED();
@@ -1684,7 +1684,7 @@ namespace webrtc {
 	//  RecordingSampleRate
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::RecordingSampleRate(
+	int32_t DoubangoAudioDeviceModule::RecordingSampleRate(
 		uint32_t* samplesPerSec) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -1705,7 +1705,7 @@ namespace webrtc {
 	//  SetPlayoutSampleRate
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetPlayoutSampleRate(
+	int32_t DoubangoAudioDeviceModule::SetPlayoutSampleRate(
 		const uint32_t samplesPerSec) {
 		LOG(INFO) << __FUNCTION__ << "(" << samplesPerSec << ")";
 		CHECK_INITIALIZED();
@@ -1721,7 +1721,7 @@ namespace webrtc {
 	//  PlayoutSampleRate
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::PlayoutSampleRate(
+	int32_t DoubangoAudioDeviceModule::PlayoutSampleRate(
 		uint32_t* samplesPerSec) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
@@ -1742,7 +1742,7 @@ namespace webrtc {
 	//  ResetAudioDevice
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::ResetAudioDevice() {
+	int32_t DoubangoAudioDeviceModule::ResetAudioDevice() {
 		LOG(INFO) << __FUNCTION__;
 		FATAL() << "Should never be called";
 		return -1;
@@ -1752,7 +1752,7 @@ namespace webrtc {
 	//  SetLoudspeakerStatus
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::SetLoudspeakerStatus(bool enable) {
+	int32_t DoubangoAudioDeviceModule::SetLoudspeakerStatus(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 
@@ -1767,7 +1767,7 @@ namespace webrtc {
 	//  GetLoudspeakerStatus
 	// ----------------------------------------------------------------------------
 
-	int32_t CustomAudioDeviceModule::GetLoudspeakerStatus(bool* enabled) const {
+	int32_t DoubangoAudioDeviceModule::GetLoudspeakerStatus(bool* enabled) const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED();
 		int32_t ok = 0;
@@ -1778,7 +1778,7 @@ namespace webrtc {
 		return ok;
 	}
 
-	bool CustomAudioDeviceModule::BuiltInAECIsAvailable() const {
+	bool DoubangoAudioDeviceModule::BuiltInAECIsAvailable() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		bool isAvailable = _ptrAudioDevice->BuiltInAECIsAvailable();
@@ -1786,7 +1786,7 @@ namespace webrtc {
 		return isAvailable;
 	}
 
-	int32_t CustomAudioDeviceModule::EnableBuiltInAEC(bool enable) {
+	int32_t DoubangoAudioDeviceModule::EnableBuiltInAEC(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 		int32_t ok = _ptrAudioDevice->EnableBuiltInAEC(enable);
@@ -1794,7 +1794,7 @@ namespace webrtc {
 		return ok;
 	}
 
-	bool CustomAudioDeviceModule::BuiltInAGCIsAvailable() const {
+	bool DoubangoAudioDeviceModule::BuiltInAGCIsAvailable() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		bool isAvailable = _ptrAudioDevice->BuiltInAGCIsAvailable();
@@ -1802,7 +1802,7 @@ namespace webrtc {
 		return isAvailable;
 	}
 
-	int32_t CustomAudioDeviceModule::EnableBuiltInAGC(bool enable) {
+	int32_t DoubangoAudioDeviceModule::EnableBuiltInAGC(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 		int32_t ok = _ptrAudioDevice->EnableBuiltInAGC(enable);
@@ -1810,7 +1810,7 @@ namespace webrtc {
 		return ok;
 	}
 
-	bool CustomAudioDeviceModule::BuiltInNSIsAvailable() const {
+	bool DoubangoAudioDeviceModule::BuiltInNSIsAvailable() const {
 		LOG(INFO) << __FUNCTION__;
 		CHECK_INITIALIZED_BOOL();
 		bool isAvailable = _ptrAudioDevice->BuiltInNSIsAvailable();
@@ -1818,7 +1818,7 @@ namespace webrtc {
 		return isAvailable;
 	}
 
-	int32_t CustomAudioDeviceModule::EnableBuiltInNS(bool enable) {
+	int32_t DoubangoAudioDeviceModule::EnableBuiltInNS(bool enable) {
 		LOG(INFO) << __FUNCTION__ << "(" << enable << ")";
 		CHECK_INITIALIZED();
 		int32_t ok = _ptrAudioDevice->EnableBuiltInNS(enable);
@@ -1827,7 +1827,7 @@ namespace webrtc {
 	}
 
 #if defined(WEBRTC_IOS)
-	int CustomAudioDeviceModule::GetPlayoutAudioParameters(
+	int DoubangoAudioDeviceModule::GetPlayoutAudioParameters(
 		AudioParameters* params) const {
 		LOG(INFO) << __FUNCTION__;
 		int r = _ptrAudioDevice->GetPlayoutAudioParameters(params);
@@ -1835,7 +1835,7 @@ namespace webrtc {
 		return r;
 	}
 
-	int CustomAudioDeviceModule::GetRecordAudioParameters(
+	int DoubangoAudioDeviceModule::GetRecordAudioParameters(
 		AudioParameters* params) const {
 		LOG(INFO) << __FUNCTION__;
 		int r = _ptrAudioDevice->GetRecordAudioParameters(params);
@@ -1852,7 +1852,7 @@ namespace webrtc {
 	//  Platform
 	// ----------------------------------------------------------------------------
 
-	CustomAudioDeviceModule::PlatformType CustomAudioDeviceModule::Platform() const {
+	DoubangoAudioDeviceModule::PlatformType DoubangoAudioDeviceModule::Platform() const {
 		LOG(INFO) << __FUNCTION__;
 		return _platformType;
 	}
@@ -1861,7 +1861,7 @@ namespace webrtc {
 	//  PlatformAudioLayer
 	// ----------------------------------------------------------------------------
 
-	AudioDeviceModule::AudioLayer CustomAudioDeviceModule::PlatformAudioLayer()
+	AudioDeviceModule::AudioLayer DoubangoAudioDeviceModule::PlatformAudioLayer()
 		const {
 		LOG(INFO) << __FUNCTION__;
 		return _platformAudioLayer;

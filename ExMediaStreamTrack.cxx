@@ -2,6 +2,7 @@
 #include "ExMediaStreamTrack.h"
 #include "RTCMediaConstraints.h"
 #include "Helper.h"
+#include "DoubangoDesktopCapturer.h"
 
 #include "webrtc/media/engine/webrtcvideocapturerfactory.h"
 #include "webrtc/modules/video_capture/video_capture_factory.h"
@@ -180,7 +181,7 @@ int ExMediaStreamTrackAudio::micLevel()
 //
 //	ExMediaStreamTrackVideo
 //
-static cricket::VideoCapturer* OpenVideoCaptureDevice(std::string _deviceId, std::string _windowId /*= ""*/);
+static cricket::VideoCapturer* OpenVideoCaptureDevice(const std::string& deviceId, const std::string& chromeMediaSource, const std::string& chromeMediaSourceId);
 
 std::map<std::string/*label*/, cricket::VideoCapturer* > ExMediaStreamTrackVideo::s_capturerWeakRef;
 
@@ -220,14 +221,18 @@ void ExMediaStreamTrackVideo::StartOnWorkerThread(const ExMediaTrackConstraints*
 	if (peer_connection_factory) {
 		MediaConstraintSets constrainSets(constrains ? constrains->ideal() : nullptr, constrains ? constrains->exact() : nullptr);
 		rtc::scoped_refptr<RTCMediaConstraints> rtcConstrains = BuildConstraints(&constrainSets);
-		std::string sourceId;
-		std::string windowId; // for screenCast (when sourceId is equal to kDoubangoScreenshareSourceId)
+		std::string deviceId;
+		std::string chromeMediaSource; // 'desktop' or 'screen'
+		std::string chromeMediaSourceId; // screenId when "chromeMediaSource" is equal 'screen'
 		if (rtcConstrains) {
-			if (!rtcConstrains->GetMandatory().FindFirst("deviceId", &sourceId)) {
-				rtcConstrains->GetOptional().FindFirst("deviceId", &sourceId);
+			if (!rtcConstrains->GetMandatory().FindFirst("deviceId", &deviceId)) {
+				rtcConstrains->GetOptional().FindFirst("deviceId", &deviceId);
 			}
-			if (!rtcConstrains->GetMandatory().FindFirst("windowId", &windowId)) {
-				rtcConstrains->GetOptional().FindFirst("windowId", &windowId);
+			if (!rtcConstrains->GetMandatory().FindFirst("chromeMediaSource", &chromeMediaSource)) {
+				rtcConstrains->GetOptional().FindFirst("chromeMediaSource", &chromeMediaSource);
+			}
+			if (!rtcConstrains->GetMandatory().FindFirst("chromeMediaSourceId", &chromeMediaSourceId)) {
+				rtcConstrains->GetOptional().FindFirst("chromeMediaSourceId", &chromeMediaSourceId);
 			}
 		}
 
@@ -252,7 +257,7 @@ void ExMediaStreamTrackVideo::StartOnWorkerThread(const ExMediaTrackConstraints*
 
 		// GetVideoCaptureDevice returns 'std::unique_ptr' which must not be used as local variable (crash when ExmediaStream)
 		m_label += "_video_track";
-		cricket::VideoCapturer* capturerWeakRef = OpenVideoCaptureDevice(sourceId, windowId);
+		cricket::VideoCapturer* capturerWeakRef = OpenVideoCaptureDevice(deviceId, chromeMediaSource, chromeMediaSourceId);
 		if (capturerWeakRef) {
 			m_track = peer_connection_factory->CreateVideoTrack(m_label, peer_connection_factory->CreateVideoSource(capturerWeakRef, rtcConstrains));
 			s_capturerWeakRef[m_track->id()] = capturerWeakRef;
@@ -270,34 +275,58 @@ void ExMediaStreamTrackVideo::StopOnWorkerThread()
 	}
 }
 
-static cricket::VideoCapturer* OpenVideoCaptureDevice(std::string _deviceId, std::string _windowId /*= ""*/)
+static cricket::VideoCapturer* OpenVideoCaptureDevice(const std::string& deviceId, const std::string& chromeMediaSource, const std::string& chromeMediaSourceId)
 {
-	std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
-		webrtc::VideoCaptureFactory::CreateDeviceInfo());
-	if (!info) {
-		return nullptr;
+	if (chromeMediaSource.compare("screen") == 0 || chromeMediaSource.compare("desktop") == 0) {
+		return DoubangoDesktopCapturerFactory::Create();
 	}
-
-	std::vector<cricket::Device> devices;
-	int num_devices = info->NumberOfDevices();
-	for (int i = 0; i < num_devices; ++i) {
-		const uint32_t kSize = 256;
-		char name[kSize] = { 0 };
-		char id[kSize] = { 0 };
-		if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
-			devices.push_back(cricket::Device(name, id));
+	else {
+		std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
+			webrtc::VideoCaptureFactory::CreateDeviceInfo());
+		if (!info) {
+			return nullptr;
 		}
-	}
-#if 0
-	cricket::WebRtcVideoDeviceCapturerFactory factory;
-#endif
-	cricket::WebRtcVideoCapturer* capturer = nullptr;
-	if (!_deviceId.empty()) {
-		for (const auto& device : devices) {
-			if (device.id.compare(_deviceId) == 0) {
-#if 0
-				capturer = factory.Create(device);
-#else
+
+		std::vector<cricket::Device> devices;
+		int num_devices = info->NumberOfDevices();
+		for (int i = 0; i < num_devices; ++i) {
+			const uint32_t kSize = 256;
+			char name[kSize] = { 0 };
+			char id[kSize] = { 0 };
+			if (info->GetDeviceName(i, name, kSize, id, kSize) != -1) {
+				devices.push_back(cricket::Device(name, id));
+			}
+		}
+
+	#if 0
+		cricket::WebRtcVideoDeviceCapturerFactory factory;
+	#endif
+		cricket::WebRtcVideoCapturer* capturer = nullptr;
+		if (!deviceId.empty()) {
+			for (const auto& device : devices) {
+				if (device.id.compare(deviceId) == 0) {
+	#if 0
+					capturer = factory.Create(device);
+	#else
+					capturer = new cricket::WebRtcVideoCapturer();
+					if (capturer) {
+						if (!(capturer->Init(device))) {
+							delete capturer;
+							capturer = nullptr;
+						}
+					}
+	#endif
+					if (capturer) {
+						break;
+					}
+				}
+			}
+		}
+		if (!capturer) {
+			for (const auto& device : devices) {
+	#if 0
+				capturer = factory.Create(cricket::Device(name, 0));
+	#else
 				capturer = new cricket::WebRtcVideoCapturer();
 				if (capturer) {
 					if (!(capturer->Init(device))) {
@@ -305,31 +334,13 @@ static cricket::VideoCapturer* OpenVideoCaptureDevice(std::string _deviceId, std
 						capturer = nullptr;
 					}
 				}
-#endif
+	#endif
 				if (capturer) {
 					break;
 				}
 			}
 		}
+		return capturer;
 	}
-	if (!capturer) {
-		for (const auto& device : devices) {
-#if 0
-			capturer = factory.Create(cricket::Device(name, 0));
-#else
-			capturer = new cricket::WebRtcVideoCapturer();
-			if (capturer) {
-				if (!(capturer->Init(device))) {
-					delete capturer;
-					capturer = nullptr;
-				}
-			}
-#endif
-			if (capturer) {
-				break;
-			}
-		}
-	}
-	return capturer;
 }
 

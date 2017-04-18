@@ -103,9 +103,6 @@
     <ClCompile Include="ExMediaDevices.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CustomAudioDeviceModule.cxx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RTCPeerConnection.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -158,6 +155,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExRTCDataChannelEvent.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DoubangoAudioDeviceModule.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DoubangoDesktopCapturer.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -261,9 +264,6 @@
     <ClInclude Include="ExMediaDevices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CustomAudioDeviceModule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RTCPeerConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -316,6 +316,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExRTCDataChannelEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DoubangoAudioDeviceModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DoubangoDesktopCapturer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

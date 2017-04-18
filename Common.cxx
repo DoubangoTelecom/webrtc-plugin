@@ -4,7 +4,7 @@
 #include "ExErrorMessage.h"
 #include "ExMediaStreamTrack.h"
 #include "RTCMediaConstraints.h"
-#include "CustomAudioDeviceModule.h"
+#include "DoubangoAudioDeviceModule.h"
 
 #include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 #include "webrtc/p2p/client/basicportallocator.h"
@@ -46,7 +46,7 @@ void TakeFakePeerConnectionFactory()
 	if (!_fake_peer_connection) {
 		if (!_fake_adm) {
 			_fake_adm = _worker_thread->Invoke<rtc::scoped_refptr<webrtc::AudioDeviceModule>>(RTC_FROM_HERE, []() {
-				return webrtc::CustomAudioDeviceModule::Create(0, webrtc::AudioDeviceModule::AudioLayer::kPlatformDefaultAudio);
+				return webrtc::DoubangoAudioDeviceModule::Create(0, webrtc::AudioDeviceModule::AudioLayer::kPlatformDefaultAudio);
 			});
 		}
 		_fake_peer_connection = webrtc::CreatePeerConnectionFactory(_worker_thread, _worker_thread, _fake_adm, NULL, NULL);

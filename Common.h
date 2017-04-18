@@ -2,7 +2,7 @@
 
 #include "Config.h"
 #include "Debug.h"
-#include "CustomAudioDeviceModule.h"
+#include "DoubangoAudioDeviceModule.h"
 
 #include "webrtc/api/peerconnectioninterface.h"
 #include "webrtc/api/mediaconstraintsinterface.h"

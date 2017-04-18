@@ -297,13 +297,18 @@ void VideoSink::OnFrame(const webrtc::VideoFrame& frame)
 	SetSize(buffer->width(), buffer->height());
 
 	RTC_DCHECK(resources_->m_image.get() != NULL);
-	libyuv::I420ToARGB(buffer->DataY(), buffer->StrideY(),
-		buffer->DataU(), buffer->StrideU(),
-		buffer->DataV(), buffer->StrideV(),
-		resources_->m_image.get(),
-		resources_->m_bmi.bmiHeader.biWidth *
-		resources_->m_bmi.bmiHeader.biBitCount / 8,
-		buffer->width(), buffer->height());
+	if (buffer->StrideY() == buffer->StrideU() && buffer->StrideY() == buffer->StrideV()) { // Hack(dmi): to detect FOURCC_ARGB (frame from 'DoubangoDesktopCapturer') - NOT CORRECT
+		memcpy(resources_->m_image.get(), buffer->DataY(), resources_->m_bmi.bmiHeader.biSizeImage);
+	}
+	else {
+		libyuv::I420ToARGB(buffer->DataY(), buffer->StrideY(),
+			buffer->DataU(), buffer->StrideU(),
+			buffer->DataV(), buffer->StrideV(),
+			resources_->m_image.get(),
+			resources_->m_bmi.bmiHeader.biWidth *
+			resources_->m_bmi.bmiHeader.biBitCount / 8,
+			buffer->width(), buffer->height());
+	}
 
 	if (resources_->m_fnIsWindowless && resources_->m_fnIsWindowless()) {
 		// windowless
