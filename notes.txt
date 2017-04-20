@@ -1,7 +1,8 @@
 cd src
 git checkout branch-heads/58
 set WINDOWSSDKDIR=C:/Program Files (x86)/Windows Kits/10
-gn gen out/x86+debug --args="is_debug=true target_cpu=\"x86\" ffmpeg_branding=\"Chrome\" proprietary_codecs=true"
+gn gen out/x86_debug --args="is_debug=true target_cpu=\"x86\" ffmpeg_branding=\"Chrome\" proprietary_codecs=true"
+ninja -C out/x86_debug
 
 == error MSB8011 ==
 1/ Make sure to start VS with admin rights

@@ -1,0 +1,33 @@
+. webrtc/modules/audio_device/win/audio_device_core_win.cc | 2 +-
+ webrtc/modules/video_capture/windows/video_capture_ds.cc | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/webrtc/modules/audio_device/win/audio_device_core_win.cc b/webrtc/modules/audio_device/win/audio_device_core_win.cc
+index 9a70239..1de3799 100644
+--- a/webrtc/modules/audio_device/win/audio_device_core_win.cc
++++ b/webrtc/modules/audio_device/win/audio_device_core_win.cc
+@@ -376,7 +376,7 @@ bool AudioDeviceWindowsCore::CoreAudioIsSupported()
+ 
+         ok |= p->Terminate();
+ 
+-        if (ok == 0)
++        if (ok == 0  || 1) // https://bugs.chromium.org/p/webrtc/issues/detail?id=41
+         {
+             coreAudioIsSupported = true;
+         }
+diff --git a/webrtc/modules/video_capture/windows/video_capture_ds.cc b/webrtc/modules/video_capture/windows/video_capture_ds.cc
+index a98b1b8..94f3a8f 100644
+--- a/webrtc/modules/video_capture/windows/video_capture_ds.cc
++++ b/webrtc/modules/video_capture/windows/video_capture_ds.cc
+@@ -177,8 +177,9 @@ int32_t VideoCaptureDS::StartCapture(
+ int32_t VideoCaptureDS::StopCapture()
+ {
+     CriticalSectionScoped cs(&_apiCs);
+-
+-    HRESULT hr = _mediaControl->Pause();
++	
++	// TODO(dmi) https://code.google.com/p/webrtc/issues/detail?id=1649
++	HRESULT hr = _mediaControl->Stop()/*_mediaControl->Pause()*/;
+     if (FAILED(hr))
+     {
+         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,

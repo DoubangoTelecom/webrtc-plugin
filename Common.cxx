@@ -46,7 +46,7 @@ void TakeFakePeerConnectionFactory()
 	if (!_fake_peer_connection) {
 		if (!_fake_adm) {
 			_fake_adm = _worker_thread->Invoke<rtc::scoped_refptr<webrtc::AudioDeviceModule>>(RTC_FROM_HERE, []() {
-				return webrtc::DoubangoAudioDeviceModule::Create(0, webrtc::AudioDeviceModule::AudioLayer::kPlatformDefaultAudio);
+				return webrtc::DoubangoAudioDeviceModule::Create(-1, webrtc::AudioDeviceModule::AudioLayer::kPlatformDefaultAudio);
 			});
 		}
 		_fake_peer_connection = webrtc::CreatePeerConnectionFactory(_worker_thread, _worker_thread, _fake_adm, NULL, NULL);
