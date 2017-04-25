@@ -163,6 +163,18 @@
     <ClCompile Include="DoubangoDesktopCapturer.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RTCWindow.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCScreen.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExRTCScreen.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExRTCWindow.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -324,6 +336,18 @@
     <ClInclude Include="DoubangoDesktopCapturer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RTCWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RTCScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rtc.rc">
@@ -389,6 +413,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="RTCDataChannelEvent.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCWindow.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCScreen.rgs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

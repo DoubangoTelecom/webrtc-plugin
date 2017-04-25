@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCScreen.1 = s 'RTCScreen Class'
+	{
+		CLSID = s '{19EB10C5-4F36-4DD0-8DCD-0DCAC12FE687}'
+	}
+	rtc.RTCScreen = s 'RTCScreen Class'
+	{		
+		CurVer = s 'rtc.RTCScreen.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {19EB10C5-4F36-4DD0-8DCD-0DCAC12FE687} = s 'RTCScreen Class'
+		{
+			ProgID = s 'rtc.RTCScreen.1'
+			VersionIndependentProgID = s 'rtc.RTCScreen'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

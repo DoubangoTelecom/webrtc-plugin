@@ -29,7 +29,8 @@ interface IPlugin : IDispatch{
 
 	[id(40), helpstring("method bindEventListener")] HRESULT bindEventListener([in] BSTR type, [in, optional]VARIANT listenerCallback, [in, optional]VARIANT useCapture);
 	[id(41), helpstring("method getSources")] HRESULT getSources([in, optional]VARIANT successCallback);
-	[id(42), helpstring("method getWindowList")] HRESULT getWindowList([out, retval] BSTR* winList);
+	[id(42), helpstring("method getWindows")] HRESULT getWindows([out, retval] VARIANT* winList);
+	[id(43), helpstring("method getScreens")] HRESULT getScreens([out, retval] VARIANT* screenList);
 
 	[propput, id(50), helpstring("property src")] HRESULT src([in] VARIANT newVal);
 	[propget, id(51), helpstring("property videoWidth")] HRESULT videoWidth([out, retval] LONG* pVal);
@@ -330,6 +331,28 @@ interface IRTCDataChannel : IDispatch{
 interface IRTCDataChannelEvent : IDispatch{
 };
 [
+	object,
+	uuid(624A33DF-99D1-49AF-A476-63DA117817DB),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCWindow : IDispatch{
+	[propget, id(1), helpstring("property id")] HRESULT id([out, retval] INT_PTR* pVal);
+	[propget, id(2), helpstring("property title")] HRESULT title([out, retval] BSTR* pVal);
+};
+[
+	object,
+	uuid(4E9C389F-59C1-4F67-92E3-C26C05927CE2),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCScreen : IDispatch{
+	[propget, id(1), helpstring("property id")] HRESULT id([out, retval] INT_PTR* pVal);
+	[propget, id(2), helpstring("property title")] HRESULT title([out, retval] BSTR* pVal);
+};
+[
 	uuid(5701E57F-4D99-450D-8479-BC9871799B8D),
 	version(1.0),
 ]
@@ -475,6 +498,20 @@ library rtcLib
 	coclass RTCDataChannelEvent
 	{
 		[default] interface IRTCDataChannelEvent;
+	};
+	[
+		uuid(F7B00619-8D49-4F38-93D8-BBCF72539B37)		
+	]
+	coclass RTCWindow
+	{
+		[default] interface IRTCWindow;
+	};
+	[
+		uuid(19EB10C5-4F36-4DD0-8DCD-0DCAC12FE687)		
+	]
+	coclass RTCScreen
+	{
+		[default] interface IRTCScreen;
 	};
 };
 

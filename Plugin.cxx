@@ -4,11 +4,14 @@
 #include "MediaStream.h"
 #include "RTCPeerConnection.h"
 #include "RTCIceCandidate.h"
+#include "RTCScreen.h"
+#include "RTCWindow.h"
 #include "Promise.h"
 #include "Common.h"
 #include "Utils.h"
 #include "Helper.h"
 #include "ATLBrowserCallback.h"
+#include "DoubangoDesktopCapturer.h"
 
 static const wchar_t kWindowlessClassName[] = L"RTCWindowlessClass";
 static const wchar_t kWindowlessTitle[] = L"RTCWindowlessTitle";
@@ -359,9 +362,62 @@ STDMETHODIMP CPlugin::get_isWebRtcPlugin(__out VARIANT_BOOL* pVal)
 	return S_OK;
 }
 
-STDMETHODIMP CPlugin::getWindowList(__out BSTR* winList)
+STDMETHODIMP CPlugin::getWindows(__out VARIANT* winList)
 {
-	return E_NOTIMPL;
+	CComPtr<CPlugin> pluginInstance = CPlugin::Singleton();
+	if (!pluginInstance) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	HRESULT hr = S_OK;
+
+	CComPtr<IDispatch> spDispatch;
+	RTC_CHECK_HR_RETURN(pluginInstance->GetDispatch(spDispatch));
+
+	std::vector<CComVariant> atlWindows;
+	std::vector<std::shared_ptr<ExRTCWindow> > exWindows = DoubangoDesktopCapturerFactory::GetWindows();
+
+	for (std::vector<std::shared_ptr<ExRTCWindow> >::iterator it = exWindows.begin(); it < exWindows.end(); ++it) {
+		CComObject<CRTCWindow>* window;
+		hr = Utils::CreateInstanceWithRef(&window, *it);
+		if (SUCCEEDED(hr)) {
+			atlWindows.push_back(CComVariant(window));
+			RTC_SAFE_RELEASE(&window);
+		}
+	}
+
+	CComQIPtr<IDispatchEx> spArray;
+	RTC_CHECK_HR_RETURN(hr = Utils::CreateJsArray(spDispatch, atlWindows, spArray));
+	*winList = CComVariant(spArray.Detach());
+	return hr;
+}
+
+STDMETHODIMP CPlugin::getScreens(__out VARIANT* winList)
+{
+	CComPtr<CPlugin> pluginInstance = CPlugin::Singleton();
+	if (!pluginInstance) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	HRESULT hr = S_OK;
+
+	CComPtr<IDispatch> spDispatch;
+	RTC_CHECK_HR_RETURN(pluginInstance->GetDispatch(spDispatch));
+
+	std::vector<CComVariant> atlScreens;
+	std::vector<std::shared_ptr<ExRTCScreen> > exScreens = DoubangoDesktopCapturerFactory::GetScreens();
+
+	for (std::vector<std::shared_ptr<ExRTCScreen> >::iterator it = exScreens.begin(); it < exScreens.end(); ++it) {
+		CComObject<CRTCScreen>* screen;
+		hr = Utils::CreateInstanceWithRef(&screen, *it);
+		if (SUCCEEDED(hr)) {
+			atlScreens.push_back(CComVariant(screen));
+			RTC_SAFE_RELEASE(&screen);
+		}
+	}
+
+	CComQIPtr<IDispatchEx> spArray;
+	RTC_CHECK_HR_RETURN(hr = Utils::CreateJsArray(spDispatch, atlScreens, spArray));
+	*winList = CComVariant(spArray.Detach());
+	return hr;
 }
 
 STDMETHODIMP CPlugin::createDisplay(__out IDispatch** ppDisplay)

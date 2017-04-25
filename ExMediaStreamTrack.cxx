@@ -1,6 +1,8 @@
 // https://www.w3.org/TR/mediacapture-streams/#idl-def-MediaStreamTrack
 #include "ExMediaStreamTrack.h"
 #include "RTCMediaConstraints.h"
+#include "ExRTCWindow.h"
+#include "ExRTCScreen.h"
 #include "Helper.h"
 #include "DoubangoDesktopCapturer.h"
 
@@ -277,8 +279,21 @@ void ExMediaStreamTrackVideo::StopOnWorkerThread()
 
 static cricket::VideoCapturer* OpenVideoCaptureDevice(const std::string& deviceId, const std::string& chromeMediaSource, const std::string& chromeMediaSourceId)
 {
-	if (chromeMediaSource.compare("screen") == 0 || chromeMediaSource.compare("desktop") == 0) {
-		return DoubangoDesktopCapturerFactory::Create();
+	if (chromeMediaSource.compare("window") == 0) {
+		if (!chromeMediaSourceId.empty()) {
+			webrtc::DesktopCapturer::SourceId sourceId = static_cast<webrtc::DesktopCapturer::SourceId>(atoll(chromeMediaSourceId.c_str()));
+			ExRTCWindow exRTCWindow(sourceId, kStringEmpty);
+			return DoubangoDesktopCapturerFactory::CreateWindowCapturer(&exRTCWindow);
+		}
+		return DoubangoDesktopCapturerFactory::CreateScreenCapturer();
+	}
+	else if (chromeMediaSource.compare("desktop") == 0) {
+		if (!chromeMediaSourceId.empty()) {
+			webrtc::DesktopCapturer::SourceId sourceId = static_cast<webrtc::DesktopCapturer::SourceId>(atoll(chromeMediaSourceId.c_str()));
+			ExRTCScreen exRTCScreen(sourceId, kStringEmpty);
+			return DoubangoDesktopCapturerFactory::CreateScreenCapturer(&exRTCScreen);
+		}
+		return DoubangoDesktopCapturerFactory::CreateScreenCapturer();
 	}
 	else {
 		std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(

@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Apr 20 22:33:49 2017
+/* at Fri Apr 21 05:44:12 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -169,6 +169,20 @@ typedef interface IRTCDataChannel IRTCDataChannel;
 typedef interface IRTCDataChannelEvent IRTCDataChannelEvent;
 
 #endif 	/* __IRTCDataChannelEvent_FWD_DEFINED__ */
+
+
+#ifndef __IRTCWindow_FWD_DEFINED__
+#define __IRTCWindow_FWD_DEFINED__
+typedef interface IRTCWindow IRTCWindow;
+
+#endif 	/* __IRTCWindow_FWD_DEFINED__ */
+
+
+#ifndef __IRTCScreen_FWD_DEFINED__
+#define __IRTCScreen_FWD_DEFINED__
+typedef interface IRTCScreen IRTCScreen;
+
+#endif 	/* __IRTCScreen_FWD_DEFINED__ */
 
 
 #ifndef ___IPluginEvents_FWD_DEFINED__
@@ -394,6 +408,30 @@ typedef struct RTCDataChannelEvent RTCDataChannelEvent;
 #endif 	/* __RTCDataChannelEvent_FWD_DEFINED__ */
 
 
+#ifndef __RTCWindow_FWD_DEFINED__
+#define __RTCWindow_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCWindow RTCWindow;
+#else
+typedef struct RTCWindow RTCWindow;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCWindow_FWD_DEFINED__ */
+
+
+#ifndef __RTCScreen_FWD_DEFINED__
+#define __RTCScreen_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCScreen RTCScreen;
+#else
+typedef struct RTCScreen RTCScreen;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCScreen_FWD_DEFINED__ */
+
+
 /* header files for imported files */
 #include "oaidl.h"
 #include "ocidl.h"
@@ -457,8 +495,11 @@ EXTERN_C const IID IID_IPlugin;
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getSources( 
             /* [optional][in] */ VARIANT successCallback) = 0;
         
-        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getWindowList( 
-            /* [retval][out] */ BSTR *winList) = 0;
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getWindows( 
+            /* [retval][out] */ VARIANT *winList) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getScreens( 
+            /* [retval][out] */ VARIANT *screenList) = 0;
         
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_src( 
             /* [in] */ VARIANT newVal) = 0;
@@ -589,9 +630,13 @@ EXTERN_C const IID IID_IPlugin;
             IPlugin * This,
             /* [optional][in] */ VARIANT successCallback);
         
-        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getWindowList )( 
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getWindows )( 
             IPlugin * This,
-            /* [retval][out] */ BSTR *winList);
+            /* [retval][out] */ VARIANT *winList);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getScreens )( 
+            IPlugin * This,
+            /* [retval][out] */ VARIANT *screenList);
         
         /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_src )( 
             IPlugin * This,
@@ -690,8 +735,11 @@ EXTERN_C const IID IID_IPlugin;
 #define IPlugin_getSources(This,successCallback)	\
     ( (This)->lpVtbl -> getSources(This,successCallback) ) 
 
-#define IPlugin_getWindowList(This,winList)	\
-    ( (This)->lpVtbl -> getWindowList(This,winList) ) 
+#define IPlugin_getWindows(This,winList)	\
+    ( (This)->lpVtbl -> getWindows(This,winList) ) 
+
+#define IPlugin_getScreens(This,screenList)	\
+    ( (This)->lpVtbl -> getScreens(This,screenList) ) 
 
 #define IPlugin_put_src(This,newVal)	\
     ( (This)->lpVtbl -> put_src(This,newVal) ) 
@@ -4051,6 +4099,286 @@ EXTERN_C const IID IID_IRTCDataChannelEvent;
 #endif 	/* __IRTCDataChannelEvent_INTERFACE_DEFINED__ */
 
 
+#ifndef __IRTCWindow_INTERFACE_DEFINED__
+#define __IRTCWindow_INTERFACE_DEFINED__
+
+/* interface IRTCWindow */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCWindow;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("624A33DF-99D1-49AF-A476-63DA117817DB")
+    IRTCWindow : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_id( 
+            /* [retval][out] */ INT_PTR *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_title( 
+            /* [retval][out] */ BSTR *pVal) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCWindowVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCWindow * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCWindow * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCWindow * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCWindow * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCWindow * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCWindow * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCWindow * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_id )( 
+            IRTCWindow * This,
+            /* [retval][out] */ INT_PTR *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_title )( 
+            IRTCWindow * This,
+            /* [retval][out] */ BSTR *pVal);
+        
+        END_INTERFACE
+    } IRTCWindowVtbl;
+
+    interface IRTCWindow
+    {
+        CONST_VTBL struct IRTCWindowVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCWindow_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCWindow_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCWindow_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCWindow_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCWindow_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCWindow_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCWindow_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCWindow_get_id(This,pVal)	\
+    ( (This)->lpVtbl -> get_id(This,pVal) ) 
+
+#define IRTCWindow_get_title(This,pVal)	\
+    ( (This)->lpVtbl -> get_title(This,pVal) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCWindow_INTERFACE_DEFINED__ */
+
+
+#ifndef __IRTCScreen_INTERFACE_DEFINED__
+#define __IRTCScreen_INTERFACE_DEFINED__
+
+/* interface IRTCScreen */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCScreen;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("4E9C389F-59C1-4F67-92E3-C26C05927CE2")
+    IRTCScreen : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_id( 
+            /* [retval][out] */ INT_PTR *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_title( 
+            /* [retval][out] */ BSTR *pVal) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCScreenVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCScreen * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCScreen * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCScreen * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCScreen * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCScreen * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCScreen * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCScreen * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_id )( 
+            IRTCScreen * This,
+            /* [retval][out] */ INT_PTR *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_title )( 
+            IRTCScreen * This,
+            /* [retval][out] */ BSTR *pVal);
+        
+        END_INTERFACE
+    } IRTCScreenVtbl;
+
+    interface IRTCScreen
+    {
+        CONST_VTBL struct IRTCScreenVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCScreen_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCScreen_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCScreen_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCScreen_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCScreen_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCScreen_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCScreen_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCScreen_get_id(This,pVal)	\
+    ( (This)->lpVtbl -> get_id(This,pVal) ) 
+
+#define IRTCScreen_get_title(This,pVal)	\
+    ( (This)->lpVtbl -> get_title(This,pVal) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCScreen_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __rtcLib_LIBRARY_DEFINED__
 #define __rtcLib_LIBRARY_DEFINED__
@@ -4318,6 +4646,22 @@ EXTERN_C const CLSID CLSID_RTCDataChannelEvent;
 
 class DECLSPEC_UUID("F7312F73-98C4-4317-B5BE-092EE286EF25")
 RTCDataChannelEvent;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCWindow;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("F7B00619-8D49-4F38-93D8-BBCF72539B37")
+RTCWindow;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCScreen;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("19EB10C5-4F36-4DD0-8DCD-0DCAC12FE687")
+RTCScreen;
 #endif
 #endif /* __rtcLib_LIBRARY_DEFINED__ */
 

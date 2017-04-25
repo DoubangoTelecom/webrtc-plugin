@@ -186,7 +186,8 @@ END_MSG_MAP()
 	STDMETHOD(get_mediaDevices)(__out VARIANT* pVal) override;
 	STDMETHOD(get_isWebRtcPlugin)(__out VARIANT_BOOL* pVal) override;
 
-	STDMETHOD(getWindowList)(__out BSTR* winList) override;
+	STDMETHOD(getWindows)(__out VARIANT* winList) override;
+	STDMETHOD(getScreens)(__out VARIANT* screenList) override;
 	STDMETHOD(createDisplay)(__out IDispatch** ppDisplay) override;
 	STDMETHOD(createSessionDescription)(__in VARIANT RTCSessionDescriptionInit, __out IDispatch** ppSdp) override;
 	STDMETHOD(createDictOptions)(__out IDispatch** ppDictOptions) override;

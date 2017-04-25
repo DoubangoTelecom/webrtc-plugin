@@ -1,4 +1,6 @@
 #include "DoubangoDesktopCapturer.h"
+#include "ExRTCScreen.h"
+#include "ExRTCWindow.h"
 
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -149,7 +151,7 @@ private:
 
 class DoubangoDesktopCapturer : public cricket::VideoCapturer, public webrtc::DesktopCapturer::Callback {
 public:
-	DoubangoDesktopCapturer()
+	DoubangoDesktopCapturer(const ExRTCScreen* screen = nullptr, const ExRTCWindow* window = nullptr)
 		: running_(false)
 		, curr_frame_(nullptr)
 		, video_buffer_(nullptr)
@@ -166,7 +168,16 @@ public:
 #if defined _WIN32
 		options.set_allow_directx_capturer(true);
 #endif
-		capture_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+		if (window) {
+			capture_ = webrtc::DesktopCapturer::CreateWindowCapturer(options);
+			capture_->SelectSource(window->id());
+		}
+		else {
+			capture_ = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+			if (screen) {
+				capture_->SelectSource(screen->id());
+			}
+		}
 #if 0
 		capture_->SetSharedMemoryFactory(std::make_unique<DoubangoSharedMemoryFactory>());
 #endif
@@ -407,8 +418,53 @@ bool DoubangoDesktopCapturerThread::Finished() const
 //	DoubangoDesktopCapturerFactory
 //
 
-cricket::VideoCapturer* DoubangoDesktopCapturerFactory::Create()
+cricket::VideoCapturer* DoubangoDesktopCapturerFactory::CreateScreenCapturer(const ExRTCScreen* screen /*= nullptr*/)
 {
-	return new DoubangoDesktopCapturer();
+	return new DoubangoDesktopCapturer(screen, nullptr);
 }
 
+cricket::VideoCapturer* DoubangoDesktopCapturerFactory::CreateWindowCapturer(const ExRTCWindow* window /*= nullptr*/)
+{
+	return new DoubangoDesktopCapturer(nullptr, window);
+}
+
+std::vector<std::shared_ptr<ExRTCScreen> > DoubangoDesktopCapturerFactory::GetScreens()
+{
+	std::vector<std::shared_ptr<ExRTCScreen> > screens;
+
+	webrtc::DesktopCaptureOptions options = webrtc::DesktopCaptureOptions::CreateDefault();
+#if defined _WIN32
+	options.set_allow_directx_capturer(true);
+#endif
+	std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateScreenCapturer(options);
+	if (capturer.get()) {
+		webrtc::DesktopCapturer::SourceList sourceList;
+		if (capturer->GetSourceList(&sourceList)) {
+			for (webrtc::DesktopCapturer::SourceList::iterator it = sourceList.begin(); it < sourceList.end(); ++it) {
+				screens.push_back(std::make_shared<ExRTCScreen>(it->id, it->title));
+			}
+		}
+	}
+
+	return screens;
+}
+
+std::vector<std::shared_ptr<ExRTCWindow> > DoubangoDesktopCapturerFactory::GetWindows()
+{
+	std::vector<std::shared_ptr<ExRTCWindow> > windows;
+
+	webrtc::DesktopCaptureOptions options = webrtc::DesktopCaptureOptions::CreateDefault();
+#if defined _WIN32
+	options.set_allow_directx_capturer(true);
+#endif
+	std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(options);
+	if (capturer.get()) {
+		webrtc::DesktopCapturer::SourceList sourceList;
+		if (capturer->GetSourceList(&sourceList)) {
+			for (webrtc::DesktopCapturer::SourceList::iterator it = sourceList.begin(); it < sourceList.end(); ++it) {
+				windows.push_back(std::make_shared<ExRTCWindow>(it->id, it->title));
+			}
+		}
+	}
+	return windows;
+}

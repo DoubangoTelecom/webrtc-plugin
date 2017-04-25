@@ -272,7 +272,9 @@
     <ClCompile Include="ExRTCIceCandidate.cxx" />
     <ClCompile Include="ExRTCPeerConnection.cxx" />
     <ClCompile Include="ExRTCPeerConnectionIceEvent.cxx" />
+    <ClCompile Include="ExRTCScreen.cxx" />
     <ClCompile Include="ExRTCSessionDescription.cxx" />
+    <ClCompile Include="ExRTCWindow.cxx" />
     <ClCompile Include="Helper.cxx" />
     <ClCompile Include="MediaDeviceInfo.cxx" />
     <ClCompile Include="MediaDevices.cxx" />
@@ -291,7 +293,9 @@
     <ClCompile Include="RTCMediaConstraint.cxx" />
     <ClCompile Include="RTCPeerConnection.cxx" />
     <ClCompile Include="RTCPeerConnectionIceEvent.cxx" />
+    <ClCompile Include="RTCScreen.cxx" />
     <ClCompile Include="RTCSessionDescription.cxx" />
+    <ClCompile Include="RTCWindow.cxx" />
     <ClCompile Include="rtc_i.c">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -337,7 +341,9 @@
     <ClInclude Include="ExRTCIceCandidate.h" />
     <ClInclude Include="ExRTCPeerConnection.h" />
     <ClInclude Include="ExRTCPeerConnectionIceEvent.h" />
+    <ClInclude Include="ExRTCScreen.h" />
     <ClInclude Include="ExRTCSessionDescription.h" />
+    <ClInclude Include="ExRTCWindow.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="MediaDeviceInfo.h" />
     <ClInclude Include="MediaDevices.h" />
@@ -356,7 +362,9 @@
     <ClInclude Include="RTCMediaConstraints.h" />
     <ClInclude Include="RTCPeerConnection.h" />
     <ClInclude Include="RTCPeerConnectionIceEvent.h" />
+    <ClInclude Include="RTCScreen.h" />
     <ClInclude Include="RTCSessionDescription.h" />
+    <ClInclude Include="RTCWindow.h" />
     <ClInclude Include="rtc_i.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -386,7 +394,9 @@
     <None Include="RTCIceCandidate.rgs" />
     <None Include="RTCPeerConnection.rgs" />
     <None Include="RTCPeerConnectionIceEvent.rgs" />
+    <None Include="RTCScreen.rgs" />
     <None Include="RTCSessionDescription.rgs" />
+    <None Include="RTCWindow.rgs" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="rtc.idl" />

@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCWindow.1 = s 'RTCWindow Class'
+	{
+		CLSID = s '{F7B00619-8D49-4F38-93D8-BBCF72539B37}'
+	}
+	rtc.RTCWindow = s 'RTCWindow Class'
+	{		
+		CurVer = s 'rtc.RTCWindow.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {F7B00619-8D49-4F38-93D8-BBCF72539B37} = s 'RTCWindow Class'
+		{
+			ProgID = s 'rtc.RTCWindow.1'
+			VersionIndependentProgID = s 'rtc.RTCWindow'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}
