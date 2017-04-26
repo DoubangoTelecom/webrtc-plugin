@@ -49,7 +49,7 @@ void TakeFakePeerConnectionFactory()
 				return webrtc::DoubangoAudioDeviceModule::Create(-1, webrtc::AudioDeviceModule::AudioLayer::kPlatformDefaultAudio);
 			});
 		}
-		_fake_peer_connection = webrtc::CreatePeerConnectionFactory(_worker_thread, _worker_thread, _fake_adm, NULL, NULL);
+		_fake_peer_connection = webrtc::CreatePeerConnectionFactory(_worker_thread, _worker_thread, _fake_adm, nullptr, nullptr);
 	}
 	else {
 		_fake_peer_connection->AddRef();
@@ -65,7 +65,7 @@ void ReleaseFakePeerConnectionFactory()
 		webrtc::PeerConnectionFactoryInterface* tmp = _fake_peer_connection.get();
 		tmp->AddRef();
 		if (tmp->Release() == 1) {
-			_fake_peer_connection = NULL;
+			_fake_peer_connection = nullptr;
 #if 0
 			_port_allocator_factory = NULL;
 #endif
@@ -119,7 +119,7 @@ webrtc::MediaStreamInterface* BuildMediaStream(const ExMediaStream* stream)
 
 void getUserMedia(const ExMediaStreamConstraints* constraints /*= NULL*/, NavigatorUserMediaSuccessCallback successCallback /*= nullptr*/, NavigatorUserMediaErrorCallback errorCallback /*= nullptr*/)
 {
-	std::shared_ptr<ExMediaStream> stream(new ExMediaStream());
+	std::shared_ptr<ExMediaStream> stream = std::make_shared<ExMediaStream>();
 	if (!stream) {
 		if (errorCallback) {
 			std::shared_ptr<ExErrorMessage> err(new ExErrorMessage("Failed to create media stream"));
@@ -132,15 +132,15 @@ void getUserMedia(const ExMediaStreamConstraints* constraints /*= NULL*/, Naviga
 	bool bHaveVideo = !constraints || !constraints->video() || !constraints->video()->isBool() || constraints->video()->boolVal();
 
 	if (bHaveAudio) {
-		ExMediaStreamTrackAudio audio(NULL, constraints ? constraints->audio().get() : NULL);
-		if (audio.IsValid()) {
-			stream->addTrack(&audio);
+		std::shared_ptr<ExMediaStreamTrackAudio> audio = std::make_shared<ExMediaStreamTrackAudio>(stream->peerconnection_factory(), nullptr, constraints ? constraints->audio().get() : nullptr);
+		if (audio->IsValid()) {
+			stream->addTrack(audio);
 		}
 	}
 	if (bHaveVideo) {
-		ExMediaStreamTrackVideo video(NULL, constraints ? constraints->video().get() : NULL);
-		if (video.IsValid()) {
-			stream->addTrack(&video);
+		std::shared_ptr<ExMediaStreamTrackVideo> video = std::make_shared<ExMediaStreamTrackVideo>(stream->peerconnection_factory(), nullptr, constraints ? constraints->video().get() : nullptr);
+		if (video->IsValid()) {
+			stream->addTrack(video);
 		}
 	}
 

@@ -363,7 +363,7 @@ Display::~Display()
 	StopVideoSink();
 
 	if (m_cs) {
-		delete m_cs, m_cs = NULL;
+		delete m_cs, m_cs = nullptr;
 	}
 }
 

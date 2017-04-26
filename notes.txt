@@ -25,6 +25,7 @@ getUserMedia with resolution constraints: https://doubango.org/rtc-plugin/sample
 getUserMedia with camera, mic and speaker selection: https://doubango.org/rtc-plugin/samples/src/content/devices/input-output/
 getUserMedia with Desktop sharing: https://doubango.org/rtc-plugin/samples/src/content/getusermedia/desktop/
 getUserMedia with Window sharing: https://doubango.org/rtc-plugin/samples/src/content/getusermedia/window/
+getUserMedia with Microphone level: https://doubango.org/rtc-plugin/samples/src/content/getusermedia/miclevel/
 
 Basic peer connection: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/pc1/
 Multiple peer connections at once: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/multiple/

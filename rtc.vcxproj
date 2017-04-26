@@ -265,6 +265,7 @@
     <ClCompile Include="ExMediaStreamEvent.cxx" />
     <ClCompile Include="ExMediaStreamTrack.cxx" />
     <ClCompile Include="ExMediaTrackConstraints.cxx" />
+    <ClCompile Include="ExPeerConnectionFactory.cxx" />
     <ClCompile Include="ExPromise.cxx" />
     <ClCompile Include="ExRTCDataChannel.cxx" />
     <ClCompile Include="ExRTCDataChannelEvent.cxx" />
@@ -334,6 +335,7 @@
     <ClInclude Include="ExMediaStreamEvent.h" />
     <ClInclude Include="ExMediaStreamTrack.h" />
     <ClInclude Include="ExMediaTrackConstraints.h" />
+    <ClInclude Include="ExPeerConnectionFactory.h" />
     <ClInclude Include="ExPromise.h" />
     <ClInclude Include="ExRTCDataChannel.h" />
     <ClInclude Include="ExRTCDataChannelEvent.h" />

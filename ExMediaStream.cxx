@@ -4,6 +4,8 @@
 #include "helper.h"
 #include "Utils.h"
 
+#include <algorithm>
+
 #define RETURN_IF_NOT_VALID() if (!IsValid()) return;
 
 ExMediaStream::ExMediaStream(MediaStreamInterfacePtr stream /*= NULL*/)
@@ -11,14 +13,26 @@ ExMediaStream::ExMediaStream(MediaStreamInterfacePtr stream /*= NULL*/)
 	, m_onaddtrack(NULL)
 	, m_onremovetrack(NULL)
 {
+	m_peerconnection_factory = std::make_shared<ExPeerConnectionFactory>();
 	m_stream = dynamic_cast<webrtc::MediaStreamInterface*>((webrtc::MediaStreamInterface*)stream);
-	if (!m_stream) {
-		rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> peer_connection_factory = GetPeerConnectionFactory();
-		if (peer_connection_factory) {
-			static long __id = 1;
-			std::string _id = Helper::ToString(InterlockedIncrement(&__id));
-			m_stream = peer_connection_factory->CreateLocalMediaStream(_id);
+	if (m_stream) {
+		webrtc::AudioTrackVector audioTracks = m_stream->GetAudioTracks();
+		for (size_t i = 0; i < audioTracks.size(); ++i) {
+			if (audioTracks[i]) {
+				m_exTracks.push_back(std::make_shared<ExMediaStreamTrackAudio>(m_peerconnection_factory, audioTracks[i]));
+			}
 		}
+		webrtc::VideoTrackVector videoTracks = m_stream->GetVideoTracks();
+		for (size_t i = 0; i < videoTracks.size(); ++i) {
+			if (videoTracks[i]) {
+				m_exTracks.push_back(std::make_shared<ExMediaStreamTrackVideo>(m_peerconnection_factory, videoTracks[i]));
+			}
+		}
+	}
+	else {
+		static long __id = 1;
+		std::string _id = Helper::ToString(InterlockedIncrement(&__id));
+		m_stream = m_peerconnection_factory->factory()->CreateLocalMediaStream(_id);
 	}
 	if (!m_stream) {
 		RTC_DEBUG_ERROR("Failed to create stream");
@@ -30,7 +44,11 @@ ExMediaStream::ExMediaStream(MediaStreamInterfacePtr stream /*= NULL*/)
 	
 ExMediaStream::~ExMediaStream()
 {
-	m_stream = NULL;
+	GetWorkerThread()->Invoke<void>(RTC_FROM_HERE, [this]() {
+		m_stream = nullptr;
+		m_peerconnection_factory = nullptr;
+		m_exTracks.clear(); // must be last (to have m_track->refCount == 1)
+	});
 	RTC_DEBUG_INFO("ExMediaStream::~ExMediaStream");
 }
 
@@ -38,14 +56,12 @@ std::shared_ptr<Sequence<ExMediaStreamTrack> > ExMediaStream::getAudioTracks()
 {
 	std::shared_ptr<Sequence<ExMediaStreamTrack> > seq(new Sequence<ExMediaStreamTrack>());
 	if (IsValid()) {
-		webrtc::AudioTrackVector tracks = m_stream->GetAudioTracks();
-		for (size_t i = 0; i < tracks.size(); ++i) {
-			if (tracks[i]) {
-				seq->Add(std::shared_ptr<ExMediaStreamTrackAudio>(new ExMediaStreamTrackAudio(tracks[i])));
+		for (std::vector<std::shared_ptr<ExMediaStreamTrack > >::iterator it = m_exTracks.begin(); it < m_exTracks.end(); ++it) {
+			if ((*it)->type() == ExMediaStreamTrackType_Audio) {
+				seq->Add(*it);
 			}
 		}
 	}
-
 	return seq;
 }
 
@@ -53,14 +69,12 @@ std::shared_ptr<Sequence<ExMediaStreamTrack> > ExMediaStream::getVideoTracks()
 {
 	std::shared_ptr<Sequence<ExMediaStreamTrack> > seq(new Sequence<ExMediaStreamTrack>());
 	if (IsValid()) {
-		webrtc::VideoTrackVector tracks = m_stream->GetVideoTracks();
-		for (size_t i = 0; i < tracks.size(); ++i) {
-			if (tracks[i]) {
-				seq->Add(std::shared_ptr<ExMediaStreamTrackVideo>(new ExMediaStreamTrackVideo(tracks[i])));
+		for (std::vector<std::shared_ptr<ExMediaStreamTrack > >::iterator it = m_exTracks.begin(); it < m_exTracks.end(); ++it) {
+			if ((*it)->type() == ExMediaStreamTrackType_Video) {
+				seq->Add(*it);
 			}
 		}
 	}
-
 	return seq;
 }
 
@@ -73,95 +87,88 @@ std::shared_ptr<Sequence<ExMediaStreamTrack> > ExMediaStream::getTracks()
 
 // void addTrack (MediaStreamTrack track); 
 // http://www.w3.org/TR/mediacapture-streams/#widl-MediaStream-addTrack-void-MediaStreamTrack-track
-void ExMediaStream::addTrack(ExMediaStreamTrack* p_track)
+void ExMediaStream::addTrack(std::shared_ptr<ExMediaStreamTrack> track)
 {
 	RETURN_IF_NOT_VALID();
-	if (!p_track) {
-		RTC_DEBUG_ERROR("Invalid parameter");
-		return;
-	}
-
-	ExMediaStreamTrackBase *_pTrack = dynamic_cast<ExMediaStreamTrackBase*>(p_track);
 	bool added = false;
-	if (_pTrack) {
-		switch (p_track->type())
-		{
-		case ExMediaStreamTrackType_Audio:
-		{
-			added = m_stream->AddTrack(dynamic_cast<ExMediaStreamTrackAudio*>(_pTrack)->track());
-			break;
-		}
-		case ExMediaStreamTrackType_Video:
-		{
-			added = m_stream->AddTrack(dynamic_cast<ExMediaStreamTrackVideo*>(_pTrack)->track());
-			break;
-		}
-		default:
-			RTC_DEBUG_ERROR("%d not valid stream track type", p_track->type());
-			break;
+	if (track.get()) {
+		ExMediaStreamTrackBase *pTrackBase = dynamic_cast<ExMediaStreamTrackBase*>(track.get());
+		if (pTrackBase) {
+			switch (pTrackBase->type()) {
+			case ExMediaStreamTrackType_Audio: {
+				added = m_stream->AddTrack(dynamic_cast<ExMediaStreamTrackAudio*>(pTrackBase)->track());
+				break;
+			}
+			case ExMediaStreamTrackType_Video: {
+				added = m_stream->AddTrack(dynamic_cast<ExMediaStreamTrackVideo*>(pTrackBase)->track());
+				break;
+			}
+			default:
+				RTC_DEBUG_ERROR("%d not valid stream track type", pTrackBase->type());
+				break;
+			}
 		}
 	}
-	else {
-		RTC_DEBUG_ERROR("Invalid stream track");
-	}
-
-	if (added && m_onaddtrack) {
-		m_onaddtrack();
+	if (added) {
+		if (m_onaddtrack) {
+			m_onaddtrack();
+		}
+		m_exTracks.push_back(track);
 	}
 }
 
 // void removeTrack (MediaStreamTrack track);
 // http://www.w3.org/TR/mediacapture-streams/#widl-MediaStream-removeTrack-void-MediaStreamTrack-track
-void ExMediaStream::removeTrack(ExMediaStreamTrack* p_track)
+void ExMediaStream::removeTrack(std::shared_ptr<ExMediaStreamTrack> track)
 {
 	RETURN_IF_NOT_VALID();
-	if (!p_track) {
-		RTC_DEBUG_ERROR("Invalid parameter");
-		return;
-	}
-
-	ExMediaStreamTrackBase *_pTrack = dynamic_cast<ExMediaStreamTrackBase*>(p_track);
 	bool removed = false;
-	if (_pTrack) {
-		switch (p_track->type())
-		{
-		case ExMediaStreamTrackType_Audio:
-			removed = m_stream->RemoveTrack(dynamic_cast<ExMediaStreamTrackAudio*>(_pTrack)->track());
-			break;
-		case ExMediaStreamTrackType_Video:
-			removed = m_stream->RemoveTrack(dynamic_cast<ExMediaStreamTrackVideo*>(_pTrack)->track());
-			break;
-		default:
-			RTC_DEBUG_ERROR("%d not valid stream track type", p_track->type());
-			break;
-		}
-	}
-	else {
-		RTC_DEBUG_ERROR("Invalid stream track");
-	}
-
-	if (removed && m_onremovetrack) {
-		m_onremovetrack();
-	}
-}
-
-std::shared_ptr<ExMediaStreamTrack> ExMediaStream::getTrackById(const char* trackId)
-{
-	std::shared_ptr<ExMediaStreamTrack> track = nullptr;
-	if (trackId && IsValid()) {
-		rtc::scoped_refptr<webrtc::AudioTrackInterface> track_audio = m_stream->FindAudioTrack(std::string(trackId));
-		if (track_audio.get()) {
-			track = std::shared_ptr<ExMediaStreamTrackAudio>(new ExMediaStreamTrackAudio(track_audio));
-		}
-		else {
-			rtc::scoped_refptr<webrtc::VideoTrackInterface> track_video = m_stream->FindVideoTrack(std::string(trackId));
-			if (track_video.get()) {
-				track = std::shared_ptr<ExMediaStreamTrackVideo>(new ExMediaStreamTrackVideo(track_video));
+	if (track.get()) {
+		ExMediaStreamTrackBase *pTrackBase = dynamic_cast<ExMediaStreamTrackBase*>(track.get());
+		if (pTrackBase) {
+			switch (pTrackBase->type()) {
+			case ExMediaStreamTrackType_Audio: {
+				GetWorkerThread()->Invoke<void>(RTC_FROM_HERE, [pTrackBase, &removed, this]() {
+					removed = m_stream->RemoveTrack(dynamic_cast<ExMediaStreamTrackAudio*>(pTrackBase)->track());
+				});
+				break;
+			}
+			case ExMediaStreamTrackType_Video: {
+				GetWorkerThread()->Invoke<void>(RTC_FROM_HERE, [pTrackBase, &removed, this]() {
+					removed = m_stream->RemoveTrack(dynamic_cast<ExMediaStreamTrackVideo*>(pTrackBase)->track());
+				});
+				break;
+			}
+			default:
+				RTC_DEBUG_ERROR("%d not valid stream track type", pTrackBase->type());
+				break;
 			}
 		}
 	}
+	if (removed) {
+		if (m_onremovetrack) {
+			m_onremovetrack();
+		}
+		m_exTracks.erase(std::find_if(m_exTracks.begin(), m_exTracks.end(),
+			[track](std::shared_ptr<ExMediaStreamTrack> const& item)
+		{
+			return std::string(track->id()).compare(item->id()) == 0;
+		}));
+	}
 
-	return track;
+}
+
+std::shared_ptr<ExMediaStreamTrack> ExMediaStream::getTrackById(const std::string& trackId)
+{
+	auto foundItem = std::find_if(m_exTracks.begin(), m_exTracks.end(),
+		[trackId](std::shared_ptr<ExMediaStreamTrack> const& item)  
+	{
+		return trackId.compare(item->id()) == 0;
+	});
+	if (foundItem != m_exTracks.end()) {
+		return *foundItem;
+	}
+	return nullptr;
 }
 
 std::shared_ptr<ExMediaStream> ExMediaStream::clone()
@@ -176,7 +183,7 @@ std::shared_ptr<ExMediaStream> ExMediaStream::clone()
 			if (audioTracks) {
 				for (size_t i = 0; i < audioTracks->values.size(); ++i) {
 					if (audioTracks->values[i].get()) {
-						_clone->addTrack(audioTracks->values[i].get());
+						_clone->addTrack(audioTracks->values[i]);
 					}
 				}
 			}
@@ -185,7 +192,7 @@ std::shared_ptr<ExMediaStream> ExMediaStream::clone()
 			if (videoTracks) {
 				for (size_t i = 0; i < videoTracks->values.size(); ++i) {
 					if (videoTracks->values[i].get()) {
-						_clone->addTrack(videoTracks->values[i].get());
+						_clone->addTrack(videoTracks->values[i]);
 					}
 				}
 			}
@@ -196,8 +203,16 @@ std::shared_ptr<ExMediaStream> ExMediaStream::clone()
 
 VideoTrackInterfacePtr ExMediaStream::GetVideoTrack(int index /*= 0*/)const
 {
-	if (m_stream && index >= 0 && index < (int)m_stream->GetVideoTracks().size()) {
-		return m_stream->GetVideoTracks().at(index);
+	int i = 0;
+	if (IsValid()) {
+		for (std::vector<std::shared_ptr<ExMediaStreamTrack > >::const_iterator it = m_exTracks.begin(); it < m_exTracks.end(); ++it) {
+			if ((*it)->type() == ExMediaStreamTrackType_Video) {
+				if (i >= index) {
+					return dynamic_cast<ExMediaStreamTrackVideo*>((*it).get())->track().get();
+				}
+				++i;
+			}
+		}
 	}
-	return NULL;
+	return nullptr;
 }

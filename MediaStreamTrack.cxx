@@ -252,3 +252,34 @@ STDMETHODIMP CMediaStreamTrack::stop()
 	m_ex->stop();
 	return S_OK;
 }
+
+STDMETHODIMP CMediaStreamTrack::get_micLevel(__out INT* pVal)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	*pVal = m_ex->micLevel();
+	return S_OK;
+}
+
+STDMETHODIMP CMediaStreamTrack::micLevelMonitoringStart()
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	if (!m_ex->micLevelMonitoringStart()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	return S_OK;
+}
+
+STDMETHODIMP CMediaStreamTrack::micLevelMonitoringStop()
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	if (!m_ex->micLevelMonitoringStop()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	return S_OK;
+}

@@ -3,8 +3,13 @@
 #include "config.h"
 #include "Common.h"
 #include "ExMediaTrackConstraints.h"
+#include "ExPeerConnectionFactory.h"
 
 #include "webrtc/api/mediastreaminterface.h"
+#include "webrtc/modules/audio_device/include/audio_device_defines.h"
+#include "webrtc/modules/audio_processing/rms_level.h"
+#include "webrtc/common_audio/resampler/include/push_resampler.h"
+#include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 
 //
 //	ExMediaStreamTrackType
@@ -22,7 +27,7 @@ enum ExMediaStreamTrackType
 class ExMediaStreamTrack
 {
 public:
-	ExMediaStreamTrack(ExMediaStreamTrackType eType, MediaStreamTrackInterfacePtr track = NULL, const ExMediaTrackConstraints* constrains = NULL);
+	ExMediaStreamTrack(ExMediaStreamTrackType eType, MediaStreamTrackInterfacePtr track = nullptr, const ExMediaTrackConstraints* constrains = nullptr);
 	virtual ~ExMediaStreamTrack();
 
 	_inline ExMediaStreamTrackType type() { return m_eType; }
@@ -56,7 +61,9 @@ public:
 	virtual std::shared_ptr<ExMediaStreamTrack> clone() = 0; // MediaStreamTrack clone ();
 	virtual void stop() = 0; // void stop ();
 
-	virtual int micLevel() { return -1; } // Not part of WebRTC std. For audio only. See rfc6464.
+	virtual int micLevel() { return -1; } // Not part of WebRTC standard. For audio only. See rfc6464.
+	virtual bool micLevelMonitoringStart() { return false; } // Not part of WebRTC standard. For audio only.
+	virtual bool micLevelMonitoringStop() { return false; } // Not part of WebRTC standard. For audio only.
 
 protected:
 #if _MSC_VER
@@ -88,7 +95,7 @@ protected:
 class ExMediaStreamTrackBase : public ExMediaStreamTrack
 {
 protected:
-	ExMediaStreamTrackBase(ExMediaStreamTrackType eType, MediaStreamTrackInterfacePtr track = NULL, const ExMediaTrackConstraints* constrains = NULL);
+	ExMediaStreamTrackBase(ExMediaStreamTrackType eType, std::shared_ptr<ExPeerConnectionFactory> pcf, MediaStreamTrackInterfacePtr track = nullptr, const ExMediaTrackConstraints* constrains = nullptr);
 public:
 	virtual ~ExMediaStreamTrackBase();
 
@@ -105,14 +112,73 @@ public:
 	virtual std::shared_ptr<ExMediaStreamTrack> clone();
 	virtual void stop();
 
+	std::shared_ptr<ExPeerConnectionFactory > peerconnection_factory() { return m_pcf; }
+
 public:
 	virtual webrtc::MediaStreamTrackInterface* _track() = 0;
 
 protected:
 	void InitLocalVarsToAvoidDanglingPointerIssue();
 
-protected:
+private:
+	std::shared_ptr<ExPeerConnectionFactory> m_pcf;
+};
 
+//
+//	ExMediaStreamTrackAudioTransport
+//
+class ExMediaStreamTrackAudioTransport : public webrtc::AudioTransport
+{
+public:
+	ExMediaStreamTrackAudioTransport();
+	virtual ~ExMediaStreamTrackAudioTransport();
+
+	void Enter() { m_cs->Enter(); }
+	void Leave() { m_cs->Leave(); }
+	
+	virtual int32_t RecordedDataIsAvailable(const void* audioSamples,
+		const size_t nSamples,
+		const size_t nBytesPerSample,
+		const size_t nChannels,
+		const uint32_t samplesPerSec,
+		const uint32_t totalDelayMS,
+		const int32_t clockDrift,
+		const uint32_t currentMicLevel,
+		const bool keyPressed,
+		uint32_t& newMicLevel) override;
+
+	virtual int32_t NeedMorePlayData(const size_t nSamples,
+		const size_t nBytesPerSample,
+		const size_t nChannels,
+		const uint32_t samplesPerSec,
+		void* audioSamples,
+		size_t& nSamplesOut,
+		int64_t* elapsed_time_ms,
+		int64_t* ntp_time_ms) override;
+
+	virtual void PushCaptureData(int voe_channel,
+		const void* audio_data,
+		int bits_per_sample,
+		int sample_rate,
+		size_t number_of_channels,
+		size_t number_of_frames) override;
+	
+	virtual void PullRenderData(int bits_per_sample,
+		int sample_rate,
+		size_t number_of_channels,
+		size_t number_of_frames,
+		void* audio_data,
+		int64_t* elapsed_time_ms,
+		int64_t* ntp_time_ms) override;
+
+	int micLevel();
+
+	static std::unique_ptr<ExMediaStreamTrackAudioTransport> Create();
+
+private:
+	webrtc::CriticalSectionWrapper *m_cs;
+	webrtc::RmsLevel m_rms;
+	webrtc::PushResampler<int16_t> m_resampler;
 };
 
 //
@@ -122,7 +188,7 @@ class ExMediaStreamTrackAudio
 	: public ExMediaStreamTrackBase
 {
 public:
-	ExMediaStreamTrackAudio(rtc::scoped_refptr<webrtc::AudioTrackInterface> track = NULL, const ExMediaTrackConstraints* constrains = NULL);
+	ExMediaStreamTrackAudio(std::shared_ptr<ExPeerConnectionFactory> pcf, rtc::scoped_refptr<webrtc::AudioTrackInterface> track = nullptr, const ExMediaTrackConstraints* constrains = nullptr);
 	virtual ~ExMediaStreamTrackAudio();
 
 	_inline virtual bool IsValid() override { return !!m_track; }
@@ -133,10 +199,14 @@ public:
 
 	// ExMediaStreamTrack interface implementation
 	virtual bool muted() override;
-	virtual int micLevel() override;
+	virtual int micLevel() override;	
+	virtual bool micLevelMonitoringStart() override; 
+	virtual bool micLevelMonitoringStop() override;
 
 private:
 	rtc::scoped_refptr<webrtc::AudioTrackInterface > m_track;
+	std::unique_ptr<ExMediaStreamTrackAudioTransport> m_transport;
+	bool m_bMicLevelMonitoringStarted;
 };
 
 //
@@ -146,7 +216,7 @@ class ExMediaStreamTrackVideo
 	: public ExMediaStreamTrackBase
 {
 public:
-	ExMediaStreamTrackVideo(rtc::scoped_refptr<webrtc::VideoTrackInterface> track = NULL, const ExMediaTrackConstraints* constrains = NULL);
+	ExMediaStreamTrackVideo(std::shared_ptr<ExPeerConnectionFactory> pcf, rtc::scoped_refptr<webrtc::VideoTrackInterface> track = nullptr, const ExMediaTrackConstraints* constrains = nullptr);
 	virtual ~ExMediaStreamTrackVideo();
 
 	_inline virtual bool IsValid() override { return !!m_track; }
@@ -162,6 +232,5 @@ private:
 
 private:
 	rtc::scoped_refptr<webrtc::VideoTrackInterface> m_track;
-	rtc::Thread* m_workerThread;
-	static std::map<std::string/*label*/, cricket::VideoCapturer* > s_capturerWeakRef;
+	cricket::VideoCapturer* m_capturerWeakRef;
 };

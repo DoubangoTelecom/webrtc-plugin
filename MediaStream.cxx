@@ -103,7 +103,7 @@ STDMETHODIMP CMediaStream::addTrack(__in VARIANT MediaStreamTrack)
 	}
 	std::shared_ptr<ExMediaStreamTrack> exMediaStreamTrack;
 	RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamTrack, CMediaStreamTrack, ExMediaStreamTrack>(MediaStreamTrack, exMediaStreamTrack)));
-	m_ex->addTrack(exMediaStreamTrack.get());
+	m_ex->addTrack(exMediaStreamTrack);
 	return S_OK;
 }
 
@@ -114,7 +114,7 @@ STDMETHODIMP CMediaStream::removeTrack(__in VARIANT MediaStreamTrack)
 	}
 	std::shared_ptr<ExMediaStreamTrack> exMediaStreamTrack;
 	RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamTrack, CMediaStreamTrack, ExMediaStreamTrack>(MediaStreamTrack, exMediaStreamTrack)));
-	m_ex->removeTrack(exMediaStreamTrack.get());
+	m_ex->removeTrack(exMediaStreamTrack);
 	return S_OK;
 }
 

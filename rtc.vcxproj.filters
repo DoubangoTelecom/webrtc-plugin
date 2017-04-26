@@ -175,6 +175,9 @@
     <ClCompile Include="ExRTCWindow.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExPeerConnectionFactory.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -346,6 +349,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExRTCWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExPeerConnectionFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

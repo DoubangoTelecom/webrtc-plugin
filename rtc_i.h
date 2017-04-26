@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Apr 21 05:44:12 2017
+/* at Tue Apr 25 08:12:10 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -1800,6 +1800,13 @@ EXTERN_C const IID IID_IMediaStreamTrack;
         
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE stop( void) = 0;
         
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_micLevel( 
+            /* [retval][out] */ INT *pVal) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE micLevelMonitoringStart( void) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE micLevelMonitoringStop( void) = 0;
+        
     };
     
     
@@ -1941,6 +1948,16 @@ EXTERN_C const IID IID_IMediaStreamTrack;
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *stop )( 
             IMediaStreamTrack * This);
         
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_micLevel )( 
+            IMediaStreamTrack * This,
+            /* [retval][out] */ INT *pVal);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *micLevelMonitoringStart )( 
+            IMediaStreamTrack * This);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *micLevelMonitoringStop )( 
+            IMediaStreamTrack * This);
+        
         END_INTERFACE
     } IMediaStreamTrackVtbl;
 
@@ -2039,6 +2056,15 @@ EXTERN_C const IID IID_IMediaStreamTrack;
 
 #define IMediaStreamTrack_stop(This)	\
     ( (This)->lpVtbl -> stop(This) ) 
+
+#define IMediaStreamTrack_get_micLevel(This,pVal)	\
+    ( (This)->lpVtbl -> get_micLevel(This,pVal) ) 
+
+#define IMediaStreamTrack_micLevelMonitoringStart(This)	\
+    ( (This)->lpVtbl -> micLevelMonitoringStart(This) ) 
+
+#define IMediaStreamTrack_micLevelMonitoringStop(This)	\
+    ( (This)->lpVtbl -> micLevelMonitoringStop(This) ) 
 
 #endif /* COBJMACROS */
 

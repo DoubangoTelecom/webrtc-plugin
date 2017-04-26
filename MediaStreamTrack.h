@@ -57,6 +57,9 @@ END_COM_MAP()
 	STDMETHOD(put_onoverconstrained)(__in VARIANT newVal) override;
 	STDMETHOD(clone)(__out VARIANT* MediaStreamTrack) override;
 	STDMETHOD(stop)() override;
+	STDMETHOD(get_micLevel)(__out INT* pVal) override; // not part of the standard
+	STDMETHOD(micLevelMonitoringStart)(); // not part of the standard
+	STDMETHOD(micLevelMonitoringStop)(); // not part of the standard
 
 private:
 	void onmute();

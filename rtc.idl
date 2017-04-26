@@ -151,6 +151,10 @@ interface IMediaStreamTrack : IDispatch{
 	[propput, id(18), helpstring("property onoverconstrained")] HRESULT onoverconstrained([in] VARIANT newVal);
 	[id(20), helpstring("method clone")] HRESULT clone([out, retval] VARIANT* MediaStreamTrack);
 	[id(21), helpstring("method stop")] HRESULT stop();
+
+	[propget, id(100), helpstring("property micLevel")] HRESULT micLevel([out, retval] INT* pVal); // not part of the standard
+	[id(101), helpstring("method micLevelMonitoringStart")] HRESULT micLevelMonitoringStart(); // not part of the standard
+	[id(102), helpstring("method micLevelMonitoringStop")] HRESULT micLevelMonitoringStop(); // not part of the standard
 };
 [
 	object,
