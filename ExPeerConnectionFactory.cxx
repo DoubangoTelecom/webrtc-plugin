@@ -8,6 +8,13 @@ ExPeerConnectionFactory::ExPeerConnectionFactory()
 	m_peerconnection_factory = webrtc::CreatePeerConnectionFactory(GetWorkerThread(), GetWorkerThread(), m_adm, nullptr, nullptr);
 }
 
+ExPeerConnectionFactory::ExPeerConnectionFactory(rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory, rtc::scoped_refptr<webrtc::AudioDeviceModule> adm)
+	: m_peerconnection_factory(factory)
+	, m_adm(adm)
+{
+
+}
+
 ExPeerConnectionFactory::~ExPeerConnectionFactory()
 {
 	GetWorkerThread()->Invoke<void>(RTC_FROM_HERE, [this]() {

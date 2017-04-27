@@ -7,6 +7,7 @@ class ExPeerConnectionFactory
 {
 public:
 	ExPeerConnectionFactory();
+	ExPeerConnectionFactory(rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory, rtc::scoped_refptr<webrtc::AudioDeviceModule> adm);
 	virtual ~ExPeerConnectionFactory();
 
 	rtc::scoped_refptr<webrtc::AudioDeviceModule> adm() { return m_adm; }

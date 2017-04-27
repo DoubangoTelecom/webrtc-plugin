@@ -9,8 +9,10 @@
 #include "RTCIceCandidate.h"
 #include "RTCPeerConnectionIceEvent.h"
 #include "RTCDataChannelEvent.h"
+#include "RTCRtpSender.h"
 #include "MediaStream.h"
 #include "MediaStreamEvent.h"
+#include "RTCTrackEvent.h"
 #include "Utils.h"
 #include "Promise.h"
 #include "Plugin.h"
@@ -57,6 +59,7 @@ void CRTCPeerConnection::FinalRelease()
 		m_ex->onaddstreamSet(nullptr);
 		m_ex->onremovestreamSet(nullptr);
 		m_ex->ondatachannelSet(nullptr);
+		m_ex->ontrackSet(nullptr);
 
 		m_ex = nullptr;
 	}
@@ -76,6 +79,7 @@ void CRTCPeerConnection::SetEx(std::shared_ptr<ExRTCPeerConnection> ex)
 		m_ex->onaddstreamSet(std::bind(&CRTCPeerConnection::onaddstream, this, std::placeholders::_1));
 		m_ex->onremovestreamSet(std::bind(&CRTCPeerConnection::onremovestream, this, std::placeholders::_1));
 		m_ex->ondatachannelSet(std::bind(&CRTCPeerConnection::ondatachannel, this, std::placeholders::_1));
+		m_ex->ontrackSet(std::bind(&CRTCPeerConnection::ontrack, this, std::placeholders::_1));
 	}
 }
 
@@ -458,6 +462,111 @@ STDMETHODIMP CRTCPeerConnection::put_ondatachannel(__in VARIANT newVal)
 	return S_OK;
 }
 
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// sequence<RTCRtpSender> getSenders();
+STDMETHODIMP CRTCPeerConnection::getSenders(__out VARIANT* varSequenceRTCRtpSender)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	CComPtr<IDispatch> spDispatch;
+	RTC_CHECK_HR_RETURN(CPlugin::Singleton()->GetDispatch(spDispatch));
+
+	std::vector<std::shared_ptr<ExRTCRtpSender > > exVect = m_ex->getSenders();
+	std::vector<CComVariant> atlVect;
+	for (std::vector<std::shared_ptr<ExRTCRtpSender > >::iterator it = exVect.begin(); it < exVect.end(); ++it) {
+		CComObject<CRTCRtpSender>* sender;
+		if (SUCCEEDED(Utils::CreateInstanceWithRef(&sender, *it))) {
+			atlVect.push_back(CComVariant(sender));
+			RTC_SAFE_RELEASE(&sender);
+		}
+	}
+
+	CComQIPtr<IDispatchEx> spArray;
+	RTC_CHECK_HR_RETURN(Utils::CreateJsArray(spDispatch, atlVect, spArray));
+	*varSequenceRTCRtpSender = CComVariant(spArray.Detach());
+	
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// sequence<RTCRtpReceiver> getReceivers()
+STDMETHODIMP CRTCPeerConnection::getReceivers(__out VARIANT* varSequenceRTCRtpReceiver)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// sequence<RTCRtpTransceiver> getTransceivers()
+STDMETHODIMP CRTCPeerConnection::getTransceivers(__out VARIANT* varSequenceRTCRtpTransceiver)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// RTCRtpSender addTrack(MediaStreamTrack track, MediaStream... streams)
+STDMETHODIMP CRTCPeerConnection::addTrack(__in VARIANT varMediaStreamTrack, __in_opt VARIANT varMediaStreams, __out VARIANT* varRTCRtpSender)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// void removeTrack(RTCRtpSender sender)
+STDMETHODIMP CRTCPeerConnection::removeTrack(__in VARIANT varRTCRtpSender)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// RTCRtpTransceiver addTransceiver((MediaStreamTrack or DOMString) trackOrKind, optional RTCRtpTransceiverInit init)
+STDMETHODIMP CRTCPeerConnection::addTransceiver(__in VARIANT varMediaStreamTrackorDOMStringTrackOrKind, __in_opt VARIANT varRTCRtpTransceiverInit)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// attribute EventHandler ontrack
+STDMETHODIMP CRTCPeerConnection::get_ontrack(__out VARIANT* varEventHandler)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+// attribute EventHandler ontrack
+STDMETHODIMP CRTCPeerConnection::put_ontrack(__in VARIANT varEventHandler)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+
 HRESULT CRTCPeerConnection::createOfferAnswer(bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit)
 {
 	if (!m_ex.get()) {
@@ -593,4 +702,9 @@ void CRTCPeerConnection::onremovestream(std::shared_ptr<ExMediaStreamEvent> e)
 void CRTCPeerConnection::ondatachannel(std::shared_ptr<ExRTCDataChannelEvent> e)
 {
 	RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCDataChannelEvent, ExRTCDataChannelEvent>(m_callback_ondatachannel, RTC_WM_ONDATACHANNEL, e)));
+}
+
+void CRTCPeerConnection::ontrack(std::shared_ptr<ExRTCTrackEvent> e)
+{
+	RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCTrackEvent, ExRTCTrackEvent>(m_callback_ontrack, RTC_WM_ONTRACK, e)));
 }

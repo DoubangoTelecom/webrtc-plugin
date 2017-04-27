@@ -442,6 +442,20 @@ bool ExRTCPeerConnection::removeStream(std::shared_ptr<ExMediaStream> mediaStrea
 	return false;
 }
 
+std::vector<std::shared_ptr<ExRTCRtpSender > > ExRTCPeerConnection::getSenders()
+{
+	std::vector<std::shared_ptr<ExRTCRtpSender > > senders;
+	if (!isValid()) {
+		RTC_DEBUG_ERROR("Not valid");
+		return senders;
+	}
+	std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface> > senders_ = m_peer_connection->GetSenders();
+	for (std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface> >::iterator it = senders_.begin(); it < senders_.end(); ++it) {
+		senders.push_back(std::make_shared<ExRTCRtpSender>(*it));
+	}
+	return senders;
+}
+
 
 void ExRTCPeerConnection::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) /*overrides(PeerConnectionObserver)*/
 {
@@ -511,4 +525,7 @@ void ExRTCPeerConnection::OnIceConnectionReceivingChange(bool receiving) /*overr
 void ExRTCPeerConnection::OnAddTrack(rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver, const std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>& streams) /*overrides(PeerConnectionObserver)*/
 {
 	RTC_DEBUG_ERROR("Not implemented");
+	if (m_callback_ontrack) {
+
+	}
 }

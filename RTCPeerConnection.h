@@ -9,6 +9,7 @@
 #include "ExRTCPeerConnectionIceEvent.h"
 #include "ExRTCDataChannelEvent.h"
 #include "ExMediaStreamEvent.h"
+#include "ExRTCTrackEvent.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
@@ -81,9 +82,20 @@ END_COM_MAP()
 	STDMETHOD(put_onfingerprintfailure)(__in VARIANT newVal) override;
 	STDMETHOD(get_onaddstream)(__out VARIANT* pVal) override; // Shim not part of the standard
 	STDMETHOD(put_onaddstream)(__in VARIANT newVal) override; // Shim not part of the standard
-	STDMETHOD(get_ondatachannel)(__out VARIANT* pVal) override; // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
-	STDMETHOD(put_ondatachannel)(__in VARIANT newVal) override; // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
+
+	// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
+	STDMETHOD(get_ondatachannel)(__out VARIANT* pVal) override; 
+	STDMETHOD(put_ondatachannel)(__in VARIANT newVal) override;
 	
+	// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+	STDMETHOD(getSenders)(__out VARIANT* varSequenceRTCRtpSender) override;
+	STDMETHOD(getReceivers)(__out VARIANT* varSequenceRTCRtpReceiver) override;
+	STDMETHOD(getTransceivers)(__out VARIANT* varSequenceRTCRtpTransceiver) override;
+	STDMETHOD(addTrack)(__in VARIANT varMediaStreamTrack, __in_opt VARIANT varMediaStreams, __out VARIANT* varRTCRtpSender) override;
+	STDMETHOD(removeTrack)(__in VARIANT varRTCRtpSender) override;
+	STDMETHOD(addTransceiver)(__in VARIANT varMediaStreamTrackorDOMStringTrackOrKind, __in_opt VARIANT varRTCRtpTransceiverInit) override;
+	STDMETHOD(get_ontrack)(__out VARIANT* varEventHandler) override;
+	STDMETHOD(put_ontrack)(__in VARIANT varEventHandler) override;
 
 private:
 	HRESULT createOfferAnswer(__in bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit);
@@ -99,6 +111,7 @@ private:
 	void onaddstream(std::shared_ptr<ExMediaStreamEvent> e);
 	void onremovestream(std::shared_ptr<ExMediaStreamEvent> e);
 	void ondatachannel(std::shared_ptr<ExRTCDataChannelEvent> e);
+	void ontrack(std::shared_ptr<ExRTCTrackEvent> e);
 
 private:
 	std::shared_ptr<ExRTCPeerConnection> m_ex;
@@ -113,6 +126,7 @@ private:
 	CComPtr<IDispatch> m_callback_onaddstream;
 	CComPtr<IDispatch> m_callback_onremovestream;
 	CComPtr<IDispatch> m_callback_ondatachannel;
+	CComPtr<IDispatch> m_callback_ontrack;
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(RTCPeerConnection), CRTCPeerConnection)

@@ -20,6 +20,8 @@ class ExRTCIceCandidate;
 class ExRTCPeerConnectionIceEvent;
 class ExMediaStreamEvent;
 class ExRTCDataChannelEvent;
+class ExRTCTrackEvent;
+class ExRTCDTMFToneChangeEvent;
 
 typedef void* VoidPtr;
 typedef VoidPtr DtmfSenderInterfacePtr,
@@ -98,6 +100,8 @@ typedef std::function<void(std::shared_ptr<ExRTCSessionDescription> e)> Function
 typedef std::function<void(std::shared_ptr<ExRTCPeerConnectionIceEvent> e)> FunctionCallbackIceCandidate;
 typedef std::function<void(std::shared_ptr<ExMediaStreamEvent> e)> FunctionCallbackStream;
 typedef std::function<void(std::shared_ptr<ExRTCDataChannelEvent> e)> FunctionCallbackDataChannel;
+typedef std::function<void(std::shared_ptr<ExRTCTrackEvent> e)> FunctionCallbackTrack;
+typedef std::function<void(std::shared_ptr<ExRTCDTMFToneChangeEvent> e)> FunctionCallbackDTMFToneChange;
 
 static const std::string kStringEmpty = "";
 

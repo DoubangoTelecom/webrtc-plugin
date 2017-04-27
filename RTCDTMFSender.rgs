@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCDTMFSender.1 = s 'RTCDTMFSender Class'
+	{
+		CLSID = s '{252A3B51-DC05-48D6-B2B6-7E2FF3987380}'
+	}
+	rtc.RTCDTMFSender = s 'RTCDTMFSender Class'
+	{		
+		CurVer = s 'rtc.RTCDTMFSender.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {252A3B51-DC05-48D6-B2B6-7E2FF3987380} = s 'RTCDTMFSender Class'
+		{
+			ProgID = s 'rtc.RTCDTMFSender.1'
+			VersionIndependentProgID = s 'rtc.RTCDTMFSender'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

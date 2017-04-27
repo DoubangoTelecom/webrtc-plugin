@@ -5,6 +5,7 @@
 #include "ExMediaStream.h"
 #include "ExRTCSessionDescription.h"
 #include "ExRTCIceCandidate.h"
+#include "ExRTCRtpSender.h"
 
 #include "webrtc/api/mediastreaminterface.h"
 #include "webrtc/api/peerconnectioninterface.h"
@@ -29,6 +30,7 @@ public:
 	_inline void onaddstreamSet(FunctionCallbackStream callback) { m_callback_onaddstream = callback; }
 	_inline void onremovestreamSet(FunctionCallbackStream callback) { m_callback_onremovestream = callback; }
 	_inline void ondatachannelSet(FunctionCallbackDataChannel callback) { m_callback_ondatachannel = callback; }
+	_inline void ontrackSet(FunctionCallbackTrack callback) { m_callback_ontrack = callback; }
 	bool createOffer(FunctionCallbackSessionDescription successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr, std::shared_ptr<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions> options = nullptr);
 	bool createAnswer(FunctionCallbackSessionDescription successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr, std::shared_ptr<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions> options = nullptr);
 	bool setLocalDescription(std::shared_ptr<ExRTCSessionDescription> sdp, FunctionCallbackVoid successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr);
@@ -50,6 +52,7 @@ public:
 	bool close();
 	bool addStream(std::shared_ptr<ExMediaStream> mediaStream);
 	bool removeStream(std::shared_ptr<ExMediaStream> mediaStream);
+	std::vector<std::shared_ptr<ExRTCRtpSender > > getSenders();
 
 protected:
 	virtual void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) override;
@@ -79,4 +82,5 @@ private:
 	FunctionCallbackStream m_callback_onaddstream;
 	FunctionCallbackStream m_callback_onremovestream;
 	FunctionCallbackDataChannel m_callback_ondatachannel;
+	FunctionCallbackTrack m_callback_ontrack;
 };

@@ -178,6 +178,30 @@
     <ClCompile Include="ExPeerConnectionFactory.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RTCDTMFSender.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExRTCDTMFSender.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExRTCTrackEvent.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCTrackEvent.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCRtpSender.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExRTCRtpSender.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCDTMFToneChangeEvent.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExRTCDTMFToneChangeEvent.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -354,6 +378,30 @@
     <ClInclude Include="ExPeerConnectionFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RTCDTMFSender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCDTMFSender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCTrackEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RTCTrackEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RTCRtpSender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCRtpSender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RTCDTMFToneChangeEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCDTMFToneChangeEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rtc.rc">
@@ -425,6 +473,18 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="RTCScreen.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCDTMFSender.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCTrackEvent.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCRtpSender.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCDTMFToneChangeEvent.rgs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

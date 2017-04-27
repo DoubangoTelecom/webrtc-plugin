@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCTrackEvent.1 = s 'RTCTrackEvent Class'
+	{
+		CLSID = s '{7728A3F5-1805-4C18-BBB9-EF2DEDC92698}'
+	}
+	rtc.RTCTrackEvent = s 'RTCTrackEvent Class'
+	{		
+		CurVer = s 'rtc.RTCTrackEvent.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {7728A3F5-1805-4C18-BBB9-EF2DEDC92698} = s 'RTCTrackEvent Class'
+		{
+			ProgID = s 'rtc.RTCTrackEvent.1'
+			VersionIndependentProgID = s 'rtc.RTCTrackEvent'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

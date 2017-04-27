@@ -231,7 +231,16 @@ interface IRTCPeerConnection : IDispatch{
 	// The Peer-to-peer data API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
 	[propget, id(50), helpstring("property ondatachannel")] HRESULT ondatachannel([out, retval] VARIANT* pVal);
 	[propput, id(50), helpstring("property ondatachannel")] HRESULT ondatachannel([in] VARIANT newVal);
-	
+
+	// The RTP media API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
+	[id(60), helpstring("method getSenders")] HRESULT getSenders([out, retval] VARIANT* varSequenceRTCRtpSender);
+	[id(61), helpstring("method getReceivers")] HRESULT getReceivers([out, retval] VARIANT* varSequenceRTCRtpReceiver);
+	[id(62), helpstring("method getTransceivers")] HRESULT getTransceivers([out, retval] VARIANT* varSequenceRTCRtpTransceiver);
+	[id(63), helpstring("method addTrack")] HRESULT addTrack([in] VARIANT varMediaStreamTrack, [in, optional] VARIANT varMediaStreams, [out, retval] VARIANT* varRTCRtpSender);
+	[id(64), helpstring("method removeTrack")] HRESULT removeTrack([in] VARIANT varRTCRtpSender);
+	[id(65), helpstring("method addTransceiver")] HRESULT addTransceiver([in] VARIANT varMediaStreamTrackorDOMStringTrackOrKind, [in, optional] VARIANT varRTCRtpTransceiverInit);
+	[propget, id(66), helpstring("property ontrack")] HRESULT ontrack([out, retval] VARIANT* varEventHandler);
+	[propput, id(66), helpstring("property ontrack")] HRESULT ontrack([in] VARIANT varEventHandler);	
 };
 [
 	object,
@@ -357,9 +366,70 @@ interface IRTCScreen : IDispatch{
 	[propget, id(2), helpstring("property title")] HRESULT title([out, retval] BSTR* pVal);
 };
 [
+	object,
+	uuid(E393A0A1-58CD-4D33-90A6-E95BEF050752),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCDTMFSender : IDispatch{
+	// https://www.w3.org/TR/webrtc/#rtcdtmfsender
+	[id(1), helpstring("method insertDTMF")] HRESULT insertDTMF([in] BSTR tones, [in, optional] VARIANT duration, [in, optional] VARIANT interToneGap);
+	[propget, id(2), helpstring("property ontonechange")] HRESULT ontonechange([out, retval] VARIANT* varEventHandler);
+	[propput, id(2), helpstring("property ontonechange")] HRESULT ontonechange([in] VARIANT varEventHandler);
+	[propget, id(3), helpstring("property toneBuffer")] HRESULT toneBuffer([out, retval] BSTR* bstrBuffer);
+};
+[
+	object,
+	uuid(BADBBC8D-E670-453A-A1D1-B410F7E74737),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCTrackEvent : IDispatch{
+};
+[
+	object,
+	uuid(C0ECD6D4-39AF-4D4F-8844-59BC8E56BC9E),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCRtpSender : IDispatch{
+	// https://www.w3.org/TR/webrtc/#dom-rtcrtpsender
+	[propget, id(1), helpstring("property track")] HRESULT track([out, retval] VARIANT* varMediaStreamTrack);
+	[propget, id(2), helpstring("property transport")] HRESULT transport([out, retval] VARIANT* varRTCDtlsTransport);
+	[propget, id(3), helpstring("property rtcpTransport")] HRESULT rtcpTransport([out, retval] VARIANT* varRTCDtlsTransport);
+	// ToBeAddedInJavascriptCode (PluginObj::getRTCRtpCapabilities(DOMString kind)): static RTCRtpCapabilities getCapabilities(DOMString kind);
+	[id(4), helpstring("method setParameters")] HRESULT setParameters([in, optional] VARIANT varRTCRtpParameters, [out, retval] VARIANT* varPromiseVoid);
+	[id(5), helpstring("method getParameters")] HRESULT getParameters([out, retval] VARIANT* varRTCRtpParameters);
+	[id(6), helpstring("method replaceTrack")] HRESULT replaceTrack([in] VARIANT varMediaStreamTrack, [out, retval] VARIANT* varPromiseVoid);
+	
+	// https://www.w3.org/TR/webrtc/#rtcrtpsender-interface-extensions
+	[propget, id(10), helpstring("property dtmf")] HRESULT dtmf([out, retval] VARIANT* varRTCDTMFSender);
+};
+[
+	object,
+	uuid(C2E33966-8DAC-4A24-928E-FF9029027D05),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCDTMFToneChangeEvent : IDispatch{
+	// https://www.w3.org/TR/webrtc/#dom-rtcdtmftonechangeevent
+	[propget, id(1), helpstring("property tone")] HRESULT tone([out, retval] BSTR* varTone);
+};
+[
 	uuid(5701E57F-4D99-450D-8479-BC9871799B8D),
 	version(1.0),
 ]
+
+
+
+
+
+
+
 
 
 
@@ -516,6 +586,34 @@ library rtcLib
 	coclass RTCScreen
 	{
 		[default] interface IRTCScreen;
+	};
+	[
+		uuid(252A3B51-DC05-48D6-B2B6-7E2FF3987380)		
+	]
+	coclass RTCDTMFSender
+	{
+		[default] interface IRTCDTMFSender;
+	};
+	[
+		uuid(7728A3F5-1805-4C18-BBB9-EF2DEDC92698)		
+	]
+	coclass RTCTrackEvent
+	{
+		[default] interface IRTCTrackEvent;
+	};
+	[
+		uuid(68F4CB24-B74B-4EAC-8D55-E3305D01349B)		
+	]
+	coclass RTCRtpSender
+	{
+		[default] interface IRTCRtpSender;
+	};
+	[
+		uuid(65D1AD0F-E022-4BC5-A6FC-2876A666B26F)		
+	]
+	coclass RTCDTMFToneChangeEvent
+	{
+		[default] interface IRTCDTMFToneChangeEvent;
 	};
 };
 

@@ -218,15 +218,10 @@ HRESULT CMediaStream::getTracks(TrackTypeFlags type, VARIANT* Tracks)
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
 
-	CComPtr<CPlugin> pluginInstance = CPlugin::Singleton();
-	if (!pluginInstance) {
-		RTC_CHECK_HR_RETURN(E_POINTER);
-	}
-
 	CComPtr<IDispatch> spDispatch;
-	RTC_CHECK_HR_RETURN(hr = pluginInstance->GetDispatch(spDispatch));
+	RTC_CHECK_HR_RETURN(hr = CPlugin::Singleton()->GetDispatch(spDispatch));
 
-	std::vector<CComVariant> vect;
+	std::vector<CComVariant> atlVect;
 	std::shared_ptr<Sequence<ExMediaStreamTrack> > _tracks;
 	std::shared_ptr<Sequence<ExMediaStreamTrack> > tracks(new Sequence<ExMediaStreamTrack>());
 	if ((type & TrackTypeFlagsAudio) == TrackTypeFlagsAudio && (_tracks = m_ex->getAudioTracks()) && _tracks.get()) {
@@ -243,13 +238,13 @@ HRESULT CMediaStream::getTracks(TrackTypeFlags type, VARIANT* Tracks)
 		CComObject<CMediaStreamTrack>* _track;
 		hr = Utils::CreateInstanceWithRef(&_track, tracks->values[i]);
 		if (SUCCEEDED(hr)) {
-			vect.push_back(CComVariant(_track));
+			atlVect.push_back(CComVariant(_track));
 			RTC_SAFE_RELEASE(&_track);
 		}
 	}
 
 	CComQIPtr<IDispatchEx> spArray;
-	RTC_CHECK_HR_RETURN(hr = Utils::CreateJsArray(spDispatch, vect, spArray));
+	RTC_CHECK_HR_RETURN(hr = Utils::CreateJsArray(spDispatch, atlVect, spArray));
 
 	*Tracks = CComVariant(spArray.Detach());
 	return hr;

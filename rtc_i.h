@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Apr 25 08:12:10 2017
+/* at Thu Apr 27 03:50:52 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -183,6 +183,34 @@ typedef interface IRTCWindow IRTCWindow;
 typedef interface IRTCScreen IRTCScreen;
 
 #endif 	/* __IRTCScreen_FWD_DEFINED__ */
+
+
+#ifndef __IRTCDTMFSender_FWD_DEFINED__
+#define __IRTCDTMFSender_FWD_DEFINED__
+typedef interface IRTCDTMFSender IRTCDTMFSender;
+
+#endif 	/* __IRTCDTMFSender_FWD_DEFINED__ */
+
+
+#ifndef __IRTCTrackEvent_FWD_DEFINED__
+#define __IRTCTrackEvent_FWD_DEFINED__
+typedef interface IRTCTrackEvent IRTCTrackEvent;
+
+#endif 	/* __IRTCTrackEvent_FWD_DEFINED__ */
+
+
+#ifndef __IRTCRtpSender_FWD_DEFINED__
+#define __IRTCRtpSender_FWD_DEFINED__
+typedef interface IRTCRtpSender IRTCRtpSender;
+
+#endif 	/* __IRTCRtpSender_FWD_DEFINED__ */
+
+
+#ifndef __IRTCDTMFToneChangeEvent_FWD_DEFINED__
+#define __IRTCDTMFToneChangeEvent_FWD_DEFINED__
+typedef interface IRTCDTMFToneChangeEvent IRTCDTMFToneChangeEvent;
+
+#endif 	/* __IRTCDTMFToneChangeEvent_FWD_DEFINED__ */
 
 
 #ifndef ___IPluginEvents_FWD_DEFINED__
@@ -430,6 +458,54 @@ typedef struct RTCScreen RTCScreen;
 #endif /* __cplusplus */
 
 #endif 	/* __RTCScreen_FWD_DEFINED__ */
+
+
+#ifndef __RTCDTMFSender_FWD_DEFINED__
+#define __RTCDTMFSender_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCDTMFSender RTCDTMFSender;
+#else
+typedef struct RTCDTMFSender RTCDTMFSender;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCDTMFSender_FWD_DEFINED__ */
+
+
+#ifndef __RTCTrackEvent_FWD_DEFINED__
+#define __RTCTrackEvent_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCTrackEvent RTCTrackEvent;
+#else
+typedef struct RTCTrackEvent RTCTrackEvent;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCTrackEvent_FWD_DEFINED__ */
+
+
+#ifndef __RTCRtpSender_FWD_DEFINED__
+#define __RTCRtpSender_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCRtpSender RTCRtpSender;
+#else
+typedef struct RTCRtpSender RTCRtpSender;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCRtpSender_FWD_DEFINED__ */
+
+
+#ifndef __RTCDTMFToneChangeEvent_FWD_DEFINED__
+#define __RTCDTMFToneChangeEvent_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCDTMFToneChangeEvent RTCDTMFToneChangeEvent;
+#else
+typedef struct RTCDTMFToneChangeEvent RTCDTMFToneChangeEvent;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCDTMFToneChangeEvent_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -2499,6 +2575,33 @@ EXTERN_C const IID IID_IRTCPeerConnection;
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_ondatachannel( 
             /* [in] */ VARIANT newVal) = 0;
         
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getSenders( 
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpSender) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getReceivers( 
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpReceiver) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getTransceivers( 
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpTransceiver) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE addTrack( 
+            /* [in] */ VARIANT varMediaStreamTrack,
+            /* [optional][in] */ VARIANT varMediaStreams,
+            /* [retval][out] */ VARIANT *varRTCRtpSender) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE removeTrack( 
+            /* [in] */ VARIANT varRTCRtpSender) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE addTransceiver( 
+            /* [in] */ VARIANT varMediaStreamTrackorDOMStringTrackOrKind,
+            /* [optional][in] */ VARIANT varRTCRtpTransceiverInit) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_ontrack( 
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_ontrack( 
+            /* [in] */ VARIANT varEventHandler) = 0;
+        
     };
     
     
@@ -2725,6 +2828,41 @@ EXTERN_C const IID IID_IRTCPeerConnection;
             IRTCPeerConnection * This,
             /* [in] */ VARIANT newVal);
         
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getSenders )( 
+            IRTCPeerConnection * This,
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpSender);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getReceivers )( 
+            IRTCPeerConnection * This,
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpReceiver);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getTransceivers )( 
+            IRTCPeerConnection * This,
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpTransceiver);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *addTrack )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT varMediaStreamTrack,
+            /* [optional][in] */ VARIANT varMediaStreams,
+            /* [retval][out] */ VARIANT *varRTCRtpSender);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *removeTrack )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT varRTCRtpSender);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *addTransceiver )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT varMediaStreamTrackorDOMStringTrackOrKind,
+            /* [optional][in] */ VARIANT varRTCRtpTransceiverInit);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_ontrack )( 
+            IRTCPeerConnection * This,
+            /* [retval][out] */ VARIANT *varEventHandler);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_ontrack )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT varEventHandler);
+        
         END_INTERFACE
     } IRTCPeerConnectionVtbl;
 
@@ -2883,6 +3021,30 @@ EXTERN_C const IID IID_IRTCPeerConnection;
 
 #define IRTCPeerConnection_put_ondatachannel(This,newVal)	\
     ( (This)->lpVtbl -> put_ondatachannel(This,newVal) ) 
+
+#define IRTCPeerConnection_getSenders(This,varSequenceRTCRtpSender)	\
+    ( (This)->lpVtbl -> getSenders(This,varSequenceRTCRtpSender) ) 
+
+#define IRTCPeerConnection_getReceivers(This,varSequenceRTCRtpReceiver)	\
+    ( (This)->lpVtbl -> getReceivers(This,varSequenceRTCRtpReceiver) ) 
+
+#define IRTCPeerConnection_getTransceivers(This,varSequenceRTCRtpTransceiver)	\
+    ( (This)->lpVtbl -> getTransceivers(This,varSequenceRTCRtpTransceiver) ) 
+
+#define IRTCPeerConnection_addTrack(This,varMediaStreamTrack,varMediaStreams,varRTCRtpSender)	\
+    ( (This)->lpVtbl -> addTrack(This,varMediaStreamTrack,varMediaStreams,varRTCRtpSender) ) 
+
+#define IRTCPeerConnection_removeTrack(This,varRTCRtpSender)	\
+    ( (This)->lpVtbl -> removeTrack(This,varRTCRtpSender) ) 
+
+#define IRTCPeerConnection_addTransceiver(This,varMediaStreamTrackorDOMStringTrackOrKind,varRTCRtpTransceiverInit)	\
+    ( (This)->lpVtbl -> addTransceiver(This,varMediaStreamTrackorDOMStringTrackOrKind,varRTCRtpTransceiverInit) ) 
+
+#define IRTCPeerConnection_get_ontrack(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_ontrack(This,varEventHandler) ) 
+
+#define IRTCPeerConnection_put_ontrack(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_ontrack(This,varEventHandler) ) 
 
 #endif /* COBJMACROS */
 
@@ -4405,6 +4567,614 @@ EXTERN_C const IID IID_IRTCScreen;
 #endif 	/* __IRTCScreen_INTERFACE_DEFINED__ */
 
 
+#ifndef __IRTCDTMFSender_INTERFACE_DEFINED__
+#define __IRTCDTMFSender_INTERFACE_DEFINED__
+
+/* interface IRTCDTMFSender */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCDTMFSender;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("E393A0A1-58CD-4D33-90A6-E95BEF050752")
+    IRTCDTMFSender : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE insertDTMF( 
+            /* [in] */ BSTR tones,
+            /* [optional][in] */ VARIANT duration,
+            /* [optional][in] */ VARIANT interToneGap) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_ontonechange( 
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_ontonechange( 
+            /* [in] */ VARIANT varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_toneBuffer( 
+            /* [retval][out] */ BSTR *bstrBuffer) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCDTMFSenderVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCDTMFSender * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCDTMFSender * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCDTMFSender * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCDTMFSender * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCDTMFSender * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCDTMFSender * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCDTMFSender * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *insertDTMF )( 
+            IRTCDTMFSender * This,
+            /* [in] */ BSTR tones,
+            /* [optional][in] */ VARIANT duration,
+            /* [optional][in] */ VARIANT interToneGap);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_ontonechange )( 
+            IRTCDTMFSender * This,
+            /* [retval][out] */ VARIANT *varEventHandler);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_ontonechange )( 
+            IRTCDTMFSender * This,
+            /* [in] */ VARIANT varEventHandler);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_toneBuffer )( 
+            IRTCDTMFSender * This,
+            /* [retval][out] */ BSTR *bstrBuffer);
+        
+        END_INTERFACE
+    } IRTCDTMFSenderVtbl;
+
+    interface IRTCDTMFSender
+    {
+        CONST_VTBL struct IRTCDTMFSenderVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCDTMFSender_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCDTMFSender_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCDTMFSender_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCDTMFSender_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCDTMFSender_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCDTMFSender_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCDTMFSender_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCDTMFSender_insertDTMF(This,tones,duration,interToneGap)	\
+    ( (This)->lpVtbl -> insertDTMF(This,tones,duration,interToneGap) ) 
+
+#define IRTCDTMFSender_get_ontonechange(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_ontonechange(This,varEventHandler) ) 
+
+#define IRTCDTMFSender_put_ontonechange(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_ontonechange(This,varEventHandler) ) 
+
+#define IRTCDTMFSender_get_toneBuffer(This,bstrBuffer)	\
+    ( (This)->lpVtbl -> get_toneBuffer(This,bstrBuffer) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCDTMFSender_INTERFACE_DEFINED__ */
+
+
+#ifndef __IRTCTrackEvent_INTERFACE_DEFINED__
+#define __IRTCTrackEvent_INTERFACE_DEFINED__
+
+/* interface IRTCTrackEvent */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCTrackEvent;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("BADBBC8D-E670-453A-A1D1-B410F7E74737")
+    IRTCTrackEvent : public IDispatch
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCTrackEventVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCTrackEvent * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCTrackEvent * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCTrackEvent * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCTrackEvent * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCTrackEvent * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCTrackEvent * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCTrackEvent * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        END_INTERFACE
+    } IRTCTrackEventVtbl;
+
+    interface IRTCTrackEvent
+    {
+        CONST_VTBL struct IRTCTrackEventVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCTrackEvent_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCTrackEvent_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCTrackEvent_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCTrackEvent_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCTrackEvent_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCTrackEvent_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCTrackEvent_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCTrackEvent_INTERFACE_DEFINED__ */
+
+
+#ifndef __IRTCRtpSender_INTERFACE_DEFINED__
+#define __IRTCRtpSender_INTERFACE_DEFINED__
+
+/* interface IRTCRtpSender */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCRtpSender;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("C0ECD6D4-39AF-4D4F-8844-59BC8E56BC9E")
+    IRTCRtpSender : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_track( 
+            /* [retval][out] */ VARIANT *varMediaStreamTrack) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_transport( 
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_rtcpTransport( 
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE setParameters( 
+            /* [optional][in] */ VARIANT varRTCRtpParameters,
+            /* [retval][out] */ VARIANT *varPromiseVoid) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getParameters( 
+            /* [retval][out] */ VARIANT *varRTCRtpParameters) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE replaceTrack( 
+            /* [in] */ VARIANT varMediaStreamTrack,
+            /* [retval][out] */ VARIANT *varPromiseVoid) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_dtmf( 
+            /* [retval][out] */ VARIANT *varRTCDTMFSender) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCRtpSenderVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCRtpSender * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCRtpSender * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCRtpSender * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCRtpSender * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCRtpSender * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCRtpSender * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCRtpSender * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_track )( 
+            IRTCRtpSender * This,
+            /* [retval][out] */ VARIANT *varMediaStreamTrack);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_transport )( 
+            IRTCRtpSender * This,
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_rtcpTransport )( 
+            IRTCRtpSender * This,
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *setParameters )( 
+            IRTCRtpSender * This,
+            /* [optional][in] */ VARIANT varRTCRtpParameters,
+            /* [retval][out] */ VARIANT *varPromiseVoid);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getParameters )( 
+            IRTCRtpSender * This,
+            /* [retval][out] */ VARIANT *varRTCRtpParameters);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *replaceTrack )( 
+            IRTCRtpSender * This,
+            /* [in] */ VARIANT varMediaStreamTrack,
+            /* [retval][out] */ VARIANT *varPromiseVoid);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_dtmf )( 
+            IRTCRtpSender * This,
+            /* [retval][out] */ VARIANT *varRTCDTMFSender);
+        
+        END_INTERFACE
+    } IRTCRtpSenderVtbl;
+
+    interface IRTCRtpSender
+    {
+        CONST_VTBL struct IRTCRtpSenderVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCRtpSender_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCRtpSender_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCRtpSender_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCRtpSender_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCRtpSender_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCRtpSender_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCRtpSender_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCRtpSender_get_track(This,varMediaStreamTrack)	\
+    ( (This)->lpVtbl -> get_track(This,varMediaStreamTrack) ) 
+
+#define IRTCRtpSender_get_transport(This,varRTCDtlsTransport)	\
+    ( (This)->lpVtbl -> get_transport(This,varRTCDtlsTransport) ) 
+
+#define IRTCRtpSender_get_rtcpTransport(This,varRTCDtlsTransport)	\
+    ( (This)->lpVtbl -> get_rtcpTransport(This,varRTCDtlsTransport) ) 
+
+#define IRTCRtpSender_setParameters(This,varRTCRtpParameters,varPromiseVoid)	\
+    ( (This)->lpVtbl -> setParameters(This,varRTCRtpParameters,varPromiseVoid) ) 
+
+#define IRTCRtpSender_getParameters(This,varRTCRtpParameters)	\
+    ( (This)->lpVtbl -> getParameters(This,varRTCRtpParameters) ) 
+
+#define IRTCRtpSender_replaceTrack(This,varMediaStreamTrack,varPromiseVoid)	\
+    ( (This)->lpVtbl -> replaceTrack(This,varMediaStreamTrack,varPromiseVoid) ) 
+
+#define IRTCRtpSender_get_dtmf(This,varRTCDTMFSender)	\
+    ( (This)->lpVtbl -> get_dtmf(This,varRTCDTMFSender) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCRtpSender_INTERFACE_DEFINED__ */
+
+
+#ifndef __IRTCDTMFToneChangeEvent_INTERFACE_DEFINED__
+#define __IRTCDTMFToneChangeEvent_INTERFACE_DEFINED__
+
+/* interface IRTCDTMFToneChangeEvent */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCDTMFToneChangeEvent;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("C2E33966-8DAC-4A24-928E-FF9029027D05")
+    IRTCDTMFToneChangeEvent : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_tone( 
+            /* [retval][out] */ BSTR *varTone) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCDTMFToneChangeEventVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCDTMFToneChangeEvent * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCDTMFToneChangeEvent * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCDTMFToneChangeEvent * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCDTMFToneChangeEvent * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCDTMFToneChangeEvent * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCDTMFToneChangeEvent * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCDTMFToneChangeEvent * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_tone )( 
+            IRTCDTMFToneChangeEvent * This,
+            /* [retval][out] */ BSTR *varTone);
+        
+        END_INTERFACE
+    } IRTCDTMFToneChangeEventVtbl;
+
+    interface IRTCDTMFToneChangeEvent
+    {
+        CONST_VTBL struct IRTCDTMFToneChangeEventVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCDTMFToneChangeEvent_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCDTMFToneChangeEvent_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCDTMFToneChangeEvent_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCDTMFToneChangeEvent_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCDTMFToneChangeEvent_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCDTMFToneChangeEvent_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCDTMFToneChangeEvent_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCDTMFToneChangeEvent_get_tone(This,varTone)	\
+    ( (This)->lpVtbl -> get_tone(This,varTone) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCDTMFToneChangeEvent_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __rtcLib_LIBRARY_DEFINED__
 #define __rtcLib_LIBRARY_DEFINED__
@@ -4688,6 +5458,38 @@ EXTERN_C const CLSID CLSID_RTCScreen;
 
 class DECLSPEC_UUID("19EB10C5-4F36-4DD0-8DCD-0DCAC12FE687")
 RTCScreen;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCDTMFSender;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("252A3B51-DC05-48D6-B2B6-7E2FF3987380")
+RTCDTMFSender;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCTrackEvent;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("7728A3F5-1805-4C18-BBB9-EF2DEDC92698")
+RTCTrackEvent;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCRtpSender;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("68F4CB24-B74B-4EAC-8D55-E3305D01349B")
+RTCRtpSender;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCDTMFToneChangeEvent;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("65D1AD0F-E022-4BC5-A6FC-2876A666B26F")
+RTCDTMFToneChangeEvent;
 #endif
 #endif /* __rtcLib_LIBRARY_DEFINED__ */
 
