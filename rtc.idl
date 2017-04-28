@@ -436,6 +436,28 @@ interface IRTCStats : IDispatch{
 	[propget, id(3), helpstring("property id")] HRESULT id([out, retval] BSTR* pVal);
 	//!\\ Id numbers within [100 - x] are reserved 
 };
+[
+	object,
+	uuid(D19FE2EC-49D5-4A2D-8FE7-A8D5E459341A),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCStatsReport : IDispatch{
+	// https://www.w3.org/TR/webrtc/#dom-rtcstatsreport
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+	// This interface has "entries", "forEach", "get", "has", "keys", "values", @@iterator methods and a "size" getter brought by readonly maplike.
+	[id(1), helpstring("method entries")] HRESULT entries([out, retval] VARIANT* varIterator);
+	[id(2), helpstring("method forEach")] HRESULT forEach([in] VARIANT varCallback, [in, optional] VARIANT varThisArg);
+	[id(3), helpstring("method get")] HRESULT get([in] VARIANT varKey, [out, retval] VARIANT* varEntry);
+	[id(4), helpstring("method has")] HRESULT has([in] VARIANT varKey, [out, retval] VARIANT_BOOL* varBool);
+	[id(5), helpstring("method keys")] HRESULT keys([out, retval] VARIANT* varIterator);
+	[id(6), helpstring("method values")] HRESULT values([out, retval] VARIANT* varIterator);
+	[propget, id(7), helpstring("property size")] HRESULT size([out, retval] LONG* pVal);
+};
+
+
+
 
 
 
@@ -640,6 +662,13 @@ library rtcLib
 	coclass RTCStats
 	{
 		[default] interface IRTCStats;
+	};
+	[
+		uuid(D344AC65-DEF1-48B2-A035-B712B43B7377)		
+	]
+	coclass RTCStatsReport
+	{
+		[default] interface IRTCStatsReport;
 	};
 };
 

@@ -279,6 +279,7 @@
     <ClCompile Include="ExRTCScreen.cxx" />
     <ClCompile Include="ExRTCSessionDescription.cxx" />
     <ClCompile Include="ExRTCStats.cxx" />
+    <ClCompile Include="ExRTCStatsReport.cxx" />
     <ClCompile Include="ExRTCTrackEvent.cxx" />
     <ClCompile Include="ExRTCWindow.cxx" />
     <ClCompile Include="Helper.cxx" />
@@ -305,6 +306,7 @@
     <ClCompile Include="RTCScreen.cxx" />
     <ClCompile Include="RTCSessionDescription.cxx" />
     <ClCompile Include="RTCStats.cxx" />
+    <ClCompile Include="RTCStatsReport.cxx" />
     <ClCompile Include="RTCTrackEvent.cxx" />
     <ClCompile Include="RTCWindow.cxx" />
     <ClCompile Include="rtc_i.c">
@@ -359,6 +361,7 @@
     <ClInclude Include="ExRTCScreen.h" />
     <ClInclude Include="ExRTCSessionDescription.h" />
     <ClInclude Include="ExRTCStats.h" />
+    <ClInclude Include="ExRTCStatsReport.h" />
     <ClInclude Include="ExRTCTrackEvent.h" />
     <ClInclude Include="ExRTCWindow.h" />
     <ClInclude Include="Helper.h" />
@@ -385,6 +388,7 @@
     <ClInclude Include="RTCScreen.h" />
     <ClInclude Include="RTCSessionDescription.h" />
     <ClInclude Include="RTCStats.h" />
+    <ClInclude Include="RTCStatsReport.h" />
     <ClInclude Include="RTCTrackEvent.h" />
     <ClInclude Include="RTCWindow.h" />
     <ClInclude Include="rtc_i.h" />
@@ -422,6 +426,7 @@
     <None Include="RTCScreen.rgs" />
     <None Include="RTCSessionDescription.rgs" />
     <None Include="RTCStats.rgs" />
+    <None Include="RTCStatsReport.rgs" />
     <None Include="RTCTrackEvent.rgs" />
     <None Include="RTCWindow.rgs" />
   </ItemGroup>

@@ -6,6 +6,7 @@
 #include "ExRTCPeerConnectionIceEvent.h"
 #include "ExMediaStreamEvent.h"
 #include "ExRTCStats.h"
+#include "ExRTCStatsReport.h"
 #include "RTCMediaConstraints.h"
 
 

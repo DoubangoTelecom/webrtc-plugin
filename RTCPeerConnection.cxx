@@ -10,6 +10,7 @@
 #include "RTCPeerConnectionIceEvent.h"
 #include "RTCDataChannelEvent.h"
 #include "RTCRtpSender.h"
+#include "RTCStatsReport.h"
 #include "MediaStream.h"
 #include "MediaStreamEvent.h"
 #include "MediaStreamTrack.h"
@@ -574,15 +575,32 @@ STDMETHODIMP CRTCPeerConnection::getStats(__in_opt VARIANT varMediaStreamTrack, 
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
+	HRESULT hr = S_OK;
 	std::shared_ptr<ExMediaStreamTrack> exMediaStreamTrack;
 	if (varMediaStreamTrack.vt == VT_DISPATCH && varMediaStreamTrack.pdispVal) { // check not null (arg is optional) and type is correct
 		RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamTrack, CMediaStreamTrack, ExMediaStreamTrack>(varMediaStreamTrack, exMediaStreamTrack)));
 	}
-	CComObject<CPromise>* atlPromise;
-
-	RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&atlPromise, std::make_shared<ExPromiseGetStats>(m_ex, exMediaStreamTrack)));
-	*varPromiseRTCStatsReport = CComVariant(atlPromise);
-	return S_OK;
+	std::shared_ptr<ExRTCPeerConnection> peerconnection = m_ex;
+	std::shared_ptr<ExPromiseAtl<CRTCStatsReport, ExRTCStatsReport, CRTCError, ExRTCError> > atlPromise =
+		std::make_shared<ExPromiseAtl<CRTCStatsReport, ExRTCStatsReport, CRTCError, ExRTCError> >(RTC_WM_GETSTATS_SUCESS, RTC_WM_GETSTATS_ERROR);
+	std::weak_ptr<ExPromiseAtl<CRTCStatsReport, ExRTCStatsReport, CRTCError, ExRTCError> > atlPromiseWeak(atlPromise);
+	auto funcCore = [exMediaStreamTrack, peerconnection, atlPromiseWeak]() -> HRESULT {
+		auto atlPromisePtr = atlPromiseWeak.lock();
+		if (atlPromisePtr) {
+			return peerconnection->getStats(
+				exMediaStreamTrack,
+				[=](std::shared_ptr<ExRTCStatsReport> report) { atlPromisePtr->raiseOnFulfilled(report); },
+				[=](std::shared_ptr<ExRTCError> err) { atlPromisePtr->raiseOnRejected(err); }
+			) ? S_OK : E_FAIL;
+		}
+		return S_OK;
+	};
+	CComObject<CPromise>* promiseRTCStatsReport;
+	hr = Utils::CreateInstanceWithRef(&promiseRTCStatsReport, atlPromise->Bind(std::bind(funcCore)));
+	if (SUCCEEDED(hr)) {
+		*varPromiseRTCStatsReport = CComVariant(promiseRTCStatsReport);
+	}
+	return hr;
 }
 
 HRESULT CRTCPeerConnection::createOfferAnswer(bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit)

@@ -218,27 +218,3 @@ private:
 	
 };
 
-//
-//	ExPromiseGetStats
-//
-class ExPromiseGetStats : public ExPromise
-{
-public:
-	ExPromiseGetStats(std::shared_ptr<ExRTCPeerConnection > peerconnection, std::shared_ptr<ExMediaStreamTrack> selector = nullptr);
-	virtual ~ExPromiseGetStats();
-
-	virtual HRESULT then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) override;
-	virtual HRESULT catchh(CComPtr<IDispatch> onRejected) override;
-
-private:
-	HRESULT Start();
-	HRESULT RaiseOnFulfilled(std::shared_ptr<ExRTCStatsReport> exRTCStatsReport);
-	HRESULT RaiseOnRejected(std::shared_ptr<ExRTCError> exRTCError);
-
-private:
-	bool m_raised;
-	std::shared_ptr<ExRTCStatsReport > m_pending_onFulfilled;
-	std::shared_ptr<ExRTCError > m_pending_onRejected;
-	std::shared_ptr<ExRTCPeerConnection > m_peerconnection;
-	std::shared_ptr<ExMediaStreamTrack> m_selector;
-};

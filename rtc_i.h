@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Apr 28 06:38:49 2017
+/* at Fri Apr 28 07:25:25 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -218,6 +218,13 @@ typedef interface IRTCDTMFToneChangeEvent IRTCDTMFToneChangeEvent;
 typedef interface IRTCStats IRTCStats;
 
 #endif 	/* __IRTCStats_FWD_DEFINED__ */
+
+
+#ifndef __IRTCStatsReport_FWD_DEFINED__
+#define __IRTCStatsReport_FWD_DEFINED__
+typedef interface IRTCStatsReport IRTCStatsReport;
+
+#endif 	/* __IRTCStatsReport_FWD_DEFINED__ */
 
 
 #ifndef ___IPluginEvents_FWD_DEFINED__
@@ -525,6 +532,18 @@ typedef struct RTCStats RTCStats;
 #endif /* __cplusplus */
 
 #endif 	/* __RTCStats_FWD_DEFINED__ */
+
+
+#ifndef __RTCStatsReport_FWD_DEFINED__
+#define __RTCStatsReport_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCStatsReport RTCStatsReport;
+#else
+typedef struct RTCStatsReport RTCStatsReport;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCStatsReport_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -5356,6 +5375,202 @@ EXTERN_C const IID IID_IRTCStats;
 #endif 	/* __IRTCStats_INTERFACE_DEFINED__ */
 
 
+#ifndef __IRTCStatsReport_INTERFACE_DEFINED__
+#define __IRTCStatsReport_INTERFACE_DEFINED__
+
+/* interface IRTCStatsReport */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCStatsReport;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("D19FE2EC-49D5-4A2D-8FE7-A8D5E459341A")
+    IRTCStatsReport : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE entries( 
+            /* [retval][out] */ VARIANT *varIterator) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE forEach( 
+            /* [in] */ VARIANT varCallback,
+            /* [optional][in] */ VARIANT varThisArg) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE get( 
+            /* [in] */ VARIANT varKey,
+            /* [retval][out] */ VARIANT *varEntry) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE has( 
+            /* [in] */ VARIANT varKey,
+            /* [retval][out] */ VARIANT_BOOL *varBool) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE keys( 
+            /* [retval][out] */ VARIANT *varIterator) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE values( 
+            /* [retval][out] */ VARIANT *varIterator) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_size( 
+            /* [retval][out] */ LONG *pVal) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCStatsReportVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCStatsReport * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCStatsReport * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCStatsReport * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCStatsReport * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCStatsReport * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCStatsReport * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCStatsReport * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *entries )( 
+            IRTCStatsReport * This,
+            /* [retval][out] */ VARIANT *varIterator);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *forEach )( 
+            IRTCStatsReport * This,
+            /* [in] */ VARIANT varCallback,
+            /* [optional][in] */ VARIANT varThisArg);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *get )( 
+            IRTCStatsReport * This,
+            /* [in] */ VARIANT varKey,
+            /* [retval][out] */ VARIANT *varEntry);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *has )( 
+            IRTCStatsReport * This,
+            /* [in] */ VARIANT varKey,
+            /* [retval][out] */ VARIANT_BOOL *varBool);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *keys )( 
+            IRTCStatsReport * This,
+            /* [retval][out] */ VARIANT *varIterator);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *values )( 
+            IRTCStatsReport * This,
+            /* [retval][out] */ VARIANT *varIterator);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_size )( 
+            IRTCStatsReport * This,
+            /* [retval][out] */ LONG *pVal);
+        
+        END_INTERFACE
+    } IRTCStatsReportVtbl;
+
+    interface IRTCStatsReport
+    {
+        CONST_VTBL struct IRTCStatsReportVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCStatsReport_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCStatsReport_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCStatsReport_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCStatsReport_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCStatsReport_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCStatsReport_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCStatsReport_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCStatsReport_entries(This,varIterator)	\
+    ( (This)->lpVtbl -> entries(This,varIterator) ) 
+
+#define IRTCStatsReport_forEach(This,varCallback,varThisArg)	\
+    ( (This)->lpVtbl -> forEach(This,varCallback,varThisArg) ) 
+
+#define IRTCStatsReport_get(This,varKey,varEntry)	\
+    ( (This)->lpVtbl -> get(This,varKey,varEntry) ) 
+
+#define IRTCStatsReport_has(This,varKey,varBool)	\
+    ( (This)->lpVtbl -> has(This,varKey,varBool) ) 
+
+#define IRTCStatsReport_keys(This,varIterator)	\
+    ( (This)->lpVtbl -> keys(This,varIterator) ) 
+
+#define IRTCStatsReport_values(This,varIterator)	\
+    ( (This)->lpVtbl -> values(This,varIterator) ) 
+
+#define IRTCStatsReport_get_size(This,pVal)	\
+    ( (This)->lpVtbl -> get_size(This,pVal) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCStatsReport_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __rtcLib_LIBRARY_DEFINED__
 #define __rtcLib_LIBRARY_DEFINED__
@@ -5679,6 +5894,14 @@ EXTERN_C const CLSID CLSID_RTCStats;
 
 class DECLSPEC_UUID("BF4E13F6-1BFE-4C37-8E74-C72A26FD4E32")
 RTCStats;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCStatsReport;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("D344AC65-DEF1-48B2-A035-B712B43B7377")
+RTCStatsReport;
 #endif
 #endif /* __rtcLib_LIBRARY_DEFINED__ */
 

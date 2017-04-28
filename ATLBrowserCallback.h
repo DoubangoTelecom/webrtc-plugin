@@ -26,19 +26,3 @@ private:
 	unsigned m_params_count;
 	CComVariant m_params[RTC_MAX_ARGS_PARAMS];
 };
-
-//
-//	ATLGetStatsBrowserCallback
-//
-
-class ATLGetStatsBrowserCallback : public ATLBrowserCallback
-{
-public:
-	ATLGetStatsBrowserCallback(unsigned msgid, CComPtr<IDispatch> disp, std::shared_ptr<ExRTCStatsReport> report);
-	virtual ~ATLGetStatsBrowserCallback();
-
-	virtual bool Invoke() override /*ATLBrowserCallback::Invoke()*/;
-
-private:
-	std::shared_ptr<ExRTCStatsReport> m_report;
-};

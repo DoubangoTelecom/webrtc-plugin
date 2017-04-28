@@ -23,6 +23,7 @@ class ExRTCDataChannelEvent;
 class ExRTCTrackEvent;
 class ExRTCDTMFToneChangeEvent;
 class ExRTCStats;
+class ExRTCStatsReport;
 
 typedef void* VoidPtr;
 typedef VoidPtr DtmfSenderInterfacePtr,
@@ -85,9 +86,6 @@ public:
 	MessageEvent() {
 	}
 };
-
-// https://www.w3.org/TR/webrtc/#dom-rtcstatsreport
-typedef std::map<std::string, std::shared_ptr<ExRTCStats >> ExRTCStatsReport;
 
 
 // http://www.w3.org/TR/mediacapture-streams/#idl-def-NavigatorUserMediaSuccessCallback

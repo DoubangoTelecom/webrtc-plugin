@@ -203,6 +203,7 @@ LRESULT CALLBACK Helper::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case RTC_WM_ONDATACHANNEL:
 	case RTC_WM_ONTRACK:
 	case RTC_WM_ONTONECHANGE:
+	case RTC_WM_FOREACH:
 	{
 		BrowserCallback* cb = reinterpret_cast<BrowserCallback*>(wParam);
 		if (cb) {
