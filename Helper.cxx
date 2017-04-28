@@ -32,8 +32,10 @@ HRESULT Helper::Initialize()
 		HRESULT hr = E_FAIL; // CoInitializeEx(NULL, COINIT_MULTITHREADED);
 		g_winCoInitialize = SUCCEEDED(hr);
 		rtc::EnsureWinsockInit();
+#if 0
 		static rtc::Win32Thread w32_thread;
 		rtc::ThreadManager::Instance()->SetCurrentThread(&w32_thread);
+#endif
 
 #if 0
 		_Logging::initialize();
