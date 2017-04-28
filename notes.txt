@@ -34,4 +34,5 @@ Munge SDP parameters: https://doubango.org/rtc-plugin/samples/src/content/peerco
 Use pranswer when setting up a peer connection: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/pr-answer/
 Display peer connection states: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/states/
 Trickle ICE: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/trickle-ice/
-Dtmf = https://doubango.org/rtc-plugin/samples/src/content/peerconnection/dtmf/
+Dtmf: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/dtmf/
+Bandwidth: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/bandwidth/

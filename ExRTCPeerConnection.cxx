@@ -5,7 +5,9 @@
 #include "ExRTCIceCandidate.h"
 #include "ExRTCPeerConnectionIceEvent.h"
 #include "ExMediaStreamEvent.h"
+#include "ExRTCStats.h"
 #include "RTCMediaConstraints.h"
+
 
 //
 //	DummySetSessionDescriptionObserver
@@ -103,52 +105,49 @@ private:
 	FunctionCallbackRTCError m_failureCallback;
 };
 
-#if 0
+
 //
 //	DummyStatsObserver
 //
 class DummyStatsObserver
 	: public webrtc::StatsObserver {
 public:
-	static DummyStatsObserver* Create(_RTCStatsCallback successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr) {
+	static DummyStatsObserver* Create(FunctionCallbackStatsReport successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr) {
 		return
 			new rtc::RefCountedObject<DummyStatsObserver>(successCallback, failureCallback);
 	}
 	virtual void OnComplete(const webrtc::StatsReports& reports) {
 		LOG(INFO) << __FUNCTION__;
 		if (m_successCallback) {
-			cpp11::shared_ptr<_RTCStatsReport> _report(new _RTCStatsReport());
-			if (_report) {
+			std::shared_ptr<ExRTCStatsReport> exReports = std::make_shared<ExRTCStatsReport>();
+			if (exReports.get()) {
+				const webrtc::StatsReport* report;
 				for (size_t i = 0; i < reports.size(); ++i) {
-					cpp11::shared_ptr<_RTCStats> stats(new _RTCStats());
-					if (stats) {
-						stats->id = std::string(reports[i]->id()->ToString());
-						stats->type = std::string(reports[i]->TypeToString());
-						stats->timestamp = reports[i]->timestamp();
-						for (std::map<webrtc::StatsReport::StatsValueName, webrtc::StatsReport::ValuePtr>::const_iterator iter
-							= reports[i]->values().begin(); iter != reports[i]->values().end(); ++iter) {
-							stats->names.insert(std::pair<std::string, std::string>(iter->second->display_name(), iter->second->ToString()));
+					report = reports[i];
+					if (report) {
+						std::shared_ptr<ExRTCStats> exStat = ExRTCStats::Create(report);
+						if (exStat.get()) {
+							exReports->insert(std::pair<std::string, std::shared_ptr<ExRTCStats> >(exStat->id(), exStat));
 						}
-						_report->values.insert(std::pair<std::string, cpp11::shared_ptr<_RTCStats> >(stats->id, stats));
 					}
 				}
-				m_successCallback(_report);
+				m_successCallback(exReports);
 			}
 		}
 	}
 protected:
-	DummyStatsObserver(_RTCStatsCallback successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr) {
+	DummyStatsObserver(FunctionCallbackStatsReport successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr) {
 		m_successCallback = successCallback;
 		m_failureCallback = failureCallback;
 	}
 	~DummyStatsObserver() {
-		WE_DEBUG_INFO("~DummyStatsObserver");
+		RTC_DEBUG_INFO("~DummyStatsObserver");
 	}
 private:
-	_RTCStatsCallback m_successCallback;
+	FunctionCallbackStatsReport m_successCallback;
 	FunctionCallbackRTCError m_failureCallback;
 };
-#endif
+
 
 //
 //		ExRTCPeerConnection
@@ -456,6 +455,24 @@ std::vector<std::shared_ptr<ExRTCRtpSender > > ExRTCPeerConnection::getSenders()
 	return senders;
 }
 
+bool ExRTCPeerConnection::getStats(std::shared_ptr<ExMediaStreamTrack> selector /*= nullptr*/, FunctionCallbackStatsReport successCallback /*= nullptr*/, FunctionCallbackRTCError failureCallback /*= nullptr*/)
+{
+	if (!isValid()) {
+		RTC_DEBUG_ERROR("Not valid");
+		return false;
+	}
+	
+	bool ret = m_peer_connection->GetStats(
+		DummyStatsObserver::Create(successCallback, failureCallback),
+		selector.get() ? static_cast<ExMediaStreamTrackBase*>(selector.get())->_track() : nullptr,
+		webrtc::PeerConnectionInterface::kStatsOutputLevelStandard
+	);
+	if (!ret && failureCallback) {
+		failureCallback(std::make_shared<ExRTCError>(RTC_OperationError));
+	}
+	
+	return true; // do not break ATL function call chain
+}
 
 void ExRTCPeerConnection::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) /*overrides(PeerConnectionObserver)*/
 {

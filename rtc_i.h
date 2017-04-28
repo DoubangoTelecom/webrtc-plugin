@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Thu Apr 27 03:50:52 2017
+/* at Fri Apr 28 06:38:49 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -211,6 +211,13 @@ typedef interface IRTCRtpSender IRTCRtpSender;
 typedef interface IRTCDTMFToneChangeEvent IRTCDTMFToneChangeEvent;
 
 #endif 	/* __IRTCDTMFToneChangeEvent_FWD_DEFINED__ */
+
+
+#ifndef __IRTCStats_FWD_DEFINED__
+#define __IRTCStats_FWD_DEFINED__
+typedef interface IRTCStats IRTCStats;
+
+#endif 	/* __IRTCStats_FWD_DEFINED__ */
 
 
 #ifndef ___IPluginEvents_FWD_DEFINED__
@@ -506,6 +513,18 @@ typedef struct RTCDTMFToneChangeEvent RTCDTMFToneChangeEvent;
 #endif /* __cplusplus */
 
 #endif 	/* __RTCDTMFToneChangeEvent_FWD_DEFINED__ */
+
+
+#ifndef __RTCStats_FWD_DEFINED__
+#define __RTCStats_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCStats RTCStats;
+#else
+typedef struct RTCStats RTCStats;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCStats_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -2602,6 +2621,10 @@ EXTERN_C const IID IID_IRTCPeerConnection;
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_ontrack( 
             /* [in] */ VARIANT varEventHandler) = 0;
         
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getStats( 
+            /* [optional][in] */ VARIANT varMediaStreamTrack,
+            /* [retval][out] */ VARIANT *varPromiseRTCStatsReport) = 0;
+        
     };
     
     
@@ -2863,6 +2886,11 @@ EXTERN_C const IID IID_IRTCPeerConnection;
             IRTCPeerConnection * This,
             /* [in] */ VARIANT varEventHandler);
         
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getStats )( 
+            IRTCPeerConnection * This,
+            /* [optional][in] */ VARIANT varMediaStreamTrack,
+            /* [retval][out] */ VARIANT *varPromiseRTCStatsReport);
+        
         END_INTERFACE
     } IRTCPeerConnectionVtbl;
 
@@ -3045,6 +3073,9 @@ EXTERN_C const IID IID_IRTCPeerConnection;
 
 #define IRTCPeerConnection_put_ontrack(This,varEventHandler)	\
     ( (This)->lpVtbl -> put_ontrack(This,varEventHandler) ) 
+
+#define IRTCPeerConnection_getStats(This,varMediaStreamTrack,varPromiseRTCStatsReport)	\
+    ( (This)->lpVtbl -> getStats(This,varMediaStreamTrack,varPromiseRTCStatsReport) ) 
 
 #endif /* COBJMACROS */
 
@@ -5175,6 +5206,156 @@ EXTERN_C const IID IID_IRTCDTMFToneChangeEvent;
 #endif 	/* __IRTCDTMFToneChangeEvent_INTERFACE_DEFINED__ */
 
 
+#ifndef __IRTCStats_INTERFACE_DEFINED__
+#define __IRTCStats_INTERFACE_DEFINED__
+
+/* interface IRTCStats */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCStats;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("0F0B140A-1904-44A5-9FFC-D44B42B367C3")
+    IRTCStats : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_timestamp( 
+            /* [retval][out] */ DOUBLE *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_type( 
+            /* [retval][out] */ BSTR *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_id( 
+            /* [retval][out] */ BSTR *pVal) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCStatsVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCStats * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCStats * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCStats * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCStats * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCStats * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCStats * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCStats * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_timestamp )( 
+            IRTCStats * This,
+            /* [retval][out] */ DOUBLE *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_type )( 
+            IRTCStats * This,
+            /* [retval][out] */ BSTR *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_id )( 
+            IRTCStats * This,
+            /* [retval][out] */ BSTR *pVal);
+        
+        END_INTERFACE
+    } IRTCStatsVtbl;
+
+    interface IRTCStats
+    {
+        CONST_VTBL struct IRTCStatsVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCStats_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCStats_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCStats_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCStats_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCStats_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCStats_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCStats_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCStats_get_timestamp(This,pVal)	\
+    ( (This)->lpVtbl -> get_timestamp(This,pVal) ) 
+
+#define IRTCStats_get_type(This,pVal)	\
+    ( (This)->lpVtbl -> get_type(This,pVal) ) 
+
+#define IRTCStats_get_id(This,pVal)	\
+    ( (This)->lpVtbl -> get_id(This,pVal) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCStats_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __rtcLib_LIBRARY_DEFINED__
 #define __rtcLib_LIBRARY_DEFINED__
@@ -5490,6 +5671,14 @@ EXTERN_C const CLSID CLSID_RTCDTMFToneChangeEvent;
 
 class DECLSPEC_UUID("65D1AD0F-E022-4BC5-A6FC-2876A666B26F")
 RTCDTMFToneChangeEvent;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCStats;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("BF4E13F6-1BFE-4C37-8E74-C72A26FD4E32")
+RTCStats;
 #endif
 #endif /* __rtcLib_LIBRARY_DEFINED__ */
 

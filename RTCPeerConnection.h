@@ -96,6 +96,9 @@ END_COM_MAP()
 	STDMETHOD(addTransceiver)(__in VARIANT varMediaStreamTrackorDOMStringTrackOrKind, __in_opt VARIANT varRTCRtpTransceiverInit) override;
 	STDMETHOD(get_ontrack)(__out VARIANT* varEventHandler) override;
 	STDMETHOD(put_ontrack)(__in VARIANT varEventHandler) override;
+	
+	// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-2
+	STDMETHOD(getStats)(__in_opt VARIANT varMediaStreamTrack, __out VARIANT* varPromiseRTCStatsReport);
 
 private:
 	HRESULT createOfferAnswer(__in bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit);

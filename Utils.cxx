@@ -265,7 +265,7 @@ HRESULT Utils::CreateJsArrayEx(__in CComPtr<IDispatch> spDispatch, __in std::vec
 {
 	HRESULT hr = S_OK;
 
-	CComVariant rgvarg((ULONG)vecValues.size()); // length as argument for the constructor
+	CComVariant rgvarg(static_cast<ULONG>(vecValues.size())); // length as argument for the constructor
 	RTC_CHECK_HR_RETURN(hr = Utils::CreateJsObjectEx(spDispatch, arrayClassName, &rgvarg, 1, spArray));
 
 	// Values

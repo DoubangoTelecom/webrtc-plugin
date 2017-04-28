@@ -6,6 +6,7 @@
 #include "ExRTCSessionDescription.h"
 #include "ExRTCIceCandidate.h"
 #include "ExRTCRtpSender.h"
+#include "ExMediaStreamTrack.h"
 
 #include "webrtc/api/mediastreaminterface.h"
 #include "webrtc/api/peerconnectioninterface.h"
@@ -53,6 +54,8 @@ public:
 	bool addStream(std::shared_ptr<ExMediaStream> mediaStream);
 	bool removeStream(std::shared_ptr<ExMediaStream> mediaStream);
 	std::vector<std::shared_ptr<ExRTCRtpSender > > getSenders();
+	bool getStats(std::shared_ptr<ExMediaStreamTrack> selector = nullptr, FunctionCallbackStatsReport successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr);
+	
 
 protected:
 	virtual void OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) override;

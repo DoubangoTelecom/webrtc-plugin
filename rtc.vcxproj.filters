@@ -202,6 +202,12 @@
     <ClCompile Include="ExRTCDTMFToneChangeEvent.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RTCStats.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExRTCStats.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -402,6 +408,12 @@
     <ClInclude Include="ExRTCDTMFToneChangeEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RTCStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rtc.rc">
@@ -485,6 +497,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="RTCDTMFToneChangeEvent.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCStats.rgs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

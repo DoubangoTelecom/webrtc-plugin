@@ -12,6 +12,7 @@
 #include "RTCRtpSender.h"
 #include "MediaStream.h"
 #include "MediaStreamEvent.h"
+#include "MediaStreamTrack.h"
 #include "RTCTrackEvent.h"
 #include "Utils.h"
 #include "Promise.h"
@@ -551,7 +552,7 @@ STDMETHODIMP CRTCPeerConnection::get_ontrack(__out VARIANT* varEventHandler)
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
-	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	*varEventHandler = CComVariant(m_callback_ontrack);
 	return S_OK;
 }
 
@@ -562,10 +563,27 @@ STDMETHODIMP CRTCPeerConnection::put_ontrack(__in VARIANT varEventHandler)
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
-	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	m_callback_ontrack = Utils::VariantToDispatch(varEventHandler);
 	return S_OK;
 }
 
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-2
+// Promise<RTCStatsReport> getStats(optional MediaStreamTrack? selector = null);
+STDMETHODIMP CRTCPeerConnection::getStats(__in_opt VARIANT varMediaStreamTrack, __out VARIANT* varPromiseRTCStatsReport)
+{
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	std::shared_ptr<ExMediaStreamTrack> exMediaStreamTrack;
+	if (varMediaStreamTrack.vt == VT_DISPATCH && varMediaStreamTrack.pdispVal) { // check not null (arg is optional) and type is correct
+		RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamTrack, CMediaStreamTrack, ExMediaStreamTrack>(varMediaStreamTrack, exMediaStreamTrack)));
+	}
+	CComObject<CPromise>* atlPromise;
+
+	RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&atlPromise, std::make_shared<ExPromiseGetStats>(m_ex, exMediaStreamTrack)));
+	*varPromiseRTCStatsReport = CComVariant(atlPromise);
+	return S_OK;
+}
 
 HRESULT CRTCPeerConnection::createOfferAnswer(bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit)
 {

@@ -241,6 +241,9 @@ interface IRTCPeerConnection : IDispatch{
 	[id(65), helpstring("method addTransceiver")] HRESULT addTransceiver([in] VARIANT varMediaStreamTrackorDOMStringTrackOrKind, [in, optional] VARIANT varRTCRtpTransceiverInit);
 	[propget, id(66), helpstring("property ontrack")] HRESULT ontrack([out, retval] VARIANT* varEventHandler);
 	[propput, id(66), helpstring("property ontrack")] HRESULT ontrack([in] VARIANT varEventHandler);	
+
+	// The Statistics API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-2
+	[id(70), helpstring("method getStats")] HRESULT getStats([in, optional] VARIANT varMediaStreamTrack, [out, retval] VARIANT* varPromiseRTCStatsReport);
 };
 [
 	object,
@@ -420,20 +423,36 @@ interface IRTCDTMFToneChangeEvent : IDispatch{
 	[propget, id(1), helpstring("property tone")] HRESULT tone([out, retval] BSTR* varTone);
 };
 [
+	object,
+	uuid(0F0B140A-1904-44A5-9FFC-D44B42B367C3),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCStats : IDispatch{
+	// https://www.w3.org/TR/webrtc/#rtcstats-dictionary
+	[propget, id(1), helpstring("property timestamp")] HRESULT timestamp([out, retval] DOUBLE* pVal);
+	[propget, id(2), helpstring("property type")] HRESULT type([out, retval] BSTR* pVal);
+	[propget, id(3), helpstring("property id")] HRESULT id([out, retval] BSTR* pVal);
+	//!\\ Id numbers within [100 - x] are reserved 
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+[
 	uuid(5701E57F-4D99-450D-8479-BC9871799B8D),
 	version(1.0),
 ]
-
-
-
-
-
-
-
-
-
-
-
 library rtcLib
 {
 	importlib("stdole2.tlb");
@@ -614,6 +633,13 @@ library rtcLib
 	coclass RTCDTMFToneChangeEvent
 	{
 		[default] interface IRTCDTMFToneChangeEvent;
+	};
+	[
+		uuid(BF4E13F6-1BFE-4C37-8E74-C72A26FD4E32)		
+	]
+	coclass RTCStats
+	{
+		[default] interface IRTCStats;
 	};
 };
 

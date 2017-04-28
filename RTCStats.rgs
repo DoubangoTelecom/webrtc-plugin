@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCStats.1 = s 'RTCStats Class'
+	{
+		CLSID = s '{BF4E13F6-1BFE-4C37-8E74-C72A26FD4E32}'
+	}
+	rtc.RTCStats = s 'RTCStats Class'
+	{		
+		CurVer = s 'rtc.RTCStats.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {BF4E13F6-1BFE-4C37-8E74-C72A26FD4E32} = s 'RTCStats Class'
+		{
+			ProgID = s 'rtc.RTCStats.1'
+			VersionIndependentProgID = s 'rtc.RTCStats'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

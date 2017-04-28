@@ -22,6 +22,7 @@ class ExMediaStreamEvent;
 class ExRTCDataChannelEvent;
 class ExRTCTrackEvent;
 class ExRTCDTMFToneChangeEvent;
+class ExRTCStats;
 
 typedef void* VoidPtr;
 typedef VoidPtr DtmfSenderInterfacePtr,
@@ -85,6 +86,9 @@ public:
 	}
 };
 
+// https://www.w3.org/TR/webrtc/#dom-rtcstatsreport
+typedef std::map<std::string, std::shared_ptr<ExRTCStats >> ExRTCStatsReport;
+
 
 // http://www.w3.org/TR/mediacapture-streams/#idl-def-NavigatorUserMediaSuccessCallback
 typedef std::function<void(std::shared_ptr<ExMediaStream> stream)> NavigatorUserMediaSuccessCallback;
@@ -102,6 +106,7 @@ typedef std::function<void(std::shared_ptr<ExMediaStreamEvent> e)> FunctionCallb
 typedef std::function<void(std::shared_ptr<ExRTCDataChannelEvent> e)> FunctionCallbackDataChannel;
 typedef std::function<void(std::shared_ptr<ExRTCTrackEvent> e)> FunctionCallbackTrack;
 typedef std::function<void(std::shared_ptr<ExRTCDTMFToneChangeEvent> e)> FunctionCallbackDTMFToneChange;
+typedef std::function<void(std::shared_ptr<ExRTCStatsReport> e)> FunctionCallbackStatsReport;
 
 static const std::string kStringEmpty = "";
 

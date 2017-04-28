@@ -6,6 +6,9 @@
 #include <shlwapi.h>
 #include <shlobj.h>
 #include <AtlConv.h>
+#include <clocale>
+#include <locale>
+#include <codecvt>
 #include "webrtc/base/win32socketinit.h"
 #include "webrtc/base/win32socketserver.h"
 #include "resource.h"
@@ -75,6 +78,12 @@ std::string Helper::ToString(long val)
 	char str[22];
 	sprintf(str, "%ld", val);
 	return std::string(str);
+}
+
+std::string Helper::ToString(const std::wstring wstr)
+{
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+	return converter.to_bytes(wstr);
 }
 
 bool Helper::RaiseCallback(LONGLONG handle, BrowserCallback* cb)
@@ -176,6 +185,8 @@ LRESULT CALLBACK Helper::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case RTC_WM_GETUSERMEDIA_ERROR:
 	case RTC_WM_ENUMERATEDEVICES_SUCESS:
 	case RTC_WM_ENUMERATEDEVICES_ERROR:
+	case RTC_WM_GETSTATS_SUCESS:
+	case RTC_WM_GETSTATS_ERROR:
 	case RTC_WM_CREATEOFFER_SUCCESS:
 	case RTC_WM_CREATEOFFER_ERROR:
 	case RTC_WM_CREATEANSWER_SUCCESS:
