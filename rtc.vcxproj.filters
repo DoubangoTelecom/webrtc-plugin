@@ -214,6 +214,12 @@
     <ClCompile Include="ExRTCStatsReport.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExRTCRtpReceiver.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RTCRtpReceiver.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -426,6 +432,12 @@
     <ClInclude Include="ExRTCStatsReport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RTCRtpReceiver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExRTCRtpReceiver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rtc.rc">
@@ -515,6 +527,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="RTCStatsReport.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="RTCRtpReceiver.rgs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

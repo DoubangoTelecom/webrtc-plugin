@@ -6,6 +6,7 @@
 #include "ExRTCSessionDescription.h"
 #include "ExRTCIceCandidate.h"
 #include "ExRTCRtpSender.h"
+#include "ExRTCRtpReceiver.h"
 #include "ExMediaStreamTrack.h"
 
 #include "webrtc/api/mediastreaminterface.h"
@@ -54,6 +55,7 @@ public:
 	bool addStream(std::shared_ptr<ExMediaStream> mediaStream);
 	bool removeStream(std::shared_ptr<ExMediaStream> mediaStream);
 	std::vector<std::shared_ptr<ExRTCRtpSender > > getSenders();
+	std::vector<std::shared_ptr<ExRTCRtpReceiver > > getReceivers();
 	bool getStats(std::shared_ptr<ExMediaStreamTrack> selector = nullptr, FunctionCallbackStatsReport successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr);
 	
 

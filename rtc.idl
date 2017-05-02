@@ -455,11 +455,22 @@ interface IRTCStatsReport : IDispatch{
 	[id(6), helpstring("method values")] HRESULT values([out, retval] VARIANT* varIterator);
 	[propget, id(7), helpstring("property size")] HRESULT size([out, retval] LONG* pVal);
 };
-
-
-
-
-
+[
+	object,
+	uuid(B9022511-3E81-4389-9BB0-667FEA36B40C),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IRTCRtpReceiver : IDispatch{
+	// https://www.w3.org/TR/webrtc/#dom-rtcrtpreceiver
+	[propget, id(1), helpstring("property track")] HRESULT track([out, retval] VARIANT* varMediaStreamTrack);
+	[propget, id(2), helpstring("property transport")] HRESULT transport([out, retval] VARIANT* varRTCDtlsTransport);
+	[propget, id(3), helpstring("property rtcpTransport")] HRESULT rtcpTransport([out, retval] VARIANT* varRTCDtlsTransport);
+	// ToBeAddedInJavascriptCode (PluginObj::getRTCRtpCapabilities(DOMString kind)): static RTCRtpCapabilities getCapabilities(DOMString kind);
+	[id(4), helpstring("method getParameters")] HRESULT getParameters([out, retval] VARIANT* varRTCRtpParameters);
+	[id(5), helpstring("method getContributingSources")] HRESULT getContributingSources([out, retval] VARIANT* varSequenceRTCRtpContributingSource);
+};
 
 
 
@@ -669,6 +680,13 @@ library rtcLib
 	coclass RTCStatsReport
 	{
 		[default] interface IRTCStatsReport;
+	};
+	[
+		uuid(450B8CED-6446-4074-8630-3F331C576F68)		
+	]
+	coclass RTCRtpReceiver
+	{
+		[default] interface IRTCRtpReceiver;
 	};
 };
 

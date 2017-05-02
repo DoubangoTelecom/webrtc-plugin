@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.RTCRtpReceiver.1 = s 'RTCRtpReceiver Class'
+	{
+		CLSID = s '{450B8CED-6446-4074-8630-3F331C576F68}'
+	}
+	rtc.RTCRtpReceiver = s 'RTCRtpReceiver Class'
+	{		
+		CurVer = s 'rtc.RTCRtpReceiver.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {450B8CED-6446-4074-8630-3F331C576F68} = s 'RTCRtpReceiver Class'
+		{
+			ProgID = s 'rtc.RTCRtpReceiver.1'
+			VersionIndependentProgID = s 'rtc.RTCRtpReceiver'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

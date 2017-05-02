@@ -10,6 +10,7 @@
 #include "RTCPeerConnectionIceEvent.h"
 #include "RTCDataChannelEvent.h"
 #include "RTCRtpSender.h"
+#include "RTCRtpReceiver.h"
 #include "RTCStatsReport.h"
 #include "MediaStream.h"
 #include "MediaStreamEvent.h"
@@ -498,7 +499,23 @@ STDMETHODIMP CRTCPeerConnection::getReceivers(__out VARIANT* varSequenceRTCRtpRe
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
-	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	CComPtr<IDispatch> spDispatch;
+	RTC_CHECK_HR_RETURN(CPlugin::Singleton()->GetDispatch(spDispatch));
+
+	std::vector<std::shared_ptr<ExRTCRtpReceiver > > exVect = m_ex->getReceivers();
+	std::vector<CComVariant> atlVect;
+	for (std::vector<std::shared_ptr<ExRTCRtpReceiver > >::iterator it = exVect.begin(); it < exVect.end(); ++it) {
+		CComObject<CRTCRtpReceiver>* receiver;
+		if (SUCCEEDED(Utils::CreateInstanceWithRef(&receiver, *it))) {
+			atlVect.push_back(CComVariant(receiver));
+			RTC_SAFE_RELEASE(&receiver);
+		}
+	}
+
+	CComQIPtr<IDispatchEx> spArray;
+	RTC_CHECK_HR_RETURN(Utils::CreateJsArray(spDispatch, atlVect, spArray));
+	*varSequenceRTCRtpReceiver = CComVariant(spArray.Detach());
+
 	return S_OK;
 }
 

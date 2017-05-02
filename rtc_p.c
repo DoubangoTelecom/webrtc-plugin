@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Apr 28 07:25:25 2017
+/* at Tue May 02 05:35:13 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -265,6 +265,13 @@ extern const MIDL_SERVER_INFO IRTCStatsReport_ServerInfo;
 extern const MIDL_STUBLESS_PROXY_INFO IRTCStatsReport_ProxyInfo;
 
 
+extern const MIDL_STUB_DESC Object_StubDesc;
+
+
+extern const MIDL_SERVER_INFO IRTCRtpReceiver_ServerInfo;
+extern const MIDL_STUBLESS_PROXY_INFO IRTCRtpReceiver_ProxyInfo;
+
+
 extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TABLE_SIZE ];
 
 #if !defined(__RPC_WIN32__)
@@ -398,6 +405,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 	/* Procedure get_transport */
 
 
+	/* Procedure get_transport */
+
+
 	/* Procedure get_ontonechange */
 
 
@@ -427,6 +437,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 	/* Parameter varRTCDtlsTransport */
 
 
+	/* Parameter varRTCDtlsTransport */
+
+
 	/* Parameter varEventHandler */
 
 
@@ -441,6 +454,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 60 */	NdrFcShort( 0x4113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=16 */
 /* 62 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 64 */	NdrFcShort( 0x412 ),	/* Type Offset=1042 */
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -1094,6 +1110,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 754 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure get_track */
+
+
 	/* Procedure entries */
 
 
@@ -1120,6 +1139,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 776 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 778 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter varMediaStreamTrack */
+
+
 	/* Parameter varIterator */
 
 
@@ -1134,6 +1156,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 780 */	NdrFcShort( 0x4113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=16 */
 /* 782 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 784 */	NdrFcShort( 0x412 ),	/* Type Offset=1042 */
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -1214,6 +1239,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 	/* Procedure get_rtcpTransport */
 
 
+	/* Procedure get_rtcpTransport */
+
+
 	/* Procedure getVideoTracks */
 
 
@@ -1237,6 +1265,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 	/* Parameter varRTCDtlsTransport */
 
 
+	/* Parameter varRTCDtlsTransport */
+
+
 	/* Parameter Tracks */
 
 
@@ -1254,10 +1285,16 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 
 	/* Return value */
 
+
+	/* Return value */
+
 /* 864 */	NdrFcShort( 0x70 ),	/* Flags:  out, return, base type, */
 /* 866 */	NdrFcShort( 0x8 ),	/* x86 Stack size/offset = 8 */
 /* 868 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
+
+	/* Procedure getParameters */
+
 
 	/* Procedure get_localDescription */
 
@@ -1279,6 +1316,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 890 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 892 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter varRTCRtpParameters */
+
+
 	/* Parameter RTCSessionDescription */
 
 
@@ -1287,6 +1327,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 894 */	NdrFcShort( 0x4113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=16 */
 /* 896 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 898 */	NdrFcShort( 0x412 ),	/* Type Offset=1042 */
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -2782,6 +2825,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 2392 */	0x8,		/* FC_LONG */
 			0x0,		/* 0 */
 
+	/* Procedure getContributingSources */
+
+
 	/* Procedure keys */
 
 
@@ -2805,6 +2851,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 2414 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 2416 */	NdrFcShort( 0x0 ),	/* 0 */
 
+	/* Parameter varSequenceRTCRtpContributingSource */
+
+
 	/* Parameter varIterator */
 
 
@@ -2816,6 +2865,9 @@ static const rtc_MIDL_PROC_FORMAT_STRING rtc__MIDL_ProcFormatString =
 /* 2418 */	NdrFcShort( 0x4113 ),	/* Flags:  must size, must free, out, simple ref, srv alloc size=16 */
 /* 2420 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
 /* 2422 */	NdrFcShort( 0x412 ),	/* Type Offset=1042 */
+
+	/* Return value */
+
 
 	/* Return value */
 
@@ -7759,6 +7811,86 @@ CInterfaceStubVtbl _IRTCStatsReportStubVtbl =
     CStdStubBuffer_DELEGATING_METHODS
 };
 
+
+/* Object interface: IRTCRtpReceiver, ver. 0.0,
+   GUID={0xB9022511,0x3E81,0x4389,{0x9B,0xB0,0x66,0x7F,0xEA,0x36,0xB4,0x0C}} */
+
+#pragma code_seg(".orpc")
+static const unsigned short IRTCRtpReceiver_FormatStringOffsetTable[] =
+    {
+    (unsigned short) -1,
+    (unsigned short) -1,
+    (unsigned short) -1,
+    (unsigned short) -1,
+    756,
+    36,
+    834,
+    870,
+    2394
+    };
+
+static const MIDL_STUBLESS_PROXY_INFO IRTCRtpReceiver_ProxyInfo =
+    {
+    &Object_StubDesc,
+    rtc__MIDL_ProcFormatString.Format,
+    &IRTCRtpReceiver_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0
+    };
+
+
+static const MIDL_SERVER_INFO IRTCRtpReceiver_ServerInfo = 
+    {
+    &Object_StubDesc,
+    0,
+    rtc__MIDL_ProcFormatString.Format,
+    &IRTCRtpReceiver_FormatStringOffsetTable[-3],
+    0,
+    0,
+    0,
+    0};
+CINTERFACE_PROXY_VTABLE(12) _IRTCRtpReceiverProxyVtbl = 
+{
+    &IRTCRtpReceiver_ProxyInfo,
+    &IID_IRTCRtpReceiver,
+    IUnknown_QueryInterface_Proxy,
+    IUnknown_AddRef_Proxy,
+    IUnknown_Release_Proxy ,
+    0 /* IDispatch::GetTypeInfoCount */ ,
+    0 /* IDispatch::GetTypeInfo */ ,
+    0 /* IDispatch::GetIDsOfNames */ ,
+    0 /* IDispatch_Invoke_Proxy */ ,
+    (void *) (INT_PTR) -1 /* IRTCRtpReceiver::get_track */ ,
+    (void *) (INT_PTR) -1 /* IRTCRtpReceiver::get_transport */ ,
+    (void *) (INT_PTR) -1 /* IRTCRtpReceiver::get_rtcpTransport */ ,
+    (void *) (INT_PTR) -1 /* IRTCRtpReceiver::getParameters */ ,
+    (void *) (INT_PTR) -1 /* IRTCRtpReceiver::getContributingSources */
+};
+
+
+static const PRPC_STUB_FUNCTION IRTCRtpReceiver_table[] =
+{
+    STUB_FORWARDING_FUNCTION,
+    STUB_FORWARDING_FUNCTION,
+    STUB_FORWARDING_FUNCTION,
+    STUB_FORWARDING_FUNCTION,
+    NdrStubCall2,
+    NdrStubCall2,
+    NdrStubCall2,
+    NdrStubCall2,
+    NdrStubCall2
+};
+
+CInterfaceStubVtbl _IRTCRtpReceiverStubVtbl =
+{
+    &IID_IRTCRtpReceiver,
+    &IRTCRtpReceiver_ServerInfo,
+    12,
+    &IRTCRtpReceiver_table[-3],
+    CStdStubBuffer_DELEGATING_METHODS
+};
+
 static const MIDL_STUB_DESC Object_StubDesc = 
     {
     0,
@@ -7788,6 +7920,7 @@ const CInterfaceProxyVtbl * const _rtc_ProxyVtblList[] =
     ( CInterfaceProxyVtbl *) &_IRTCStatsProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IRTCPeerConnectionIceEventProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IMediaStreamEventProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_IRTCRtpReceiverProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IPluginProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IMediaStreamTrackProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IPromiseProxyVtbl,
@@ -7819,6 +7952,7 @@ const CInterfaceStubVtbl * const _rtc_StubVtblList[] =
     ( CInterfaceStubVtbl *) &_IRTCStatsStubVtbl,
     ( CInterfaceStubVtbl *) &_IRTCPeerConnectionIceEventStubVtbl,
     ( CInterfaceStubVtbl *) &_IMediaStreamEventStubVtbl,
+    ( CInterfaceStubVtbl *) &_IRTCRtpReceiverStubVtbl,
     ( CInterfaceStubVtbl *) &_IPluginStubVtbl,
     ( CInterfaceStubVtbl *) &_IMediaStreamTrackStubVtbl,
     ( CInterfaceStubVtbl *) &_IPromiseStubVtbl,
@@ -7850,6 +7984,7 @@ PCInterfaceName const _rtc_InterfaceNamesList[] =
     "IRTCStats",
     "IRTCPeerConnectionIceEvent",
     "IMediaStreamEvent",
+    "IRTCRtpReceiver",
     "IPlugin",
     "IMediaStreamTrack",
     "IPromise",
@@ -7904,6 +8039,7 @@ const IID *  const _rtc_BaseIIDList[] =
     &IID_IDispatch,
     &IID_IDispatch,
     &IID_IDispatch,
+    &IID_IDispatch,
     0
 };
 
@@ -7914,12 +8050,12 @@ int __stdcall _rtc_IID_Lookup( const IID * pIID, int * pIndex )
 {
     IID_BS_LOOKUP_SETUP
 
-    IID_BS_LOOKUP_INITIAL_TEST( _rtc, 26, 16 )
+    IID_BS_LOOKUP_INITIAL_TEST( _rtc, 27, 16 )
     IID_BS_LOOKUP_NEXT_TEST( _rtc, 8 )
     IID_BS_LOOKUP_NEXT_TEST( _rtc, 4 )
     IID_BS_LOOKUP_NEXT_TEST( _rtc, 2 )
     IID_BS_LOOKUP_NEXT_TEST( _rtc, 1 )
-    IID_BS_LOOKUP_RETURN_RESULT( _rtc, 26, *pIndex )
+    IID_BS_LOOKUP_RETURN_RESULT( _rtc, 27, *pIndex )
     
 }
 
@@ -7930,7 +8066,7 @@ const ExtendedProxyFileInfo rtc_ProxyFileInfo =
     (const PCInterfaceName * ) & _rtc_InterfaceNamesList,
     (const IID ** ) & _rtc_BaseIIDList,
     & _rtc_IID_Lookup, 
-    26,
+    27,
     2,
     0, /* table of [async_uuid] interfaces */
     0, /* Filler1 */

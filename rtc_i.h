@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Fri Apr 28 07:25:25 2017
+/* at Tue May 02 05:35:13 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -225,6 +225,13 @@ typedef interface IRTCStats IRTCStats;
 typedef interface IRTCStatsReport IRTCStatsReport;
 
 #endif 	/* __IRTCStatsReport_FWD_DEFINED__ */
+
+
+#ifndef __IRTCRtpReceiver_FWD_DEFINED__
+#define __IRTCRtpReceiver_FWD_DEFINED__
+typedef interface IRTCRtpReceiver IRTCRtpReceiver;
+
+#endif 	/* __IRTCRtpReceiver_FWD_DEFINED__ */
 
 
 #ifndef ___IPluginEvents_FWD_DEFINED__
@@ -544,6 +551,18 @@ typedef struct RTCStatsReport RTCStatsReport;
 #endif /* __cplusplus */
 
 #endif 	/* __RTCStatsReport_FWD_DEFINED__ */
+
+
+#ifndef __RTCRtpReceiver_FWD_DEFINED__
+#define __RTCRtpReceiver_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class RTCRtpReceiver RTCRtpReceiver;
+#else
+typedef struct RTCRtpReceiver RTCRtpReceiver;
+#endif /* __cplusplus */
+
+#endif 	/* __RTCRtpReceiver_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -5571,6 +5590,176 @@ EXTERN_C const IID IID_IRTCStatsReport;
 #endif 	/* __IRTCStatsReport_INTERFACE_DEFINED__ */
 
 
+#ifndef __IRTCRtpReceiver_INTERFACE_DEFINED__
+#define __IRTCRtpReceiver_INTERFACE_DEFINED__
+
+/* interface IRTCRtpReceiver */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IRTCRtpReceiver;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("B9022511-3E81-4389-9BB0-667FEA36B40C")
+    IRTCRtpReceiver : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_track( 
+            /* [retval][out] */ VARIANT *varMediaStreamTrack) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_transport( 
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_rtcpTransport( 
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getParameters( 
+            /* [retval][out] */ VARIANT *varRTCRtpParameters) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getContributingSources( 
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpContributingSource) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IRTCRtpReceiverVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IRTCRtpReceiver * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IRTCRtpReceiver * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IRTCRtpReceiver * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IRTCRtpReceiver * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IRTCRtpReceiver * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IRTCRtpReceiver * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IRTCRtpReceiver * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_track )( 
+            IRTCRtpReceiver * This,
+            /* [retval][out] */ VARIANT *varMediaStreamTrack);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_transport )( 
+            IRTCRtpReceiver * This,
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_rtcpTransport )( 
+            IRTCRtpReceiver * This,
+            /* [retval][out] */ VARIANT *varRTCDtlsTransport);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getParameters )( 
+            IRTCRtpReceiver * This,
+            /* [retval][out] */ VARIANT *varRTCRtpParameters);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getContributingSources )( 
+            IRTCRtpReceiver * This,
+            /* [retval][out] */ VARIANT *varSequenceRTCRtpContributingSource);
+        
+        END_INTERFACE
+    } IRTCRtpReceiverVtbl;
+
+    interface IRTCRtpReceiver
+    {
+        CONST_VTBL struct IRTCRtpReceiverVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IRTCRtpReceiver_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IRTCRtpReceiver_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IRTCRtpReceiver_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IRTCRtpReceiver_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IRTCRtpReceiver_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IRTCRtpReceiver_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IRTCRtpReceiver_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IRTCRtpReceiver_get_track(This,varMediaStreamTrack)	\
+    ( (This)->lpVtbl -> get_track(This,varMediaStreamTrack) ) 
+
+#define IRTCRtpReceiver_get_transport(This,varRTCDtlsTransport)	\
+    ( (This)->lpVtbl -> get_transport(This,varRTCDtlsTransport) ) 
+
+#define IRTCRtpReceiver_get_rtcpTransport(This,varRTCDtlsTransport)	\
+    ( (This)->lpVtbl -> get_rtcpTransport(This,varRTCDtlsTransport) ) 
+
+#define IRTCRtpReceiver_getParameters(This,varRTCRtpParameters)	\
+    ( (This)->lpVtbl -> getParameters(This,varRTCRtpParameters) ) 
+
+#define IRTCRtpReceiver_getContributingSources(This,varSequenceRTCRtpContributingSource)	\
+    ( (This)->lpVtbl -> getContributingSources(This,varSequenceRTCRtpContributingSource) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IRTCRtpReceiver_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __rtcLib_LIBRARY_DEFINED__
 #define __rtcLib_LIBRARY_DEFINED__
@@ -5902,6 +6091,14 @@ EXTERN_C const CLSID CLSID_RTCStatsReport;
 
 class DECLSPEC_UUID("D344AC65-DEF1-48B2-A035-B712B43B7377")
 RTCStatsReport;
+#endif
+
+EXTERN_C const CLSID CLSID_RTCRtpReceiver;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("450B8CED-6446-4074-8630-3F331C576F68")
+RTCRtpReceiver;
 #endif
 #endif /* __rtcLib_LIBRARY_DEFINED__ */
 

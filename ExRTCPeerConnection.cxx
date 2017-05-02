@@ -456,6 +456,20 @@ std::vector<std::shared_ptr<ExRTCRtpSender > > ExRTCPeerConnection::getSenders()
 	return senders;
 }
 
+std::vector<std::shared_ptr<ExRTCRtpReceiver > > ExRTCPeerConnection::getReceivers()
+{
+	std::vector<std::shared_ptr<ExRTCRtpReceiver > > receivers;
+	if (!isValid()) {
+		RTC_DEBUG_ERROR("Not valid");
+		return receivers;
+	}
+	std::vector<rtc::scoped_refptr<webrtc::RtpReceiverInterface> > receivers_ = m_peer_connection->GetReceivers();
+	for (std::vector<rtc::scoped_refptr<webrtc::RtpReceiverInterface> >::iterator it = receivers_.begin(); it < receivers_.end(); ++it) {
+		receivers.push_back(std::make_shared<ExRTCRtpReceiver>(*it));
+	}
+	return receivers;
+}
+
 bool ExRTCPeerConnection::getStats(std::shared_ptr<ExMediaStreamTrack> selector /*= nullptr*/, FunctionCallbackStatsReport successCallback /*= nullptr*/, FunctionCallbackRTCError failureCallback /*= nullptr*/)
 {
 	if (!isValid()) {

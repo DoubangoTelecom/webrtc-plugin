@@ -36,3 +36,4 @@ Display peer connection states: https://doubango.org/rtc-plugin/samples/src/cont
 Trickle ICE: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/trickle-ice/
 Dtmf: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/dtmf/
 Bandwidth: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/bandwidth/
+Adjust constraints, view stats: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/constraints/
