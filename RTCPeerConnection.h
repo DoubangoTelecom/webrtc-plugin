@@ -84,8 +84,10 @@ END_COM_MAP()
 	STDMETHOD(put_onaddstream)(__in VARIANT newVal) override; // Shim not part of the standard
 
 	// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
-	STDMETHOD(get_ondatachannel)(__out VARIANT* pVal) override; 
-	STDMETHOD(put_ondatachannel)(__in VARIANT newVal) override;
+	STDMETHOD(createDataChannel)(__in BSTR label, __in_opt VARIANT dataChannelDict, __out VARIANT* DataChannel);
+	STDMETHOD(get_sctp)(__out VARIANT* varRTCSctpTransport) override;
+	STDMETHOD(get_ondatachannel)(__out VARIANT* varEventHandler) override;
+	STDMETHOD(put_ondatachannel)(__in VARIANT varEventHandler) override;
 	
 	// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
 	STDMETHOD(getSenders)(__out VARIANT* varSequenceRTCRtpSender) override;

@@ -24,6 +24,7 @@ class ExRTCTrackEvent;
 class ExRTCDTMFToneChangeEvent;
 class ExRTCStats;
 class ExRTCStatsReport;
+class ExMessageEvent;
 
 typedef void* VoidPtr;
 typedef VoidPtr DtmfSenderInterfacePtr,
@@ -34,6 +35,9 @@ VideoRendererPtr,
 DataChannelInterfacePtr;
 
 #define RTC_MAX_ARGS_PARAMS 10
+
+#define RTC_nullable_ushort_null -1
+typedef int RTC_nullable_ushort;
 
 // Errors
 #define RTC_ConstraintNotSatisfiedError		"ConstraintNotSatisfiedError"
@@ -57,6 +61,21 @@ enum TrackTypeFlags {
 	TrackTypeFlagsAll = 0xFF
 };
 
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays
+enum ArrayType
+{
+	ArrayType_None,
+	ArrayType_Int8Array, //	1	8 - bit twos complement signed integer	signed char
+	ArrayType_Uint8Array, //	1	8 - bit unsigned integer	unsigned char
+	ArrayType_Uint8ClampedArray, //	1	8 - bit unsigned integer	unsigned char
+	ArrayType_Int16Array, //	2	16 - bit twos complement signed integer	short
+	ArrayType_Uint16Array, //	2	16 - bit unsigned integer	unsigned short
+	ArrayType_Int32Array, //	4	32 - bit twos complement signed integer	int
+	ArrayType_Uint32Array, //	4	32 - bit unsigned integer	unsigned int
+	ArrayType_Float32Array, //	4	32 - bit IEEE floating point number	float
+	ArrayType_Float64Array, //	8	64 - bit IEEE floating point number	double
+};
+
 
 struct RTCIceServer {
 public:
@@ -78,16 +97,6 @@ public:
 	}
 };
 
-// http://www.w3.org/TR/webrtc/#event-datachannel-message
-struct MessageEvent {
-public:
-	std::shared_ptr<Buffer>data;
-	bool binary = false;
-	MessageEvent() {
-	}
-};
-
-
 // http://www.w3.org/TR/mediacapture-streams/#idl-def-NavigatorUserMediaSuccessCallback
 typedef std::function<void(std::shared_ptr<ExMediaStream> stream)> NavigatorUserMediaSuccessCallback;
 
@@ -105,6 +114,7 @@ typedef std::function<void(std::shared_ptr<ExRTCDataChannelEvent> e)> FunctionCa
 typedef std::function<void(std::shared_ptr<ExRTCTrackEvent> e)> FunctionCallbackTrack;
 typedef std::function<void(std::shared_ptr<ExRTCDTMFToneChangeEvent> e)> FunctionCallbackDTMFToneChange;
 typedef std::function<void(std::shared_ptr<ExRTCStatsReport> e)> FunctionCallbackStatsReport;
+typedef std::function<void(std::shared_ptr<ExMessageEvent> e)> FunctionCallbackMessage;
 
 static const std::string kStringEmpty = "";
 
@@ -152,6 +162,32 @@ static const char kRTCPeerConnectionStateConnected[] = "connected";
 static const char kRTCPeerConnectionStateDisconnected[] = "disconnected";
 static const char kRTCPeerConnectionStateFailed[] = "failed";
 static const char kRTCPeerConnectionStateClosed[] = "closed";
+
+// https://www.w3.org/TR/webrtc/#dom-rtcprioritytype
+static const char kRTCPriorityTypeVeryLow[] = "very-low";
+static const char kRTCPriorityTypeLow[] = "low";
+static const char kRTCPriorityTypeMedium[] = "medium";
+static const char kRTCPriorityTypeHigh[] = "high";
+
+// https://www.w3.org/TR/webrtc/#dom-rtcdatachannelstate
+static const char kRTCDataChannelStateConnecting[] = "connecting";
+static const char kRTCDataChannelStateOpen[] = "open";
+static const char kRTCDataChannelStateClosing[] = "closing";
+static const char kRTCDataChannelStateClosed[] = "closed";
+
+
+// https://www.w3.org/TR/webrtc/#dom-rtcdatachannelinit
+struct RTCDataChannelInit {
+public:
+	// "nullable_ushort" is used instead of "unsigned short" to emulate nulable values: "-1 == null" (same rule is used in WebRTC internals)
+	bool ordered = true; //  boolean ordered = true;
+	RTC_nullable_ushort maxPacketLifeTime = RTC_nullable_ushort_null; // unsigned short ? maxRetransmitTime = null;
+	RTC_nullable_ushort maxRetransmits = RTC_nullable_ushort_null; // unsigned short ? maxRetransmits = null;
+	std::string protocol = ""; // USVString protocol = "";
+	bool negotiated = false; // boolean negotiated = false;
+	RTC_nullable_ushort id = RTC_nullable_ushort_null; // [EnforceRange] unsigned short ? id = null;
+	std::string priority = kRTCPriorityTypeLow; // RTCPriorityType priority = "low";
+};
 
 // https://www.w3.org/TR/mediacapture-streams/#idl-def-MediaConstraintSet
 typedef std::pair< std::string, std::string> MediaConstraint;

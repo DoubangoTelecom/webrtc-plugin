@@ -88,6 +88,45 @@ std::string Helper::ToString(const std::wstring wstr)
 	return converter.to_bytes(wstr);
 }
 
+int Helper::ArrayBytesCount(ArrayType arrayType)
+{
+	switch (arrayType) {
+	case ArrayType_Int8Array:
+	case ArrayType_Uint8Array:
+	case ArrayType_Uint8ClampedArray:
+		return 1;
+	case ArrayType_Int16Array:
+	case ArrayType_Uint16Array:
+		return 2;
+	case ArrayType_Int32Array:
+	case ArrayType_Uint32Array:
+	case ArrayType_Float32Array:
+		return 4;
+	case ArrayType_Float64Array:
+		return 8;
+	default:
+		return -1;
+	}
+}
+
+bool Helper::ArrayIsFloatingPoint(ArrayType arrayType)
+{
+	switch (arrayType) {
+	case ArrayType_Int8Array:
+	case ArrayType_Uint8Array:
+	case ArrayType_Uint8ClampedArray:
+	case ArrayType_Int16Array:
+	case ArrayType_Uint16Array:
+	case ArrayType_Int32Array:
+	case ArrayType_Uint32Array:
+	default:
+		return false;
+	case ArrayType_Float32Array:
+	case ArrayType_Float64Array:
+		return true;
+	}
+}
+
 bool Helper::RaiseCallback(LONGLONG handle, BrowserCallback* cb)
 {
 	if (!cb) {

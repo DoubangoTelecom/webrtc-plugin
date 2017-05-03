@@ -1,6 +1,7 @@
 #pragma once
 #include "Config.h"
 #include "Common.h"
+#include "Buffer.h"
 #include "ATLBrowserCallback.h"
 #include "Plugin.h"
 
@@ -44,16 +45,16 @@ public:
 	static HRESULT BuildRTCConfiguration(__in VARIANT varConfiguration, __out std::shared_ptr<RTCConfiguration> &configuration);
 	static HRESULT BuildRTCOfferAnswerOptions(__in VARIANT varOptions, __out std::shared_ptr<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions> &options);
 
-#if 0
-	static HRESULT BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out std::shared_ptr<_RTCDataChannelInit> &configuration);
-	static HRESULT BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varData, __out std::shared_ptr<_Buffer> &data);
-	static HRESULT BuildDataArray(__in CComPtr<IDispatch> spData, __in _ArrayType type, __out std::shared_ptr<_Buffer> &data);
-#endif
+	static HRESULT BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out std::shared_ptr<RTCDataChannelInit> &configuration);
+	static HRESULT BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varData, __out std::shared_ptr<Buffer> &data);
+	static HRESULT BuildDataArray(__in CComPtr<IDispatch> spData, __in ArrayType type, __out std::shared_ptr<Buffer> &data);
+
 	static HRESULT WrapArrayBufferIntoUint8Array(__in CComPtr<IDispatch> spDispatch, __in CComPtr<IDispatch> spArrayBuffer, __out CComPtr<IDispatch> &spUint8Array);
 
 	static HRESULT DataChannelSendBlob(__in CComPtr<IDispatch> spDispatch, __in CComPtr<IDispatch> dataChannel, __in CComPtr<IDispatch> blob);
 
 	static HRESULT InstallScripts(__in CComPtr<IHTMLWindow2> spWindow);
+	static HRESULT UnInstallScripts(__in CComPtr<IHTMLWindow2> spWindow);
 
 	template <typename ClassType>
 	static HRESULT CreateInstanceWithRef(__out ClassType** ppObject)
@@ -146,4 +147,5 @@ public:
 private:
 	static DISPID s_funcID_WE00_dataChannelSendBlob;
 	static DISPID s_funcID_WE01_wrapArrayBufferIntoUint8Array;
+	static bool s_b_ScriptsInstalled;
 };

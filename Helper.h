@@ -15,6 +15,9 @@ public:
 	static std::string ToString(long val);
 	static std::string ToString(const std::wstring wstr);
 
+	static int ArrayBytesCount(ArrayType arrayType);
+	static bool ArrayIsFloatingPoint(ArrayType arrayType);
+
 	static bool RaiseCallback(LONGLONG handle, BrowserCallback* cb);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 

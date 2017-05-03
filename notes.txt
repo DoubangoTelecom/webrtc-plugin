@@ -37,3 +37,7 @@ Trickle ICE: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/
 Dtmf: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/dtmf/
 Bandwidth: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/bandwidth/
 Adjust constraints, view stats: https://doubango.org/rtc-plugin/samples/src/content/peerconnection/constraints/
+
+Transmit text: https://doubango.org/rtc-plugin/samples/src/content/datachannel/basic/
+Transfer a file: https://doubango.org/rtc-plugin/samples/src/content/datachannel/filetransfer/
+Transfer data: https://doubango.org/rtc-plugin/samples/src/content/datachannel/datatransfer/

@@ -229,8 +229,10 @@ interface IRTCPeerConnection : IDispatch{
 	[propput, id(39), helpstring("property onaddstream (Shim not part of the standard)")] HRESULT onaddstream([in] VARIANT newVal);
 
 	// The Peer-to-peer data API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
-	[propget, id(50), helpstring("property ondatachannel")] HRESULT ondatachannel([out, retval] VARIANT* pVal);
-	[propput, id(50), helpstring("property ondatachannel")] HRESULT ondatachannel([in] VARIANT newVal);
+	[propget, id(50), helpstring("property sctp")] HRESULT sctp([out, retval] VARIANT* varRTCSctpTransport);
+	[id(51), helpstring("method createDataChannel")] HRESULT createDataChannel([in] BSTR label, [in, optional] VARIANT varDataChannelDict, [out, retval] VARIANT* varRTCDataChannel);
+	[propget, id(52), helpstring("property ondatachannel")] HRESULT ondatachannel([out, retval] VARIANT* varEventHandler);
+	[propput, id(52), helpstring("property ondatachannel")] HRESULT ondatachannel([in] VARIANT varEventHandler);
 
 	// The RTP media API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
 	[id(60), helpstring("method getSenders")] HRESULT getSenders([out, retval] VARIANT* varSequenceRTCRtpSender);
@@ -336,6 +338,37 @@ interface IEmpty : IDispatch{
 	pointer_default(unique)
 ]
 interface IRTCDataChannel : IDispatch{
+	// https://www.w3.org/TR/webrtc/#dom-rtcdatachannel
+	[propget, id(1), helpstring("property label")] HRESULT label([out, retval] BSTR* USVString);
+	[propget, id(2), helpstring("property ordered")] HRESULT ordered([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(3), helpstring("property maxPacketLifeTime")] HRESULT maxPacketLifeTime([out, retval] VARIANT* pVal);
+	[propget, id(4), helpstring("property maxRetransmits")] HRESULT maxRetransmits([out, retval] VARIANT* pVal);
+	[propget, id(5), helpstring("property protocol")] HRESULT protocol([out, retval] BSTR* USVString);
+	[propget, id(6), helpstring("property negotiated")] HRESULT negotiated([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(7), helpstring("property id")] HRESULT id([out, retval] VARIANT* pVal);
+	[propget, id(8), helpstring("property priority")] HRESULT priority([out, retval] BSTR* RTCPriorityType);
+	[propget, id(9), helpstring("property readyState")] HRESULT readyState([out, retval] BSTR* RTCDataChannelState);
+	[propget, id(10), helpstring("property bufferedAmount")] HRESULT bufferedAmount([out, retval] ULONG64* pVal);
+	[propget, id(11), helpstring("property bufferedAmountLowThreshold")] HRESULT bufferedAmountLowThreshold([out, retval] ULONG64* pVal);
+	[propput, id(11), helpstring("property bufferedAmountLowThreshold")] HRESULT bufferedAmountLowThreshold([in] ULONG64 newVal);
+	[propget, id(12), helpstring("property binaryType")] HRESULT binaryType([out, retval] BSTR* DOMString);
+	[propput, id(12), helpstring("property binaryType")] HRESULT binaryType([in] BSTR DOMString);
+	[propget, id(13), helpstring("property onopen")] HRESULT onopen([out, retval] VARIANT* varEventHandler);
+	[propput, id(13), helpstring("property onopen")] HRESULT onopen([in] VARIANT varEventHandler);
+	[propget, id(14), helpstring("property onerror")] HRESULT onerror([out, retval] VARIANT* varEventHandler);
+	[propput, id(14), helpstring("property onerror")] HRESULT onerror([in] VARIANT varEventHandler);
+	[propget, id(15), helpstring("property onclose")] HRESULT onclose([out, retval] VARIANT* varEventHandler);
+	[propput, id(15), helpstring("property onclose")] HRESULT onclose([in] VARIANT varEventHandler);
+	[propget, id(16), helpstring("property onmessage")] HRESULT onmessage([out, retval] VARIANT* varEventHandler);
+	[propput, id(16), helpstring("property onmessage")] HRESULT onmessage([in] VARIANT varEventHandler);
+	[propget, id(17), helpstring("property onbufferedamountlow")] HRESULT onbufferedamountlow([out, retval] VARIANT* varEventHandler);
+	[propput, id(17), helpstring("property onbufferedamountlow")] HRESULT onbufferedamountlow([in] VARIANT varEventHandler);
+	[id(18), helpstring("method close")] HRESULT close();
+	[id(19), helpstring("method send")] HRESULT send([in] VARIANT data);
+
+	// Not part of the std
+	[id(40), helpstring("method addEventListener")] HRESULT addEventListener([in] BSTR type, [in, optional]VARIANT listenerCallback, [in, optional]VARIANT useCapture);
+	[id(41), helpstring("method removeEventListener")] HRESULT removeEventListener([in] BSTR type, [in, optional]VARIANT listenerCallback, [in, optional]VARIANT useCapture);
 };
 [
 	object,
@@ -345,6 +378,8 @@ interface IRTCDataChannel : IDispatch{
 	pointer_default(unique)
 ]
 interface IRTCDataChannelEvent : IDispatch{
+	// https://www.w3.org/TR/webrtc/#dom-rtcdatachannelevent
+	[propget, id(1), helpstring("property channel")] HRESULT channel([out, retval] VARIANT* varRTCDataChannel);
 };
 [
 	object,
@@ -471,6 +506,20 @@ interface IRTCRtpReceiver : IDispatch{
 	[id(4), helpstring("method getParameters")] HRESULT getParameters([out, retval] VARIANT* varRTCRtpParameters);
 	[id(5), helpstring("method getContributingSources")] HRESULT getContributingSources([out, retval] VARIANT* varSequenceRTCRtpContributingSource);
 };
+[
+	object,
+	uuid(1DE917D5-1BE6-4D0C-AE95-A35C3E03A2C8),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IMessageEvent : IDispatch{
+	// https://www.w3.org/TR/webmessaging/#the-messageevent-interfaces
+	[propget, id(1), helpstring("property data")] HRESULT data([out, retval] VARIANT* varAny);
+	[propget, id(2), helpstring("property origin")] HRESULT origin([out, retval] BSTR* DOMString);
+	[propget, id(3), helpstring("property lastEventId")] HRESULT lastEventId([out, retval] BSTR* DOMString);
+};
+
 
 
 
@@ -687,6 +736,13 @@ library rtcLib
 	coclass RTCRtpReceiver
 	{
 		[default] interface IRTCRtpReceiver;
+	};
+	[
+		uuid(757CE69A-9AB3-4F85-AB01-97EE17E6AD61)		
+	]
+	coclass MessageEvent
+	{
+		[default] interface IMessageEvent;
 	};
 };
 

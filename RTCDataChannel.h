@@ -34,9 +34,52 @@ END_COM_MAP()
 	void FinalRelease();
 	void SetEx(std::shared_ptr<ExRTCDataChannel> ex);
 	std::shared_ptr<ExRTCDataChannel> GetEx();
+	// https://www.w3.org/TR/webrtc/#dom-rtcdatachannel
+	STDMETHOD(get_label)(__out BSTR* USVString) override;
+	STDMETHOD(get_ordered)(__out VARIANT_BOOL* pVal) override;
+	STDMETHOD(get_maxPacketLifeTime)(__out VARIANT* pVal) override;
+	STDMETHOD(get_maxRetransmits)(__out VARIANT* pVal) override;
+	STDMETHOD(get_protocol)(__out BSTR* USVString) override;
+	STDMETHOD(get_negotiated)(__out VARIANT_BOOL* pVal) override;
+	STDMETHOD(get_id)(__out VARIANT* pVal) override;
+	STDMETHOD(get_priority)(__out BSTR* RTCPriorityType) override;
+	STDMETHOD(get_readyState)(__out BSTR* RTCDataChannelState) override;
+	STDMETHOD(get_bufferedAmount)(__out ULONG64* pVal) override;
+	STDMETHOD(get_bufferedAmountLowThreshold)(__out ULONG64* pVal) override;
+	STDMETHOD(put_bufferedAmountLowThreshold)(__in ULONG64 newVal) override;
+	STDMETHOD(get_binaryType)(__out BSTR* DOMString) override;
+	STDMETHOD(put_binaryType)(__in BSTR DOMString) override;
+	STDMETHOD(get_onopen)(__out VARIANT* varEventHandler) override;
+	STDMETHOD(put_onopen)(__in VARIANT varEventHandler) override;
+	STDMETHOD(get_onerror)(__out VARIANT* varEventHandler) override;
+	STDMETHOD(put_onerror)(__in VARIANT varEventHandler) override;
+	STDMETHOD(get_onclose)(__out VARIANT* varEventHandler) override;
+	STDMETHOD(put_onclose)(__in VARIANT varEventHandler) override;
+	STDMETHOD(get_onmessage)(__out VARIANT* varEventHandler) override;
+	STDMETHOD(put_onmessage)(__in VARIANT varEventHandler) override;
+	STDMETHOD(get_onbufferedamountlow)(__out VARIANT* varEventHandler) override;
+	STDMETHOD(put_onbufferedamountlow)(__in VARIANT varEventHandler) override;
+	STDMETHOD(close)();
+	STDMETHOD(send)(__in VARIANT data);
+
+	// Not part of the std
+	STDMETHOD(addEventListener)(__in BSTR type, __in_opt VARIANT listenerCallback, __in_opt VARIANT useCapture);
+	STDMETHOD(removeEventListener)(__in BSTR type, __in_opt VARIANT listenerCallback, __in_opt VARIANT useCapture);
+
+private:
+	void onopen();
+	void onerror(std::shared_ptr<ExErrorMessage> e);
+	void onclose();
+	void onmessage(std::shared_ptr<ExMessageEvent> e);
+	void onbufferedamountlow();
 
 private:
 	std::shared_ptr<ExRTCDataChannel> m_ex;
+	CComPtr<IDispatch> m_callback_onopen;
+	CComPtr<IDispatch> m_callback_onerror;
+	CComPtr<IDispatch> m_callback_onclose;
+	CComPtr<IDispatch> m_callback_onmessage;
+	CComPtr<IDispatch> m_callback_onbufferedamountlow;
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(RTCDataChannel), CRTCDataChannel)

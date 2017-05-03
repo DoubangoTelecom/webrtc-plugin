@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue May 02 05:35:13 2017
+/* at Wed May 03 10:06:37 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -232,6 +232,13 @@ typedef interface IRTCStatsReport IRTCStatsReport;
 typedef interface IRTCRtpReceiver IRTCRtpReceiver;
 
 #endif 	/* __IRTCRtpReceiver_FWD_DEFINED__ */
+
+
+#ifndef __IMessageEvent_FWD_DEFINED__
+#define __IMessageEvent_FWD_DEFINED__
+typedef interface IMessageEvent IMessageEvent;
+
+#endif 	/* __IMessageEvent_FWD_DEFINED__ */
 
 
 #ifndef ___IPluginEvents_FWD_DEFINED__
@@ -563,6 +570,18 @@ typedef struct RTCRtpReceiver RTCRtpReceiver;
 #endif /* __cplusplus */
 
 #endif 	/* __RTCRtpReceiver_FWD_DEFINED__ */
+
+
+#ifndef __MessageEvent_FWD_DEFINED__
+#define __MessageEvent_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class MessageEvent MessageEvent;
+#else
+typedef struct MessageEvent MessageEvent;
+#endif /* __cplusplus */
+
+#endif 	/* __MessageEvent_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -2626,11 +2645,19 @@ EXTERN_C const IID IID_IRTCPeerConnection;
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onaddstream( 
             /* [in] */ VARIANT newVal) = 0;
         
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_sctp( 
+            /* [retval][out] */ VARIANT *varRTCSctpTransport) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE createDataChannel( 
+            /* [in] */ BSTR label,
+            /* [optional][in] */ VARIANT varDataChannelDict,
+            /* [retval][out] */ VARIANT *varRTCDataChannel) = 0;
+        
         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_ondatachannel( 
-            /* [retval][out] */ VARIANT *pVal) = 0;
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
         
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_ondatachannel( 
-            /* [in] */ VARIANT newVal) = 0;
+            /* [in] */ VARIANT varEventHandler) = 0;
         
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getSenders( 
             /* [retval][out] */ VARIANT *varSequenceRTCRtpSender) = 0;
@@ -2881,13 +2908,23 @@ EXTERN_C const IID IID_IRTCPeerConnection;
             IRTCPeerConnection * This,
             /* [in] */ VARIANT newVal);
         
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_sctp )( 
+            IRTCPeerConnection * This,
+            /* [retval][out] */ VARIANT *varRTCSctpTransport);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *createDataChannel )( 
+            IRTCPeerConnection * This,
+            /* [in] */ BSTR label,
+            /* [optional][in] */ VARIANT varDataChannelDict,
+            /* [retval][out] */ VARIANT *varRTCDataChannel);
+        
         /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_ondatachannel )( 
             IRTCPeerConnection * This,
-            /* [retval][out] */ VARIANT *pVal);
+            /* [retval][out] */ VARIANT *varEventHandler);
         
         /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_ondatachannel )( 
             IRTCPeerConnection * This,
-            /* [in] */ VARIANT newVal);
+            /* [in] */ VARIANT varEventHandler);
         
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getSenders )( 
             IRTCPeerConnection * This,
@@ -3082,11 +3119,17 @@ EXTERN_C const IID IID_IRTCPeerConnection;
 #define IRTCPeerConnection_put_onaddstream(This,newVal)	\
     ( (This)->lpVtbl -> put_onaddstream(This,newVal) ) 
 
-#define IRTCPeerConnection_get_ondatachannel(This,pVal)	\
-    ( (This)->lpVtbl -> get_ondatachannel(This,pVal) ) 
+#define IRTCPeerConnection_get_sctp(This,varRTCSctpTransport)	\
+    ( (This)->lpVtbl -> get_sctp(This,varRTCSctpTransport) ) 
 
-#define IRTCPeerConnection_put_ondatachannel(This,newVal)	\
-    ( (This)->lpVtbl -> put_ondatachannel(This,newVal) ) 
+#define IRTCPeerConnection_createDataChannel(This,label,varDataChannelDict,varRTCDataChannel)	\
+    ( (This)->lpVtbl -> createDataChannel(This,label,varDataChannelDict,varRTCDataChannel) ) 
+
+#define IRTCPeerConnection_get_ondatachannel(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_ondatachannel(This,varEventHandler) ) 
+
+#define IRTCPeerConnection_put_ondatachannel(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_ondatachannel(This,varEventHandler) ) 
 
 #define IRTCPeerConnection_getSenders(This,varSequenceRTCRtpSender)	\
     ( (This)->lpVtbl -> getSenders(This,varSequenceRTCRtpSender) ) 
@@ -4131,6 +4174,93 @@ EXTERN_C const IID IID_IRTCDataChannel;
     IRTCDataChannel : public IDispatch
     {
     public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_label( 
+            /* [retval][out] */ BSTR *USVString) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_ordered( 
+            /* [retval][out] */ VARIANT_BOOL *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_maxPacketLifeTime( 
+            /* [retval][out] */ VARIANT *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_maxRetransmits( 
+            /* [retval][out] */ VARIANT *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_protocol( 
+            /* [retval][out] */ BSTR *USVString) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_negotiated( 
+            /* [retval][out] */ VARIANT_BOOL *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_id( 
+            /* [retval][out] */ VARIANT *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_priority( 
+            /* [retval][out] */ BSTR *RTCPriorityType) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_readyState( 
+            /* [retval][out] */ BSTR *RTCDataChannelState) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_bufferedAmount( 
+            /* [retval][out] */ ULONG64 *pVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_bufferedAmountLowThreshold( 
+            /* [retval][out] */ ULONG64 *pVal) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_bufferedAmountLowThreshold( 
+            /* [in] */ ULONG64 newVal) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_binaryType( 
+            /* [retval][out] */ BSTR *DOMString) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_binaryType( 
+            /* [in] */ BSTR DOMString) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_onopen( 
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onopen( 
+            /* [in] */ VARIANT varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_onerror( 
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onerror( 
+            /* [in] */ VARIANT varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_onclose( 
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onclose( 
+            /* [in] */ VARIANT varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_onmessage( 
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onmessage( 
+            /* [in] */ VARIANT varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_onbufferedamountlow( 
+            /* [retval][out] */ VARIANT *varEventHandler) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onbufferedamountlow( 
+            /* [in] */ VARIANT varEventHandler) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE close( void) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE send( 
+            /* [in] */ VARIANT data) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE addEventListener( 
+            /* [in] */ BSTR type,
+            /* [optional][in] */ VARIANT listenerCallback,
+            /* [optional][in] */ VARIANT useCapture) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE removeEventListener( 
+            /* [in] */ BSTR type,
+            /* [optional][in] */ VARIANT listenerCallback,
+            /* [optional][in] */ VARIANT useCapture) = 0;
+        
     };
     
     
@@ -4189,6 +4319,121 @@ EXTERN_C const IID IID_IRTCDataChannel;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_label )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ BSTR *USVString);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_ordered )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT_BOOL *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_maxPacketLifeTime )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_maxRetransmits )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_protocol )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ BSTR *USVString);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_negotiated )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT_BOOL *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_id )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_priority )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ BSTR *RTCPriorityType);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_readyState )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ BSTR *RTCDataChannelState);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_bufferedAmount )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ ULONG64 *pVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_bufferedAmountLowThreshold )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ ULONG64 *pVal);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_bufferedAmountLowThreshold )( 
+            IRTCDataChannel * This,
+            /* [in] */ ULONG64 newVal);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_binaryType )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ BSTR *DOMString);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_binaryType )( 
+            IRTCDataChannel * This,
+            /* [in] */ BSTR DOMString);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_onopen )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *varEventHandler);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_onopen )( 
+            IRTCDataChannel * This,
+            /* [in] */ VARIANT varEventHandler);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_onerror )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *varEventHandler);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_onerror )( 
+            IRTCDataChannel * This,
+            /* [in] */ VARIANT varEventHandler);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_onclose )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *varEventHandler);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_onclose )( 
+            IRTCDataChannel * This,
+            /* [in] */ VARIANT varEventHandler);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_onmessage )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *varEventHandler);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_onmessage )( 
+            IRTCDataChannel * This,
+            /* [in] */ VARIANT varEventHandler);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_onbufferedamountlow )( 
+            IRTCDataChannel * This,
+            /* [retval][out] */ VARIANT *varEventHandler);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_onbufferedamountlow )( 
+            IRTCDataChannel * This,
+            /* [in] */ VARIANT varEventHandler);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *close )( 
+            IRTCDataChannel * This);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *send )( 
+            IRTCDataChannel * This,
+            /* [in] */ VARIANT data);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *addEventListener )( 
+            IRTCDataChannel * This,
+            /* [in] */ BSTR type,
+            /* [optional][in] */ VARIANT listenerCallback,
+            /* [optional][in] */ VARIANT useCapture);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *removeEventListener )( 
+            IRTCDataChannel * This,
+            /* [in] */ BSTR type,
+            /* [optional][in] */ VARIANT listenerCallback,
+            /* [optional][in] */ VARIANT useCapture);
+        
         END_INTERFACE
     } IRTCDataChannelVtbl;
 
@@ -4225,6 +4470,90 @@ EXTERN_C const IID IID_IRTCDataChannel;
     ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
+#define IRTCDataChannel_get_label(This,USVString)	\
+    ( (This)->lpVtbl -> get_label(This,USVString) ) 
+
+#define IRTCDataChannel_get_ordered(This,pVal)	\
+    ( (This)->lpVtbl -> get_ordered(This,pVal) ) 
+
+#define IRTCDataChannel_get_maxPacketLifeTime(This,pVal)	\
+    ( (This)->lpVtbl -> get_maxPacketLifeTime(This,pVal) ) 
+
+#define IRTCDataChannel_get_maxRetransmits(This,pVal)	\
+    ( (This)->lpVtbl -> get_maxRetransmits(This,pVal) ) 
+
+#define IRTCDataChannel_get_protocol(This,USVString)	\
+    ( (This)->lpVtbl -> get_protocol(This,USVString) ) 
+
+#define IRTCDataChannel_get_negotiated(This,pVal)	\
+    ( (This)->lpVtbl -> get_negotiated(This,pVal) ) 
+
+#define IRTCDataChannel_get_id(This,pVal)	\
+    ( (This)->lpVtbl -> get_id(This,pVal) ) 
+
+#define IRTCDataChannel_get_priority(This,RTCPriorityType)	\
+    ( (This)->lpVtbl -> get_priority(This,RTCPriorityType) ) 
+
+#define IRTCDataChannel_get_readyState(This,RTCDataChannelState)	\
+    ( (This)->lpVtbl -> get_readyState(This,RTCDataChannelState) ) 
+
+#define IRTCDataChannel_get_bufferedAmount(This,pVal)	\
+    ( (This)->lpVtbl -> get_bufferedAmount(This,pVal) ) 
+
+#define IRTCDataChannel_get_bufferedAmountLowThreshold(This,pVal)	\
+    ( (This)->lpVtbl -> get_bufferedAmountLowThreshold(This,pVal) ) 
+
+#define IRTCDataChannel_put_bufferedAmountLowThreshold(This,newVal)	\
+    ( (This)->lpVtbl -> put_bufferedAmountLowThreshold(This,newVal) ) 
+
+#define IRTCDataChannel_get_binaryType(This,DOMString)	\
+    ( (This)->lpVtbl -> get_binaryType(This,DOMString) ) 
+
+#define IRTCDataChannel_put_binaryType(This,DOMString)	\
+    ( (This)->lpVtbl -> put_binaryType(This,DOMString) ) 
+
+#define IRTCDataChannel_get_onopen(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_onopen(This,varEventHandler) ) 
+
+#define IRTCDataChannel_put_onopen(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_onopen(This,varEventHandler) ) 
+
+#define IRTCDataChannel_get_onerror(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_onerror(This,varEventHandler) ) 
+
+#define IRTCDataChannel_put_onerror(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_onerror(This,varEventHandler) ) 
+
+#define IRTCDataChannel_get_onclose(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_onclose(This,varEventHandler) ) 
+
+#define IRTCDataChannel_put_onclose(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_onclose(This,varEventHandler) ) 
+
+#define IRTCDataChannel_get_onmessage(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_onmessage(This,varEventHandler) ) 
+
+#define IRTCDataChannel_put_onmessage(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_onmessage(This,varEventHandler) ) 
+
+#define IRTCDataChannel_get_onbufferedamountlow(This,varEventHandler)	\
+    ( (This)->lpVtbl -> get_onbufferedamountlow(This,varEventHandler) ) 
+
+#define IRTCDataChannel_put_onbufferedamountlow(This,varEventHandler)	\
+    ( (This)->lpVtbl -> put_onbufferedamountlow(This,varEventHandler) ) 
+
+#define IRTCDataChannel_close(This)	\
+    ( (This)->lpVtbl -> close(This) ) 
+
+#define IRTCDataChannel_send(This,data)	\
+    ( (This)->lpVtbl -> send(This,data) ) 
+
+#define IRTCDataChannel_addEventListener(This,type,listenerCallback,useCapture)	\
+    ( (This)->lpVtbl -> addEventListener(This,type,listenerCallback,useCapture) ) 
+
+#define IRTCDataChannel_removeEventListener(This,type,listenerCallback,useCapture)	\
+    ( (This)->lpVtbl -> removeEventListener(This,type,listenerCallback,useCapture) ) 
+
 #endif /* COBJMACROS */
 
 
@@ -4251,6 +4580,9 @@ EXTERN_C const IID IID_IRTCDataChannelEvent;
     IRTCDataChannelEvent : public IDispatch
     {
     public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_channel( 
+            /* [retval][out] */ VARIANT *varRTCDataChannel) = 0;
+        
     };
     
     
@@ -4309,6 +4641,10 @@ EXTERN_C const IID IID_IRTCDataChannelEvent;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_channel )( 
+            IRTCDataChannelEvent * This,
+            /* [retval][out] */ VARIANT *varRTCDataChannel);
+        
         END_INTERFACE
     } IRTCDataChannelEventVtbl;
 
@@ -4344,6 +4680,9 @@ EXTERN_C const IID IID_IRTCDataChannelEvent;
 #define IRTCDataChannelEvent_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
     ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
+
+#define IRTCDataChannelEvent_get_channel(This,varRTCDataChannel)	\
+    ( (This)->lpVtbl -> get_channel(This,varRTCDataChannel) ) 
 
 #endif /* COBJMACROS */
 
@@ -5760,6 +6099,156 @@ EXTERN_C const IID IID_IRTCRtpReceiver;
 #endif 	/* __IRTCRtpReceiver_INTERFACE_DEFINED__ */
 
 
+#ifndef __IMessageEvent_INTERFACE_DEFINED__
+#define __IMessageEvent_INTERFACE_DEFINED__
+
+/* interface IMessageEvent */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IMessageEvent;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("1DE917D5-1BE6-4D0C-AE95-A35C3E03A2C8")
+    IMessageEvent : public IDispatch
+    {
+    public:
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_data( 
+            /* [retval][out] */ VARIANT *varAny) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_origin( 
+            /* [retval][out] */ BSTR *DOMString) = 0;
+        
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_lastEventId( 
+            /* [retval][out] */ BSTR *DOMString) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IMessageEventVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IMessageEvent * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IMessageEvent * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IMessageEvent * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IMessageEvent * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IMessageEvent * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IMessageEvent * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IMessageEvent * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_data )( 
+            IMessageEvent * This,
+            /* [retval][out] */ VARIANT *varAny);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_origin )( 
+            IMessageEvent * This,
+            /* [retval][out] */ BSTR *DOMString);
+        
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_lastEventId )( 
+            IMessageEvent * This,
+            /* [retval][out] */ BSTR *DOMString);
+        
+        END_INTERFACE
+    } IMessageEventVtbl;
+
+    interface IMessageEvent
+    {
+        CONST_VTBL struct IMessageEventVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IMessageEvent_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IMessageEvent_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IMessageEvent_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IMessageEvent_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IMessageEvent_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IMessageEvent_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IMessageEvent_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#define IMessageEvent_get_data(This,varAny)	\
+    ( (This)->lpVtbl -> get_data(This,varAny) ) 
+
+#define IMessageEvent_get_origin(This,DOMString)	\
+    ( (This)->lpVtbl -> get_origin(This,DOMString) ) 
+
+#define IMessageEvent_get_lastEventId(This,DOMString)	\
+    ( (This)->lpVtbl -> get_lastEventId(This,DOMString) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IMessageEvent_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __rtcLib_LIBRARY_DEFINED__
 #define __rtcLib_LIBRARY_DEFINED__
@@ -6099,6 +6588,14 @@ EXTERN_C const CLSID CLSID_RTCRtpReceiver;
 
 class DECLSPEC_UUID("450B8CED-6446-4074-8630-3F331C576F68")
 RTCRtpReceiver;
+#endif
+
+EXTERN_C const CLSID CLSID_MessageEvent;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("757CE69A-9AB3-4F85-AB01-97EE17E6AD61")
+MessageEvent;
 #endif
 #endif /* __rtcLib_LIBRARY_DEFINED__ */
 

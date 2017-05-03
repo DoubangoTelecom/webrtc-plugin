@@ -3,11 +3,15 @@
 #include "Config.h"
 #include "Common.h"
 
+class ExRTCDataChannel;
+
 class ExRTCDataChannelEvent {
 public:
-	ExRTCDataChannelEvent();
+	ExRTCDataChannelEvent(std::shared_ptr<ExRTCDataChannel> channel);
 	virtual ~ExRTCDataChannelEvent();
 
-private:
+	_inline std::shared_ptr<ExRTCDataChannel> channel() { return m_channel; }
 
+private:
+	std::shared_ptr<ExRTCDataChannel> m_channel;
 };

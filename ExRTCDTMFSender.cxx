@@ -11,6 +11,7 @@ ExRTCDTMFSender::ExRTCDTMFSender(rtc::scoped_refptr<webrtc::DtmfSenderInterface>
 ExRTCDTMFSender::~ExRTCDTMFSender()
 {
 	m_obj->UnregisterObserver();
+	m_obj = nullptr;
 }
 
 void ExRTCDTMFSender::OnToneChange(const std::string& tone) /*override*/

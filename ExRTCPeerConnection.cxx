@@ -7,6 +7,8 @@
 #include "ExMediaStreamEvent.h"
 #include "ExRTCStats.h"
 #include "ExRTCStatsReport.h"
+#include "ExRTCDataChannelEvent.h"
+#include "ExRTCDataChannel.h"
 #include "RTCMediaConstraints.h"
 
 
@@ -489,6 +491,25 @@ bool ExRTCPeerConnection::getStats(std::shared_ptr<ExMediaStreamTrack> selector 
 	return true; // do not break ATL function call chain
 }
 
+std::shared_ptr<ExRTCDataChannel> ExRTCPeerConnection::createDataChannel(const char* label/*[TreatNullAs=EmptyString]*/ /*= NULL*/, std::shared_ptr<RTCDataChannelInit> dataChannelDict /*= nullptr*/)
+{
+	if (!isValid()) {
+		RTC_DEBUG_ERROR("Not valid");
+		return nullptr;
+	}
+	std::string label_(label ? label : "");
+	webrtc::DataChannelInit dataChannelDict_;
+	if (dataChannelDict) {
+		dataChannelDict_.ordered = dataChannelDict->ordered;
+		dataChannelDict_.maxRetransmitTime = dataChannelDict->maxPacketLifeTime; // TODO(dmi): Is this correct?
+		dataChannelDict_.maxRetransmits = dataChannelDict->maxRetransmits;
+		dataChannelDict_.protocol = dataChannelDict->protocol;
+		dataChannelDict_.negotiated = dataChannelDict->negotiated;
+		dataChannelDict_.id = dataChannelDict->id;
+	}
+	return std::make_shared<ExRTCDataChannel>(m_peer_connection->CreateDataChannel(label_, &dataChannelDict_));
+}
+
 void ExRTCPeerConnection::OnSignalingChange(webrtc::PeerConnectionInterface::SignalingState new_state) /*overrides(PeerConnectionObserver)*/
 {
 	if (m_callback_onsignalingstatechange) {
@@ -512,7 +533,9 @@ void ExRTCPeerConnection::OnRemoveStream(rtc::scoped_refptr<webrtc::MediaStreamI
 
 void ExRTCPeerConnection::OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel) /*overrides(PeerConnectionObserver)*/
 {
-	RTC_DEBUG_ERROR("Not implemented");
+	if (m_callback_ondatachannel) {
+		m_callback_ondatachannel(std::make_shared<ExRTCDataChannelEvent>(std::make_shared<ExRTCDataChannel>(data_channel)));
+	}
 }
 
 void ExRTCPeerConnection::OnRenegotiationNeeded() /*overrides(PeerConnectionObserver)*/

@@ -50,6 +50,11 @@ void CPlugin::FinalRelease()
 	StopVideoSink();
 	SetDispatcher(NULL);
 
+	if (s_Singleton == this) {
+		s_Singleton = NULL;
+		RTC_CHECK_HR_NOP(Utils::UnInstallScripts(m_spWindow));
+	}
+
 	m_TempVideoBuff = nullptr;
 	m_spPresentSite = NULL;
 	m_spContainer = NULL;
@@ -60,9 +65,6 @@ void CPlugin::FinalRelease()
 		m_hWindowlessHandle = NULL;
 	}
 	ReleaseFakePeerConnectionFactory();
-	if (s_Singleton == this) {
-		s_Singleton = NULL;
-	}
 }
 
 // Display::Handle() implementation

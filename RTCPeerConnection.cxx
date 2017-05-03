@@ -8,6 +8,7 @@
 #include "RTCSessionDescription.h"
 #include "RTCIceCandidate.h"
 #include "RTCPeerConnectionIceEvent.h"
+#include "RTCDataChannel.h"
 #include "RTCDataChannelEvent.h"
 #include "RTCRtpSender.h"
 #include "RTCRtpReceiver.h"
@@ -452,16 +453,55 @@ STDMETHODIMP CRTCPeerConnection::put_onaddstream(__in VARIANT newVal)
 }
 
 // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
-STDMETHODIMP CRTCPeerConnection::get_ondatachannel(__out VARIANT* pVal)
+// RTCDataChannel createDataChannel([TreatNullAs=EmptyString] USVString label, optional RTCDataChannelInit dataChannelDict);
+STDMETHODIMP CRTCPeerConnection::createDataChannel(__in BSTR bstrLabel, __in_opt VARIANT varDataChannelDict, __out VARIANT* varDataChannel)
 {
-	*pVal = CComVariant(m_callback_ondatachannel);
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	std::shared_ptr<RTCDataChannelInit> dataChannelDict;
+	RTC_CHECK_HR_RETURN(Utils::BuildRTCDataChannelInit(varDataChannelDict, dataChannelDict));
+
+	char *label = _com_util::ConvertBSTRToString(bstrLabel ? bstrLabel : _T(""));
+	if (!label) {
+		RTC_CHECK_HR_RETURN(E_OUTOFMEMORY);
+	}
+	std::shared_ptr<ExRTCDataChannel> exDataChannel = m_ex->createDataChannel(label, dataChannelDict);
+	delete[] label;
+	if (!exDataChannel) {
+		RTC_CHECK_HR_RETURN(E_OUTOFMEMORY);
+	}
+
+	CComObject<CRTCDataChannel>* dataChannel;
+	RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&dataChannel, exDataChannel));
+	*varDataChannel = CComVariant(dataChannel);
 	return S_OK;
 }
 
 // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
-STDMETHODIMP CRTCPeerConnection::put_ondatachannel(__in VARIANT newVal)
+// readonly attribute RTCSctpTransport? sctp;
+STDMETHODIMP CRTCPeerConnection::get_sctp(__out VARIANT* varRTCSctpTransport)
 {
-	m_callback_ondatachannel = Utils::VariantToDispatch(newVal);
+	if (!m_ex.get()) {
+		RTC_CHECK_HR_RETURN(E_POINTER);
+	}
+	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
+// attribute EventHandler ondatachannel;
+STDMETHODIMP CRTCPeerConnection::get_ondatachannel(__out VARIANT* varEventHandler)
+{
+	*varEventHandler = CComVariant(m_callback_ondatachannel);
+	return S_OK;
+}
+
+// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
+// attribute EventHandler ondatachannel;
+STDMETHODIMP CRTCPeerConnection::put_ondatachannel(__in VARIANT varEventHandler)
+{
+	m_callback_ondatachannel = Utils::VariantToDispatch(varEventHandler);
 	return S_OK;
 }
 

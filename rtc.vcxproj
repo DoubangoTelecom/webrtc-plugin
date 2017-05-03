@@ -265,6 +265,7 @@
     <ClCompile Include="ExMediaStreamEvent.cxx" />
     <ClCompile Include="ExMediaStreamTrack.cxx" />
     <ClCompile Include="ExMediaTrackConstraints.cxx" />
+    <ClCompile Include="ExMessageEvent.cxx" />
     <ClCompile Include="ExPeerConnectionFactory.cxx" />
     <ClCompile Include="ExPromise.cxx" />
     <ClCompile Include="ExRTCDataChannel.cxx" />
@@ -291,6 +292,7 @@
     <ClCompile Include="MediaStreamTrack.cxx" />
     <ClCompile Include="MediaTrackConstraints.cxx" />
     <ClCompile Include="MediaTrackSupportedConstraints.cxx" />
+    <ClCompile Include="MessageEvent.cxx" />
     <ClCompile Include="Plugin.cxx" />
     <ClCompile Include="Promise.cxx" />
     <ClCompile Include="rtc.cxx" />
@@ -349,6 +351,7 @@
     <ClInclude Include="ExMediaStreamEvent.h" />
     <ClInclude Include="ExMediaStreamTrack.h" />
     <ClInclude Include="ExMediaTrackConstraints.h" />
+    <ClInclude Include="ExMessageEvent.h" />
     <ClInclude Include="ExPeerConnectionFactory.h" />
     <ClInclude Include="ExPromise.h" />
     <ClInclude Include="ExRTCDataChannel.h" />
@@ -375,6 +378,7 @@
     <ClInclude Include="MediaStreamTrack.h" />
     <ClInclude Include="MediaTrackConstraints.h" />
     <ClInclude Include="MediaTrackSupportedConstraints.h" />
+    <ClInclude Include="MessageEvent.h" />
     <ClInclude Include="Plugin.h" />
     <ClInclude Include="Promise.h" />
     <ClInclude Include="Resource.h" />
@@ -414,6 +418,7 @@
     <None Include="MediaStreamTrack.rgs" />
     <None Include="MediaTrackConstraints.rgs" />
     <None Include="MediaTrackSupportedConstraints.rgs" />
+    <None Include="MessageEvent.rgs" />
     <None Include="Plugin.rgs" />
     <None Include="Promise.rgs" />
     <None Include="rtc.def" />

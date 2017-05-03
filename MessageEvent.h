@@ -1,8 +1,8 @@
-// https://www.w3.org/TR/webrtc/#dom-rtcdatachannelevent
+// https://www.w3.org/TR/webmessaging/#the-messageevent-interfaces
 #pragma once
 #include "resource.h"       // main symbols
 #include "rtc_i.h"
-#include "ExRTCDataChannelEvent.h"
+#include "ExMessageEvent.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
@@ -10,21 +10,21 @@
 
 using namespace ATL;
 
-// CRTCDataChannelEvent
+// CMessageEvent
 
-class ATL_NO_VTABLE CRTCDataChannelEvent :
+class ATL_NO_VTABLE CMessageEvent :
 	public CComObjectRootEx<CComSingleThreadModel>,
-	public CComCoClass<CRTCDataChannelEvent, &CLSID_RTCDataChannelEvent>,
-	public IDispatchImpl<IRTCDataChannelEvent, &IID_IRTCDataChannelEvent, &LIBID_rtcLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
+	public CComCoClass<CMessageEvent, &CLSID_MessageEvent>,
+	public IDispatchImpl<IMessageEvent, &IID_IMessageEvent, &LIBID_rtcLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
 {
 public:
-	CRTCDataChannelEvent();
+	CMessageEvent();
 
-DECLARE_REGISTRY_RESOURCEID(IDR_RTCDATACHANNELEVENT)
+DECLARE_REGISTRY_RESOURCEID(IDR_MESSAGEEVENT)
 
 
-BEGIN_COM_MAP(CRTCDataChannelEvent)
-	COM_INTERFACE_ENTRY(IRTCDataChannelEvent)
+BEGIN_COM_MAP(CMessageEvent)
+	COM_INTERFACE_ENTRY(IMessageEvent)
 	COM_INTERFACE_ENTRY(IDispatch)
 END_COM_MAP()
 
@@ -32,15 +32,16 @@ END_COM_MAP()
 
 	HRESULT FinalConstruct();
 	void FinalRelease();
-	void SetEx(std::shared_ptr<ExRTCDataChannelEvent> ex);
-	std::shared_ptr<ExRTCDataChannelEvent> GetEx();
+	void SetEx(std::shared_ptr<ExMessageEvent> ex);
+	std::shared_ptr<ExMessageEvent> GetEx();
 
-	// https://www.w3.org/TR/webrtc/#dom-rtcdatachannelevent
-	STDMETHOD(get_channel)(__out VARIANT* varRTCDataChannel) override;
+	// https://www.w3.org/TR/webmessaging/#the-messageevent-interfaces
+	STDMETHOD(get_data)(__out VARIANT* varAny) override;
+	STDMETHOD(get_origin)(__out BSTR* bstrOrigin) override;
+	STDMETHOD(get_lastEventId)(__out BSTR* bstrLastEventId) override;
 
 private:
-	std::shared_ptr<ExRTCDataChannelEvent> m_ex;
-
+	std::shared_ptr<ExMessageEvent > m_ex;
 };
 
-OBJECT_ENTRY_AUTO(__uuidof(RTCDataChannelEvent), CRTCDataChannelEvent)
+OBJECT_ENTRY_AUTO(__uuidof(MessageEvent), CMessageEvent)

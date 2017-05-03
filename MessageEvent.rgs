@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.MessageEvent.1 = s 'MessageEvent Class'
+	{
+		CLSID = s '{757CE69A-9AB3-4F85-AB01-97EE17E6AD61}'
+	}
+	rtc.MessageEvent = s 'MessageEvent Class'
+	{		
+		CurVer = s 'rtc.MessageEvent.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {757CE69A-9AB3-4F85-AB01-97EE17E6AD61} = s 'MessageEvent Class'
+		{
+			ProgID = s 'rtc.MessageEvent.1'
+			VersionIndependentProgID = s 'rtc.MessageEvent'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

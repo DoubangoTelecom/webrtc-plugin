@@ -1,10 +1,19 @@
 #include "stdafx.h"
 #include "Utils.h"
+#include "Helper.h"
 #include "ExMediaStreamConstraints.h"
 #include "ExMediaTrackConstraints.h"
 
 DISPID Utils::s_funcID_WE00_dataChannelSendBlob = 0;
 DISPID Utils::s_funcID_WE01_wrapArrayBufferIntoUint8Array = 0;
+bool Utils::s_b_ScriptsInstalled = false;
+
+typedef struct script {
+	const char* funcName = NULL;
+	DISPID* funcID = NULL;
+	const char* code = NULL;
+	script(const char* _funcName, DISPID* _funcID, const char* _code) : funcName(_funcName), funcID(_funcID), code(_code) {}
+} script;
 
 HRESULT Utils::ToString(__in BSTR* bstr, __out std::string & str)
 {
@@ -625,8 +634,8 @@ HRESULT Utils::BuildRTCOfferAnswerOptions(__in VARIANT varOptions, __out std::sh
 	return S_OK;
 }
 
-#if 0
-HRESULT Utils::BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out std::shared_ptr<_RTCDataChannelInit> &configuration)
+// https://www.w3.org/TR/webrtc/#dom-rtcdatachannelinit
+HRESULT Utils::BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out std::shared_ptr<RTCDataChannelInit> &configuration)
 {
 	if (varRTCDataChannelInit.vt == VT_EMPTY || varRTCDataChannelInit.vt == VT_NULL || varRTCDataChannelInit.vt == VT_ERROR /* optional parameter */) {
 		return S_OK;
@@ -637,7 +646,7 @@ HRESULT Utils::BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out
 		RTC_CHECK_HR_RETURN(E_NOINTERFACE);
 	}
 
-	configuration = std::make_shared<_RTCDataChannelInit>();
+	configuration = std::make_shared<RTCDataChannelInit>();
 	HRESULT hr;
 	BSTR bstr;
 	bool _bool;
@@ -650,8 +659,8 @@ HRESULT Utils::BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out
 	if (SUCCEEDED((hr = Utils::DispatchGetPropBOOL(spConfiguration, L"ordered", _bool)))) {
 		configuration->ordered = _bool;
 	}
-	if (SUCCEEDED((hr = Utils::DispatchGetPropInteger(spConfiguration, L"maxRetransmitTime", _long)))) {
-		configuration->maxRetransmitTime = _long;
+	if (SUCCEEDED((hr = Utils::DispatchGetPropInteger(spConfiguration, L"maxPacketLifeTime", _long)))) {
+		configuration->maxPacketLifeTime = _long;
 	}
 	if (SUCCEEDED((hr = Utils::DispatchGetPropInteger(spConfiguration, L"maxRetransmits", _long)))) {
 		configuration->maxRetransmits = _long;
@@ -665,15 +674,12 @@ HRESULT Utils::BuildRTCDataChannelInit(__in VARIANT varRTCDataChannelInit, __out
 	return S_OK;
 }
 
-HRESULT Utils::BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varData, __out std::shared_ptr<_Buffer> &data)
+HRESULT Utils::BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varData, __out std::shared_ptr<Buffer> &data)
 {
 	if (varData.vt == VT_BSTR) {
-		char *_str = _com_util::ConvertBSTRToString(varData.bstrVal);
-		if (!_str) {
-			RTC_CHECK_HR_RETURN(E_OUTOFMEMORY);
-		}
-		data = std::make_shared<_Buffer>(_str, we_strlen(_str));
-		delete[]_str;
+		std::string dataStr;
+		RTC_CHECK_HR_RETURN(Utils::ToString(&varData.bstrVal, dataStr));
+		data = std::make_shared<Buffer>(dataStr.c_str(), dataStr.length());
 		return S_OK;
 	}
 	else if (varData.vt == VT_DISPATCH) {
@@ -682,7 +688,7 @@ HRESULT Utils::BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varDat
 			RTC_CHECK_HR_RETURN(E_NOINTERFACE);
 		}
 
-		_ArrayType arrayType = _ArrayType_None;
+		ArrayType arrayType = ArrayType_None;
 		HRESULT hr;
 
 		CComVariant var;
@@ -692,31 +698,31 @@ HRESULT Utils::BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varDat
 		}
 
 		if (_wcsicmp(var.bstrVal, _T("[object Int8Array]")) == 0) {
-			arrayType = _ArrayType_Int8Array;
+			arrayType = ArrayType_Int8Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Uint8Array]")) == 0) {
-			arrayType = _ArrayType_Uint8Array;
+			arrayType = ArrayType_Uint8Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Uint8ClampedArray]")) == 0) {
-			arrayType = _ArrayType_Uint8ClampedArray;
+			arrayType = ArrayType_Uint8ClampedArray;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Int16Array]")) == 0) {
-			arrayType = _ArrayType_Int16Array;
+			arrayType = ArrayType_Int16Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Uint16Array]")) == 0) {
-			arrayType = _ArrayType_Uint16Array;
+			arrayType = ArrayType_Uint16Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Int32Array]")) == 0) {
-			arrayType = _ArrayType_Int32Array;
+			arrayType = ArrayType_Int32Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Uint32Array]")) == 0) {
-			arrayType = _ArrayType_Uint32Array;
+			arrayType = ArrayType_Uint32Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Float32Array]")) == 0) {
-			arrayType = _ArrayType_Float32Array;
+			arrayType = ArrayType_Float32Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object Float64Array]")) == 0) {
-			arrayType = _ArrayType_Float64Array;
+			arrayType = ArrayType_Float64Array;
 		}
 		else if (_wcsicmp(var.bstrVal, _T("[object ArrayBuffer]")) == 0) {
 			CComPtr<IDispatch> spUint8Array;
@@ -724,7 +730,7 @@ HRESULT Utils::BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varDat
 			return Utils::BuildData(spDispatch, CComVariant(spUint8Array), data);
 		}
 
-		if (arrayType != _ArrayType_None) {
+		if (arrayType != ArrayType_None) {
 			return Utils::BuildDataArray(spData.p, arrayType, data);
 		}
 	}
@@ -732,13 +738,13 @@ HRESULT Utils::BuildData(__in CComPtr<IDispatch> spDispatch, __in VARIANT varDat
 	return E_FAIL;
 }
 
-HRESULT Utils::BuildDataArray(__in CComPtr<IDispatch> spData, __in _ArrayType arrayType, __out std::shared_ptr<_Buffer> &data)
+HRESULT Utils::BuildDataArray(__in CComPtr<IDispatch> spData, __in ArrayType arrayType, __out std::shared_ptr<Buffer> &data)
 {
-	if (!spData || arrayType == _ArrayType_None) {
+	if (!spData || arrayType == ArrayType_None) {
 		RTC_CHECK_HR_RETURN(E_INVALIDARG);
 	}
 
-	int byteCount = _Utils::ArrayBytesCount(arrayType);
+	int byteCount = Helper::ArrayBytesCount(arrayType);
 	if (byteCount <= 0) {
 		RTC_CHECK_HR_RETURN(E_INVALIDARG);
 	}
@@ -749,13 +755,13 @@ HRESULT Utils::BuildDataArray(__in CComPtr<IDispatch> spData, __in _ArrayType ar
 
 	RTC_CHECK_HR_RETURN(hr = Utils::DispatchGetPropInteger(spData, L"length", length));
 
-	data = std::make_shared<_Buffer>((const void*)NULL, (size_t)(length * byteCount));
-	if (!data.get() || !data->getPtr()) {
+	data = std::make_shared<Buffer>(reinterpret_cast<const void*>(NULL), static_cast<size_t>(length * byteCount));
+	if (!data.get() || !data->ptr()) {
 		RTC_CHECK_HR_RETURN(E_OUTOFMEMORY);
 	}
-	uint8_t* ptr = reinterpret_cast<uint8_t*>(const_cast<void*>(data->getPtr()));
+	uint8_t* ptr = reinterpret_cast<uint8_t*>(const_cast<void*>(data->ptr()));
 
-	bool isFloatingPoint = _Utils::ArrayIsFloatingPoint(arrayType);
+	bool isFloatingPoint = Helper::ArrayIsFloatingPoint(arrayType);
 
 	TCHAR s[25];
 	double _double;
@@ -766,21 +772,21 @@ HRESULT Utils::BuildDataArray(__in CComPtr<IDispatch> spData, __in _ArrayType ar
 		if (isFloatingPoint) {
 			RTC_CHECK_HR_RETURN(hr = Utils::VariantToDouble(var, _double));
 			switch (arrayType) {
-			case _ArrayType_Float32Array: *((float*)ptr) = (float)_double; break;
-			case _ArrayType_Float64Array: *((double*)ptr) = _double; break;
+			case ArrayType_Float32Array: *((float*)ptr) = (float)_double; break;
+			case ArrayType_Float64Array: *((double*)ptr) = _double; break;
 			default: RTC_CHECK_HR_RETURN(E_INVALIDARG);
 			}
 		}
 		else {
 			RTC_CHECK_HR_RETURN(hr = Utils::VariantToInteger(var, _long));
 			switch (arrayType) {
-			case _ArrayType_Int8Array: *((int8_t*)ptr) = (int8_t)_long; break;
-			case _ArrayType_Uint8Array: *((uint8_t*)ptr) = (uint8_t)_long; break;
-			case _ArrayType_Uint8ClampedArray: *((uint8_t*)ptr) = (uint8_t)(_long < 0 ? 0 : (_long > 255 ? 255 : _long)); break;
-			case _ArrayType_Int16Array: *((int16_t*)ptr) = ((int16_t)_long); break;
-			case _ArrayType_Uint16Array: *((uint16_t*)ptr) = ((uint16_t)_long); break;
-			case _ArrayType_Int32Array: *((int32_t*)ptr) = (int32_t)_long; break;
-			case _ArrayType_Uint32Array: *((uint32_t*)ptr) = (uint32_t)_long; break;
+			case ArrayType_Int8Array: *((int8_t*)ptr) = (int8_t)_long; break;
+			case ArrayType_Uint8Array: *((uint8_t*)ptr) = (uint8_t)_long; break;
+			case ArrayType_Uint8ClampedArray: *((uint8_t*)ptr) = (uint8_t)(_long < 0 ? 0 : (_long > 255 ? 255 : _long)); break;
+			case ArrayType_Int16Array: *((int16_t*)ptr) = ((int16_t)_long); break;
+			case ArrayType_Uint16Array: *((uint16_t*)ptr) = ((uint16_t)_long); break;
+			case ArrayType_Int32Array: *((int32_t*)ptr) = (int32_t)_long; break;
+			case ArrayType_Uint32Array: *((uint32_t*)ptr) = (uint32_t)_long; break;
 			default: RTC_CHECK_HR_RETURN(E_INVALIDARG);
 			}
 		}
@@ -789,7 +795,6 @@ HRESULT Utils::BuildDataArray(__in CComPtr<IDispatch> spData, __in _ArrayType ar
 
 	return S_OK;
 }
-#endif
 
 HRESULT Utils::WrapArrayBufferIntoUint8Array(__in CComPtr<IDispatch> spDispatch, __in CComPtr<IDispatch> spArrayBuffer, __out CComPtr<IDispatch> &spUint8Array)
 {
@@ -834,22 +839,13 @@ HRESULT Utils::DataChannelSendBlob(__in CComPtr<IDispatch> spDispatch, __in CCom
 
 HRESULT Utils::InstallScripts(__in CComPtr<IHTMLWindow2> spWindow)
 {
-	static bool g_installed = false;
-
-	if (g_installed) {
+	if (s_b_ScriptsInstalled) {
 		return S_OK;
 	}
 
 	if (!spWindow) {
 		RTC_CHECK_HR_RETURN(E_INVALIDARG);
 	}
-
-	typedef struct script {
-		const char* funcName = NULL;
-		DISPID* funcID = NULL;
-		const char* code = NULL;
-		script(const char* _funcName, DISPID* _funcID, const char* _code) : funcName(_funcName), funcID(_funcID), code(_code) {}
-	} script;
 
 	static const char __script00[] = "window.WE00_dataChannelSendBlob = function(dataChannel, blob) {"
 		"var reader = new FileReader();"
@@ -858,7 +854,7 @@ HRESULT Utils::InstallScripts(__in CComPtr<IHTMLWindow2> spWindow)
 		"});"
 		"reader.readAsArrayBuffer(blob);"
 		"}";
-	static const char __script001[] = "window.WE01_wrapArrayBufferIntoUint8Array = function(arrayBuffer) { return new Uint8Array(arrayBuffer) }";
+	static const char __script001[] = "window.WE01_wrapArrayBufferIntoUint8Array = function(arrayBuffer) { return new Uint8Array(arrayBuffer); }";
 	static script __scripts[] = { { "WE00_dataChannelSendBlob", &Utils::s_funcID_WE00_dataChannelSendBlob, __script00 },{ "WE01_wrapArrayBufferIntoUint8Array", &Utils::s_funcID_WE01_wrapArrayBufferIntoUint8Array, __script001 } };
 
 	CComVariant ret;
@@ -872,7 +868,39 @@ HRESULT Utils::InstallScripts(__in CComPtr<IHTMLWindow2> spWindow)
 		LPOLESTR funcName = CComBSTR(__scripts[i].funcName);
 		RTC_CHECK_HR_RETURN(hr = spDispatch->GetIDsOfNames(IID_NULL, &funcName, 1, LOCALE_USER_DEFAULT, __scripts[i].funcID));
 	}
-	g_installed = true;
+	s_b_ScriptsInstalled = true;
+
+	return S_OK;
+}
+
+HRESULT Utils::UnInstallScripts(__in CComPtr<IHTMLWindow2> spWindow)
+{
+	if (!s_b_ScriptsInstalled) {
+		return S_OK;
+	}
+
+#if 0
+	if (!spWindow) {
+		RTC_CHECK_HR_RETURN(E_INVALIDARG);
+	}	
+
+	static const char __script00[] = "window.WE00_dataChannelSendBlob = null;";
+	static const char __script001[] = "window.WE01_wrapArrayBufferIntoUint8Array = null; ";
+	static script __scripts[] = { { "WE00_dataChannelSendBlob", &Utils::s_funcID_WE00_dataChannelSendBlob, __script00 },{ "WE01_wrapArrayBufferIntoUint8Array", &Utils::s_funcID_WE01_wrapArrayBufferIntoUint8Array, __script001 } };
+
+	CComVariant ret;
+	HRESULT hr = S_OK;
+
+	CComPtr<IDispatch> spDispatch;
+	RTC_CHECK_HR_RETURN(hr = spWindow->QueryInterface(IID_PPV_ARGS(&spDispatch)));
+
+	for (size_t i = 0; i < sizeof(__scripts) / sizeof(__scripts[0]); ++i) {
+		RTC_CHECK_HR_RETURN(hr = spWindow->execScript(CComBSTR(__scripts[i].code), _T("javascript"), &ret));
+		LPOLESTR funcName = CComBSTR(__scripts[i].funcName);
+		RTC_CHECK_HR_RETURN(hr = spDispatch->GetIDsOfNames(IID_NULL, &funcName, 1, LOCALE_USER_DEFAULT, __scripts[i].funcID));
+	}
+#endif
+	s_b_ScriptsInstalled = false;
 
 	return S_OK;
 }
