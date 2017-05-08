@@ -13,7 +13,7 @@
  - [getUserMedia with Microphone level](https://doubango.org/rtc-plugin/samples/src/content/getusermedia/miclevel/)
 
 ### Devices ###
- - [getUserMedia with camera, mic and speaker selection)[https://doubango.org/rtc-plugin/samples/src/content/devices/input-output/)
+ - [getUserMedia with camera, mic and speaker selection](https://doubango.org/rtc-plugin/samples/src/content/devices/input-output/)
 
 ### RTCPeerConnection ###
  - [Basic peer connection](https://doubango.org/rtc-plugin/samples/src/content/peerconnection/pc1/)

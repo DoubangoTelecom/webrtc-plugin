@@ -37,7 +37,7 @@ public:
 	void onremovetrackSet(FunctionCallbackVoid onremovetrack) { m_onremovetrack = onremovetrack; } // attribute EventHandler onremovetrack;
 
 	bool IsValid()const { return m_stream != nullptr; }
-	MediaStreamInterfacePtr GetWrappedStream() const { return m_stream; }
+	MediaStreamInterfacePtr GetWrappedStream() const { return m_stream.get(); }
 	VideoTrackInterfacePtr GetVideoTrack(int index = 0) const;
 
 	std::shared_ptr<ExPeerConnectionFactory > peerconnection_factory() { return m_peerconnection_factory; }

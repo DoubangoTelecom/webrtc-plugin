@@ -49,3 +49,8 @@ std::shared_ptr<ExRTCDTMFSender> ExRTCRtpSender::dtmf()
 	}
 	return m_dtmfSender;
 }
+
+rtc::scoped_refptr<webrtc::RtpSenderInterface> ExRTCRtpSender::obj()
+{
+	return m_obj;
+}

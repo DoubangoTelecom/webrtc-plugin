@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Sat May 06 02:20:14 2017
+/* at Mon May 08 19:59:44 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
@@ -2670,7 +2670,9 @@ EXTERN_C const IID IID_IRTCPeerConnection;
         
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE addTrack( 
             /* [in] */ VARIANT varMediaStreamTrack,
-            /* [optional][in] */ VARIANT varMediaStreams,
+            /* [optional][in] */ VARIANT varMediaStreams0,
+            /* [optional][in] */ VARIANT varMediaStreams1,
+            /* [optional][in] */ VARIANT varMediaStreams2,
             /* [retval][out] */ VARIANT *varRTCRtpSender) = 0;
         
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE removeTrack( 
@@ -2941,7 +2943,9 @@ EXTERN_C const IID IID_IRTCPeerConnection;
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *addTrack )( 
             IRTCPeerConnection * This,
             /* [in] */ VARIANT varMediaStreamTrack,
-            /* [optional][in] */ VARIANT varMediaStreams,
+            /* [optional][in] */ VARIANT varMediaStreams0,
+            /* [optional][in] */ VARIANT varMediaStreams1,
+            /* [optional][in] */ VARIANT varMediaStreams2,
             /* [retval][out] */ VARIANT *varRTCRtpSender);
         
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *removeTrack )( 
@@ -3140,8 +3144,8 @@ EXTERN_C const IID IID_IRTCPeerConnection;
 #define IRTCPeerConnection_getTransceivers(This,varSequenceRTCRtpTransceiver)	\
     ( (This)->lpVtbl -> getTransceivers(This,varSequenceRTCRtpTransceiver) ) 
 
-#define IRTCPeerConnection_addTrack(This,varMediaStreamTrack,varMediaStreams,varRTCRtpSender)	\
-    ( (This)->lpVtbl -> addTrack(This,varMediaStreamTrack,varMediaStreams,varRTCRtpSender) ) 
+#define IRTCPeerConnection_addTrack(This,varMediaStreamTrack,varMediaStreams0,varMediaStreams1,varMediaStreams2,varRTCRtpSender)	\
+    ( (This)->lpVtbl -> addTrack(This,varMediaStreamTrack,varMediaStreams0,varMediaStreams1,varMediaStreams2,varRTCRtpSender) ) 
 
 #define IRTCPeerConnection_removeTrack(This,varRTCRtpSender)	\
     ( (This)->lpVtbl -> removeTrack(This,varRTCRtpSender) ) 

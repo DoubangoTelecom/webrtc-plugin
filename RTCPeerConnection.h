@@ -93,7 +93,7 @@ END_COM_MAP()
 	STDMETHOD(getSenders)(__out VARIANT* varSequenceRTCRtpSender) override;
 	STDMETHOD(getReceivers)(__out VARIANT* varSequenceRTCRtpReceiver) override;
 	STDMETHOD(getTransceivers)(__out VARIANT* varSequenceRTCRtpTransceiver) override;
-	STDMETHOD(addTrack)(__in VARIANT varMediaStreamTrack, __in_opt VARIANT varMediaStreams, __out VARIANT* varRTCRtpSender) override;
+	STDMETHOD(addTrack)(__in VARIANT varMediaStreamTrack, __in_opt VARIANT varMediaStreams0, __in_opt VARIANT varMediaStreams1, __in_opt VARIANT varMediaStreams2, __out VARIANT* varRTCRtpSender) override;
 	STDMETHOD(removeTrack)(__in VARIANT varRTCRtpSender) override;
 	STDMETHOD(addTransceiver)(__in VARIANT varMediaStreamTrackorDOMStringTrackOrKind, __in_opt VARIANT varRTCRtpTransceiverInit) override;
 	STDMETHOD(get_ontrack)(__out VARIANT* varEventHandler) override;

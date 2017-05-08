@@ -7,6 +7,7 @@
 #include "ExRTCIceCandidate.h"
 #include "ExRTCRtpSender.h"
 #include "ExRTCRtpReceiver.h"
+#include "ExRTCRtpSender.h"
 #include "ExMediaStreamTrack.h"
 #include "ExRTCDataChannel.h"
 
@@ -55,6 +56,8 @@ public:
 	bool close();
 	bool addStream(std::shared_ptr<ExMediaStream> mediaStream);
 	bool removeStream(std::shared_ptr<ExMediaStream> mediaStream);
+	std::shared_ptr<ExRTCRtpSender> addTrack(std::shared_ptr<ExMediaStreamTrack> track, std::vector<std::shared_ptr<ExMediaStream> > streams);
+	bool removeTrack(std::shared_ptr<ExRTCRtpSender> sender);
 	std::vector<std::shared_ptr<ExRTCRtpSender > > getSenders();
 	std::vector<std::shared_ptr<ExRTCRtpReceiver > > getReceivers();
 	bool getStats(std::shared_ptr<ExMediaStreamTrack> selector = nullptr, FunctionCallbackStatsReport successCallback = nullptr, FunctionCallbackRTCError failureCallback = nullptr);

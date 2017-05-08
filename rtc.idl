@@ -238,7 +238,7 @@ interface IRTCPeerConnection : IDispatch{
 	[id(60), helpstring("method getSenders")] HRESULT getSenders([out, retval] VARIANT* varSequenceRTCRtpSender);
 	[id(61), helpstring("method getReceivers")] HRESULT getReceivers([out, retval] VARIANT* varSequenceRTCRtpReceiver);
 	[id(62), helpstring("method getTransceivers")] HRESULT getTransceivers([out, retval] VARIANT* varSequenceRTCRtpTransceiver);
-	[id(63), helpstring("method addTrack")] HRESULT addTrack([in] VARIANT varMediaStreamTrack, [in, optional] VARIANT varMediaStreams, [out, retval] VARIANT* varRTCRtpSender);
+	[id(63), helpstring("method addTrack")] HRESULT addTrack([in] VARIANT varMediaStreamTrack, [in, optional] VARIANT varMediaStreams0, [in, optional] VARIANT varMediaStreams1, [in, optional] VARIANT varMediaStreams2, [out, retval] VARIANT* varRTCRtpSender);
 	[id(64), helpstring("method removeTrack")] HRESULT removeTrack([in] VARIANT varRTCRtpSender);
 	[id(65), helpstring("method addTransceiver")] HRESULT addTransceiver([in] VARIANT varMediaStreamTrackorDOMStringTrackOrKind, [in, optional] VARIANT varRTCRtpTransceiverInit);
 	[propget, id(66), helpstring("property ontrack")] HRESULT ontrack([out, retval] VARIANT* varEventHandler);

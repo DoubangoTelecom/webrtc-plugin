@@ -572,13 +572,42 @@ STDMETHODIMP CRTCPeerConnection::getTransceivers(__out VARIANT* varSequenceRTCRt
 
 // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
 // RTCRtpSender addTrack(MediaStreamTrack track, MediaStream... streams)
-STDMETHODIMP CRTCPeerConnection::addTrack(__in VARIANT varMediaStreamTrack, __in_opt VARIANT varMediaStreams, __out VARIANT* varRTCRtpSender)
+STDMETHODIMP CRTCPeerConnection::addTrack(__in VARIANT varMediaStreamTrack, __in_opt VARIANT varMediaStreams0, __in_opt VARIANT varMediaStreams1, __in_opt VARIANT varMediaStreams2, __out VARIANT* varRTCRtpSender)
 {
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
+#if 0
+	// TODO(dmi): not tested (blind implementation)
+	RTC_DEBUG_WARN("not tested (blind implementation)");
+	std::shared_ptr<ExMediaStreamTrack> exMediaStreamTrack;
+	std::vector<std::shared_ptr<ExMediaStream> > exMediaStreams;
+	RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamTrack, CMediaStreamTrack, ExMediaStreamTrack>(varMediaStreamTrack, exMediaStreamTrack)));
+	// TODO(dmi): for now we accept up to #3 streams -> add support for variable arguments (Use Invoke function)
+	VARIANT varMediaStreams[] = {
+		varMediaStreams0,
+		varMediaStreams1,
+		varMediaStreams2
+	};
+	for (size_t i = 0; i < sizeof(varMediaStreams) / sizeof(varMediaStreams[0]); ++i) {
+		if (varMediaStreams[i].vt == VT_DISPATCH && varMediaStreams[i].pdispVal) {
+			std::shared_ptr<ExMediaStream> exMediaStream;
+			RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamDoubango, CMediaStream, ExMediaStream>(varMediaStreams[i], exMediaStream)));
+			exMediaStreams.push_back(exMediaStream);
+		}
+	}
+	std::shared_ptr<ExRTCRtpSender> exSender = m_ex->addTrack(exMediaStreamTrack, exMediaStreams);
+	if (!exSender.get()) {
+		return E_FAIL;
+	}
+	CComObject<CRTCRtpSender>* atlSender;
+	RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&atlSender, exSender));
+	*varRTCRtpSender = CComVariant(atlSender);
+#else
 	RTC_CHECK_HR_RETURN(E_NOTIMPL);
+#endif
 	return S_OK;
+
 }
 
 // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
@@ -588,8 +617,18 @@ STDMETHODIMP CRTCPeerConnection::removeTrack(__in VARIANT varRTCRtpSender)
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
+#if 0
+	// TODO(dmi): not tested (blind implementation)
+	RTC_DEBUG_WARN("not tested (blind implementation)");
+	std::shared_ptr<ExRTCRtpSender> exRTCRtpSender;
+	RTC_CHECK_HR_RETURN((Utils::QueryEx<IRTCRtpSender, CRTCRtpSender, ExRTCRtpSender>(varRTCRtpSender, exRTCRtpSender)));
+	return m_ex->removeTrack(exRTCRtpSender)
+		? S_OK
+		: E_FAIL;
+#else
 	RTC_CHECK_HR_RETURN(E_NOTIMPL);
 	return S_OK;
+#endif
 }
 
 // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions

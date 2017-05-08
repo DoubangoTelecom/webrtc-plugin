@@ -37,3 +37,6 @@
 /*.db
 /*.opendb
 /*.user
+/wininstall/setup.exe
+/wininstall/vc_redist.x64.exe
+/wininstall/vc_redist.x86.exe

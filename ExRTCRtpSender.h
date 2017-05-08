@@ -17,6 +17,7 @@ public:
 
 	std::shared_ptr<ExMediaStreamTrack> track();
 	std::shared_ptr<ExRTCDTMFSender> dtmf();
+	rtc::scoped_refptr<webrtc::RtpSenderInterface> obj();
 
 private:
 	rtc::scoped_refptr<webrtc::RtpSenderInterface> m_obj;

@@ -444,6 +444,29 @@ bool ExRTCPeerConnection::removeStream(std::shared_ptr<ExMediaStream> mediaStrea
 	return false;
 }
 
+std::shared_ptr<ExRTCRtpSender> ExRTCPeerConnection::addTrack(std::shared_ptr<ExMediaStreamTrack> track, std::vector<std::shared_ptr<ExMediaStream> > streams)
+{
+	if (!isValid()) {
+		RTC_DEBUG_ERROR("Not valid");
+		return nullptr;
+	}
+	std::vector<webrtc::MediaStreamInterface*> stream_;
+	for (std::vector<std::shared_ptr<ExMediaStream> >::iterator it = streams.begin(); it < streams.end(); ++it) {
+		stream_.push_back(static_cast<webrtc::MediaStreamInterface*>((*it)->GetWrappedStream()));
+	}
+	return std::make_shared<ExRTCRtpSender>(
+		m_peer_connection->AddTrack(static_cast<ExMediaStreamTrackBase*>(track.get())->_track(), stream_));
+}
+
+bool ExRTCPeerConnection::removeTrack(std::shared_ptr<ExRTCRtpSender> sender)
+{
+	if (!isValid()) {
+		RTC_DEBUG_ERROR("Not valid");
+		return false;
+	}
+	return m_peer_connection->RemoveTrack(sender->obj().get());
+}
+
 std::vector<std::shared_ptr<ExRTCRtpSender > > ExRTCPeerConnection::getSenders()
 {
 	std::vector<std::shared_ptr<ExRTCRtpSender > > senders;
