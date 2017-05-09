@@ -33,7 +33,7 @@
  - [Transfer data](https://doubango.org/rtc-plugin/samples/src/content/datachannel/datatransfer/)
 
 # Using our plugin in your own project
- - Download and install the plugin for <a href="https://doubango.org/webrtc/setup.exe" target="_blank">Windows</a>
+ - Download and install the plugin for <a href="https://doubango.org/rtc-plugin/setup.exe" target="_blank">Windows</a>
  - Include <a href="https://doubango.org/rtc-plugin/adapter/adapter-latest.js" target="_blank">adapter-latest.js</a> in your code.
  - Change the code you're using to attach a stream to a &lt;audio/&gt; or &lt;video /&gt; HTML5 element: <br />
  from:
