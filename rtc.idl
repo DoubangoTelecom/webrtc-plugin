@@ -26,6 +26,7 @@ interface IPlugin : IDispatch{
 	[id(13), helpstring("method createPeerConnection")] HRESULT createPeerConnection([in, optional] VARIANT RTCConfiguration, [in, optional] VARIANT MediaConstraints, [out, retval] IDispatch** ppPeerConnection);
 	[id(14), helpstring("method createIceCandidate")] HRESULT createIceCandidate([in] VARIANT RTCIceCandidateInit, [out, retval] IDispatch** ppIceCandidate);
 	[id(15), helpstring("method createMediaStreamTrack")] HRESULT createMediaStreamTrack([out, retval] IDispatch** ppMediaStreamTrack);
+	[id(16), helpstring("method createMediaStream")] HRESULT createMediaStream([out, retval] IDispatch** ppMediaStream);
 
 	[id(40), helpstring("method bindEventListener")] HRESULT bindEventListener([in] BSTR type, [in, optional]VARIANT listenerCallback, [in, optional]VARIANT useCapture);
 	[id(41), helpstring("method getSources")] HRESULT getSources([in, optional]VARIANT successCallback);

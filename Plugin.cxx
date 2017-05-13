@@ -505,6 +505,13 @@ STDMETHODIMP CPlugin::createMediaStreamTrack(__out IDispatch** ppMediaStreamTrac
 	return E_NOTIMPL;
 }
 
+STDMETHODIMP CPlugin::createMediaStream(__out IDispatch** ppMediaStream)
+{
+	CComObject<CMediaStream>* pMediaStream;
+	RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&pMediaStream, std::make_shared<ExMediaStream>()));
+	*ppMediaStream = pMediaStream;
+	return S_OK;
+}
 
 STDMETHODIMP CPlugin::getSources(__in_opt VARIANT successCallback)
 {

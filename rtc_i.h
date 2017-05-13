@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Mon May 08 19:59:44 2017
+/* at Sat May 13 18:33:13 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
@@ -639,6 +639,9 @@ EXTERN_C const IID IID_IPlugin;
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE createMediaStreamTrack( 
             /* [retval][out] */ IDispatch **ppMediaStreamTrack) = 0;
         
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE createMediaStream( 
+            /* [retval][out] */ IDispatch **ppMediaStream) = 0;
+        
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE bindEventListener( 
             /* [in] */ BSTR type,
             /* [optional][in] */ VARIANT listenerCallback,
@@ -772,6 +775,10 @@ EXTERN_C const IID IID_IPlugin;
             IPlugin * This,
             /* [retval][out] */ IDispatch **ppMediaStreamTrack);
         
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *createMediaStream )( 
+            IPlugin * This,
+            /* [retval][out] */ IDispatch **ppMediaStream);
+        
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *bindEventListener )( 
             IPlugin * This,
             /* [in] */ BSTR type,
@@ -880,6 +887,9 @@ EXTERN_C const IID IID_IPlugin;
 
 #define IPlugin_createMediaStreamTrack(This,ppMediaStreamTrack)	\
     ( (This)->lpVtbl -> createMediaStreamTrack(This,ppMediaStreamTrack) ) 
+
+#define IPlugin_createMediaStream(This,ppMediaStream)	\
+    ( (This)->lpVtbl -> createMediaStream(This,ppMediaStream) ) 
 
 #define IPlugin_bindEventListener(This,type,listenerCallback,useCapture)	\
     ( (This)->lpVtbl -> bindEventListener(This,type,listenerCallback,useCapture) ) 

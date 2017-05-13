@@ -194,6 +194,7 @@ END_MSG_MAP()
 	STDMETHOD(createPeerConnection)(__in_opt VARIANT RTCConfiguration, __in_opt VARIANT MediaConstraints, __out IDispatch** ppPeerConnection) override;
 	STDMETHOD(createIceCandidate)(__in VARIANT RTCIceCandidateInit, __out IDispatch** ppIceCandidate) override;
 	STDMETHOD(createMediaStreamTrack)(__out IDispatch** ppMediaStreamTrack) override;
+	STDMETHOD(createMediaStream)(__out IDispatch** ppMediaStream) override;
 
 	STDMETHOD(getSources)(__in_opt VARIANT successCallback) override;
 
