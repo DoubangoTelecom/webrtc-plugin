@@ -332,9 +332,12 @@ LRESULT CALLBACK CPlugin::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 {
 	if (uMsg == RTC_WM_INVALIDATE_WINDOWLESS) {
 		CPlugin* This = dynamic_cast<CPlugin*>(reinterpret_cast<CPlugin*>(::GetWindowLongPtr(hwnd, GWLP_USERDATA)));
-		HRESULT hr = This->m_spInPlaceSite->InvalidateRect(NULL, FALSE); // TODO(dmi): read wParam and lParam to get params for InvalidateRect
-		if (FAILED(hr)) {
+		CComPtr<IOleInPlaceSiteWindowless> spInPlaceSite = This->m_spInPlaceSite; // for thead-safeness take a reference
+		if (spInPlaceSite) {
+			HRESULT hr = spInPlaceSite->InvalidateRect(NULL, FALSE); // TODO(dmi): read wParam and lParam to get params for InvalidateRect
+			if (FAILED(hr)) {
 
+			}
 		}
 		return 1;
 	}
