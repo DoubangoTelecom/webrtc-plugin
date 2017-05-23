@@ -1,0 +1,26 @@
+HKCR
+{
+	rtc.JsArray.1 = s 'JsArray Class'
+	{
+		CLSID = s '{82E3A6DF-9233-4C74-9F75-F3215C679897}'
+	}
+	rtc.JsArray = s 'JsArray Class'
+	{		
+		CurVer = s 'rtc.JsArray.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {82E3A6DF-9233-4C74-9F75-F3215C679897} = s 'JsArray Class'
+		{
+			ProgID = s 'rtc.JsArray.1'
+			VersionIndependentProgID = s 'rtc.JsArray'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			TypeLib = s '{5701E57F-4D99-450D-8479-BC9871799B8D}'
+			Version = s '1.0'
+		}
+	}
+}

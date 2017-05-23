@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Mon May 22 22:35:03 2017
+/* at Tue May 23 00:46:54 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
@@ -239,6 +239,13 @@ typedef interface IRTCRtpReceiver IRTCRtpReceiver;
 typedef interface IMessageEvent IMessageEvent;
 
 #endif 	/* __IMessageEvent_FWD_DEFINED__ */
+
+
+#ifndef __IJsArray_FWD_DEFINED__
+#define __IJsArray_FWD_DEFINED__
+typedef interface IJsArray IJsArray;
+
+#endif 	/* __IJsArray_FWD_DEFINED__ */
 
 
 #ifndef ___IPluginEvents_FWD_DEFINED__
@@ -582,6 +589,18 @@ typedef struct MessageEvent MessageEvent;
 #endif /* __cplusplus */
 
 #endif 	/* __MessageEvent_FWD_DEFINED__ */
+
+
+#ifndef __JsArray_FWD_DEFINED__
+#define __JsArray_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class JsArray JsArray;
+#else
+typedef struct JsArray JsArray;
+#endif /* __cplusplus */
+
+#endif 	/* __JsArray_FWD_DEFINED__ */
 
 
 /* header files for imported files */
@@ -1633,6 +1652,9 @@ EXTERN_C const IID IID_IPromise;
             /* [optional][in] */ VARIANT onRejected,
             /* [retval][out] */ VARIANT *pThePromise) = 0;
         
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE toString( 
+            /* [retval][out] */ BSTR *String) = 0;
+        
     };
     
     
@@ -1702,6 +1724,10 @@ EXTERN_C const IID IID_IPromise;
             /* [optional][in] */ VARIANT onRejected,
             /* [retval][out] */ VARIANT *pThePromise);
         
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *toString )( 
+            IPromise * This,
+            /* [retval][out] */ BSTR *String);
+        
         END_INTERFACE
     } IPromiseVtbl;
 
@@ -1743,6 +1769,9 @@ EXTERN_C const IID IID_IPromise;
 
 #define IPromise_catchh(This,onRejected,pThePromise)	\
     ( (This)->lpVtbl -> catchh(This,onRejected,pThePromise) ) 
+
+#define IPromise_toString(This,String)	\
+    ( (This)->lpVtbl -> toString(This,String) ) 
 
 #endif /* COBJMACROS */
 
@@ -6263,6 +6292,126 @@ EXTERN_C const IID IID_IMessageEvent;
 #endif 	/* __IMessageEvent_INTERFACE_DEFINED__ */
 
 
+#ifndef __IJsArray_INTERFACE_DEFINED__
+#define __IJsArray_INTERFACE_DEFINED__
+
+/* interface IJsArray */
+/* [unique][nonextensible][dual][uuid][object] */ 
+
+
+EXTERN_C const IID IID_IJsArray;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("79DA6ABF-DD77-4C1D-93CE-E18904E5D9BD")
+    IJsArray : public IDispatch
+    {
+    public:
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IJsArrayVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IJsArray * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IJsArray * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IJsArray * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
+            IJsArray * This,
+            /* [out] */ UINT *pctinfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
+            IJsArray * This,
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
+            IJsArray * This,
+            /* [in] */ REFIID riid,
+            /* [size_is][in] */ LPOLESTR *rgszNames,
+            /* [range][in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [size_is][out] */ DISPID *rgDispId);
+        
+        /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
+            IJsArray * This,
+            /* [annotation][in] */ 
+            _In_  DISPID dispIdMember,
+            /* [annotation][in] */ 
+            _In_  REFIID riid,
+            /* [annotation][in] */ 
+            _In_  LCID lcid,
+            /* [annotation][in] */ 
+            _In_  WORD wFlags,
+            /* [annotation][out][in] */ 
+            _In_  DISPPARAMS *pDispParams,
+            /* [annotation][out] */ 
+            _Out_opt_  VARIANT *pVarResult,
+            /* [annotation][out] */ 
+            _Out_opt_  EXCEPINFO *pExcepInfo,
+            /* [annotation][out] */ 
+            _Out_opt_  UINT *puArgErr);
+        
+        END_INTERFACE
+    } IJsArrayVtbl;
+
+    interface IJsArray
+    {
+        CONST_VTBL struct IJsArrayVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IJsArray_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IJsArray_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IJsArray_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IJsArray_GetTypeInfoCount(This,pctinfo)	\
+    ( (This)->lpVtbl -> GetTypeInfoCount(This,pctinfo) ) 
+
+#define IJsArray_GetTypeInfo(This,iTInfo,lcid,ppTInfo)	\
+    ( (This)->lpVtbl -> GetTypeInfo(This,iTInfo,lcid,ppTInfo) ) 
+
+#define IJsArray_GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId)	\
+    ( (This)->lpVtbl -> GetIDsOfNames(This,riid,rgszNames,cNames,lcid,rgDispId) ) 
+
+#define IJsArray_Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr)	\
+    ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
+
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IJsArray_INTERFACE_DEFINED__ */
+
+
 
 #ifndef __rtcLib_LIBRARY_DEFINED__
 #define __rtcLib_LIBRARY_DEFINED__
@@ -6610,6 +6759,14 @@ EXTERN_C const CLSID CLSID_MessageEvent;
 
 class DECLSPEC_UUID("757CE69A-9AB3-4F85-AB01-97EE17E6AD61")
 MessageEvent;
+#endif
+
+EXTERN_C const CLSID CLSID_JsArray;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("82E3A6DF-9233-4C74-9F75-F3215C679897")
+JsArray;
 #endif
 #endif /* __rtcLib_LIBRARY_DEFINED__ */
 

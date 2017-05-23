@@ -45,6 +45,7 @@ END_COM_MAP()
 
 	STDMETHOD(then)(__in VARIANT onFulfilled, __in_opt VARIANT onRejected, __out VARIANT* pThePromise) override;
 	STDMETHOD(catchh)(__in_opt VARIANT onRejected, __out VARIANT* pThePromise) override; // 'catch' is reserved name
+	STDMETHOD(toString)(__out BSTR* String) override;
 
 private:
 	std::shared_ptr<ExPromiseBase> m_ex;

@@ -1,11 +1,13 @@
 // navigator.MediaDevices: https://www.w3.org/TR/mediacapture-streams/#mediadevices
 #include "stdafx.h"
+#include "ExMediaDevices.h"
 #include "MediaDevices.h"
 #include "Promise.h"
 #include "Utils.h"
 #include "MediaTrackSupportedConstraints.h"
 #include "MediaStream.h"
 #include "ErrorMessage.h"
+#include "JsArray.h"
 
 CMediaDevices::CMediaDevices()
 {
@@ -66,12 +68,28 @@ STDMETHODIMP CMediaDevices::getUserMedia(__in VARIANT constraints, __out VARIANT
 // Promise<sequence<MediaDeviceInfo>> enumerateDevices ();
 STDMETHODIMP CMediaDevices::enumerateDevices(__out VARIANT* pPromiseSequenceMediaDeviceInfo)
 {
+	CComQIPtr<IDispatchEx> spDevices;
+	CComPtr<IDispatch> spDispatch;
+	RTC_CHECK_HR_RETURN(CPlugin::Singleton()->GetDispatch(spDispatch));
+	RTC_CHECK_HR_RETURN(ExMediaDevices::enumerateDevices(spDispatch, spDevices)); // Must be called on UI thread (required by ATL function 'Utils::CreateJsArray')
+	std::shared_ptr<ExJsArray> exJsArrayDevices = std::make_shared<ExJsArray>(spDevices);
+
+	std::shared_ptr<ExPromiseAtl<CJsArray, ExJsArray, CErrorMessage, ExErrorMessage> > atlPromise =
+		std::make_shared<ExPromiseAtl<CJsArray, ExJsArray, CErrorMessage, ExErrorMessage> >(RTC_WM_ENUMERATEDEVICES_SUCESS, RTC_WM_ENUMERATEDEVICES_ERROR);
+	std::weak_ptr<ExPromiseAtl<CJsArray, ExJsArray, CErrorMessage, ExErrorMessage> > atlPromiseWeak(atlPromise);
+	auto funcCore = [exJsArrayDevices, atlPromiseWeak]() -> HRESULT {
+		auto atlPromisePtr = atlPromiseWeak.lock();
+		if (atlPromisePtr) {
+			return atlPromisePtr->raiseOnFulfilled(exJsArrayDevices);
+		}
+		return S_OK;
+	};
+
 	CComObject<CPromise>* promisePromiseSequenceMediaDeviceInfo;
-	HRESULT hr = S_OK;
-	hr = Utils::CreateInstanceWithRef(&promisePromiseSequenceMediaDeviceInfo, std::make_shared<ExPromiseEnumerateDevices>());
+	HRESULT hr = Utils::CreateInstanceWithRef(&promisePromiseSequenceMediaDeviceInfo, atlPromise->Bind(std::bind(funcCore)));
 	if (SUCCEEDED(hr)) {
 		*pPromiseSequenceMediaDeviceInfo = CComVariant(promisePromiseSequenceMediaDeviceInfo);
-	}	
+	}
 	return hr;
 }
 

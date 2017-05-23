@@ -244,11 +244,11 @@ public:
 #define RTC_DECLARE_BROWSER_OBJECT_RETAIN_RELEASE() \
 	virtual BrowserObject* RetainObject() override { \
 		if (AddRef()) return dynamic_cast<BrowserObject*>(this); \
-		return NULL; \
+		return nullptr; \
 	} \
 	virtual BrowserObject* ReleaseObject() override { \
 		if (Release()) return dynamic_cast<BrowserObject*>(this); \
-		return NULL; \
+		return nullptr; \
 	}
 
 #define RTC_DECLARE_BROWSER_OBJECT_RETAIN_RELEASE_INLINE() \
@@ -261,9 +261,8 @@ public:
 	} \
 struct BrowserObject* ReleaseObject() { \
 	assert(m_nRefCount > 0); \
-    InterlockedDecrement(&m_nRefCount); \
-	if (m_nRefCount) return this; \
-	delete this; return NULL; \
+	if (InterlockedDecrement(&m_nRefCount)) return this; \
+	delete this; return nullptr; \
 }
 
 struct BrowserCallback : public BrowserObject {

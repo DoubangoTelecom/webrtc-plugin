@@ -2,6 +2,8 @@
 #include "Config.h"
 #include "Common.h"
 #include "AsyncEvent.h"
+#include "ATLBrowserCallback.h"
+#include "ExJsArray.h"
 
 class ExMediaStream;
 class ExErrorMessage;
@@ -10,6 +12,7 @@ class ExRTCSessionDescription;
 class ExRTCError;
 class ExRTCIceCandidate;
 class ExMediaStreamTrack;
+class ExPromiseChild;
 
 //
 //	ExPromiseBase
@@ -19,8 +22,8 @@ class ExPromiseBase {
 public:
 	ExPromiseBase() { }
 	virtual ~ExPromiseBase() { }
-	virtual HRESULT then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) = 0;
-	virtual HRESULT catchh(CComPtr<IDispatch> onRejected) = 0;
+	virtual std::shared_ptr<ExPromiseChild> then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) = 0;
+	virtual std::shared_ptr<ExPromiseChild> catchh(CComPtr<IDispatch> onRejected) = 0;
 };
 
 //
@@ -33,6 +36,8 @@ public:
 	ExPromiseAtl(int evt_onFulfilled = RTC_WM_SUCCESS, int evt_ononRejected = RTC_WM_ERROR)
 		: m_evt_onFulfilled(evt_onFulfilled)
 		, m_evt_onRejected(evt_ononRejected)
+		, m_bcb_onFulfilled(nullptr)
+		, m_bcb_onRejected(nullptr)
 	{
 		m_fun_core = nullptr;
 		m_callback_onRejected = nullptr;
@@ -53,6 +58,8 @@ public:
 		m_fun_core = nullptr;
 		m_fun_onRejected = nullptr;
 		m_fun_onFulfilled = nullptr;
+		RTC_SAFE_RELEASE_OBJECT(&m_bcb_onFulfilled);
+		RTC_SAFE_RELEASE_OBJECT(&m_bcb_onRejected);
 	}
 
 	std::shared_ptr<ExPromiseAtl<AltFulfilledType, ExFulfilledType, AtlRejectedType, ExRejectedType> > Bind(std::function<HRESULT()> fun_core)
@@ -61,17 +68,41 @@ public:
 		std::shared_ptr<ExPromiseAtl<AltFulfilledType, ExFulfilledType, AtlRejectedType, ExRejectedType> > This
 			= shared_from_this();
 		std::weak_ptr<ExPromiseAtl<AltFulfilledType, ExFulfilledType, AtlRejectedType, ExRejectedType> > ThisWeak(This);
+
+		RTC_SAFE_RELEASE_OBJECT(&This->m_bcb_onFulfilled);
+		RTC_SAFE_RELEASE_OBJECT(&This->m_bcb_onRejected);
+		This->m_bcb_onFulfilled = new ATLBrowserCallback(This->m_evt_onFulfilled, This->m_callback_onFulfilled);
+		This->m_bcb_onRejected = new ATLBrowserCallback(This->m_evt_onRejected, This->m_callback_onRejected);
+
 		m_fun_onFulfilled = [ThisWeak](std::shared_ptr<ExFulfilledType> exFulfilledObject) -> HRESULT {
 			auto ThisPtr = ThisWeak.lock();
 			if (ThisPtr && ThisPtr->m_callback_onFulfilled) {
-				RTC_CHECK_HR_RETURN((Utils::RaiseEvent<AltFulfilledType, ExFulfilledType>(ThisPtr->m_callback_onFulfilled, ThisPtr->m_evt_onFulfilled, exFulfilledObject)));
+				if (std::is_same<ExFulfilledType, ExJsArray>::value) {
+					ThisPtr->m_bcb_onFulfilled->AddDispatch(reinterpret_cast<ExJsArray*>(exFulfilledObject.get())->spJsArray().Detach());
+					dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(ThisPtr->m_bcb_onFulfilled);
+				}
+				else {
+					CComObject<AltFulfilledType>* arg;
+					if (SUCCEEDED(Utils::CreateInstanceWithRef(&arg))) {
+						arg->SetEx(exFulfilledObject);
+						ThisPtr->m_bcb_onFulfilled->AddDispatch(arg);
+						dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(ThisPtr->m_bcb_onFulfilled);
+						RTC_SAFE_RELEASE(&arg);
+					}
+				}
 			}
 			return S_OK;
 		};
 		m_fun_onRejected = [ThisWeak](std::shared_ptr<ExRejectedType> exRejectedObject) -> HRESULT {
 			auto ThisPtr = ThisWeak.lock();
 			if (ThisPtr && ThisPtr->m_callback_onRejected) {
-				RTC_CHECK_HR_RETURN((Utils::RaiseEvent<AtlRejectedType, ExRejectedType>(ThisPtr->m_callback_onRejected, ThisPtr->m_evt_onRejected, exRejectedObject)));
+				CComObject<AtlRejectedType>* arg;
+				if (SUCCEEDED(Utils::CreateInstanceWithRef(&arg))) {
+					arg->SetEx(exRejectedObject);
+					ThisPtr->m_bcb_onRejected->AddDispatch(arg);
+					dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(ThisPtr->m_bcb_onRejected);
+					RTC_SAFE_RELEASE(&arg);
+				}
 			}
 			return S_OK;
 		};
@@ -88,21 +119,25 @@ public:
 		return This;
 	}
 
-	virtual HRESULT then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) override
+	virtual std::shared_ptr<ExPromiseChild> then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) override
 	{
 		m_callback_onFulfilled = onFulfilled;
 		if (onRejected) {
 			m_callback_onRejected = onRejected;
 		}
-		RTC_CHECK_HR_RETURN(start());
-		return S_OK;
+		if (FAILED(start())) {
+			return nullptr;
+		}
+		return std::make_shared<ExPromiseChild>(m_bcb_onFulfilled, m_bcb_onRejected);
 	}
 
-	virtual HRESULT catchh(CComPtr<IDispatch> onRejected) override
+	virtual std::shared_ptr<ExPromiseChild> catchh(CComPtr<IDispatch> onRejected) override
 	{
 		m_callback_onRejected = onRejected;
-		RTC_CHECK_HR_RETURN(start());
-		return S_OK;
+		if (FAILED(start())) {
+			return nullptr;
+		}
+		return std::make_shared<ExPromiseChild>(m_bcb_onFulfilled, m_bcb_onRejected);
 	}
 
 	HRESULT raiseOnFulfilled(std::shared_ptr<ExFulfilledType> exFulfilled)
@@ -136,6 +171,8 @@ public:
 private:
 	virtual HRESULT start()
 	{
+		m_bcb_onFulfilled->SetCallback(m_callback_onFulfilled);
+		m_bcb_onRejected->SetCallback(m_callback_onRejected);
 		if (m_raised) {
 			if (m_pending_onFulfilled) {
 				RTC_CHECK_HR_RETURN(raiseOnFulfilled(m_pending_onFulfilled));
@@ -166,55 +203,35 @@ private:
 	bool m_raised;
 	int m_evt_onFulfilled;
 	int m_evt_onRejected;
+	ATLBrowserCallback* m_bcb_onRejected;
+	ATLBrowserCallback* m_bcb_onFulfilled;
 };
 
 
-enum ExPromiseType
-{
-	ExPromiseType_Unknown,
-	ExPromiseType_Void,
-	ExPromiseType_GetUserMedia,
-	ExPromiseType_EnumerateDevices,
-	ExPromiseType_CreateSessionDescription,
-	ExPromiseType_GetStats,
-};
-
 //
-//	ExPromise
+//	ExPromiseChild
 //
-class ExPromise : public ExPromiseBase
+class ExPromiseChild : public ExPromiseBase
 {
-protected:
-	ExPromise(ExPromiseType eType);
 public:
-	virtual ~ExPromise();
+	ExPromiseChild(ATLBrowserCallback* bcb_onFulfilled, ATLBrowserCallback* bcb_onRejected);
+	virtual ~ExPromiseChild();
 
-	_inline ExPromiseType type() const { return m_eType; }
+	virtual  std::shared_ptr<ExPromiseChild> then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) override;
+	virtual  std::shared_ptr<ExPromiseChild> catchh(CComPtr<IDispatch> onRejected) override;
 
-	virtual HRESULT then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) override;
-	virtual HRESULT catchh(CComPtr<IDispatch> onRejected) override;
+private:
+	bool raiseOnFulfilled(ATLBrowserCallback* bcb_onFulfilled);
+	bool raiseOnRejected(ATLBrowserCallback* bcb_onRejected);
 
-protected:
+private:
 	CComPtr<IDispatch>m_callback_onRejected;
 	CComPtr<IDispatch>m_callback_onFulfilled;
-
-private:
-	ExPromiseType m_eType;
-};
-
-//
-//	ExPromiseEnumerateDevices
-//
-class ExPromiseEnumerateDevices : public ExPromise
-{
-public:
-	ExPromiseEnumerateDevices();
-	virtual ~ExPromiseEnumerateDevices();
-
-	virtual HRESULT then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected = nullptr) override;
-	virtual HRESULT catchh(CComPtr<IDispatch> onRejected) override;
-
-private:
-	
+	ATLBrowserCallback* m_bcb_onFulfilled;
+	ATLBrowserCallback* m_bcb_onRejected;
+	ATLBrowserCallback* m_bcb_pending_onFulfilled;
+	ATLBrowserCallback* m_bcb_pending_onRejected;
+	bool m_raised_onRejected;
+	bool m_raised_onFulfilled;
 };
 

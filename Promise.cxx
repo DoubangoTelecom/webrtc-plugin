@@ -46,10 +46,11 @@ STDMETHODIMP CPromise::GetIDsOfNames(
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
 STDMETHODIMP CPromise::then(__in VARIANT onFulfilled, __in_opt VARIANT onRejected, __out VARIANT* pThePromise)
 {
-	this->AddRef();
-	*pThePromise = CComVariant(this);
-	if (m_ex) {
-		m_ex->then(Utils::VariantToDispatch(onFulfilled), Utils::VariantToDispatch(onRejected));
+	if (m_ex.get()) {
+		std::shared_ptr<ExPromiseChild> exChild = m_ex->then(Utils::VariantToDispatch(onFulfilled), Utils::VariantToDispatch(onRejected));
+		CComObject<CPromise>* promiseChild;
+		RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&promiseChild, exChild));
+		*pThePromise = CComVariant(promiseChild);
 	}
 	return S_OK;
 }
@@ -57,10 +58,19 @@ STDMETHODIMP CPromise::then(__in VARIANT onFulfilled, __in_opt VARIANT onRejecte
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
 STDMETHODIMP CPromise::catchh(__in_opt VARIANT onRejected, __out VARIANT* pThePromise) // 'catch' is reserved name
 {
-	this->AddRef();
-	*pThePromise = CComVariant(this);
-	if (m_ex) {
-		m_ex->catchh(Utils::VariantToDispatch(onRejected));
+	if (m_ex.get()) {
+		std::shared_ptr<ExPromiseChild> exChild = m_ex->catchh(Utils::VariantToDispatch(onRejected));
+		CComObject<CPromise>* promiseChild;
+		RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&promiseChild, exChild));
+		*pThePromise = CComVariant(promiseChild);
 	}
 	return S_OK;
+}
+
+STDMETHODIMP CPromise::toString(__out BSTR* String)
+{
+	if (m_ex.get()) {
+		return Utils::CopyAnsiStr("IPromise", String);
+	}
+	return E_POINTER;
 }

@@ -226,6 +226,12 @@
     <ClCompile Include="ExMessageEvent.cxx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JsArray.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExJsArray.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -450,6 +456,12 @@
     <ClInclude Include="ExMessageEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JsArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExJsArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="rtc.rc">
@@ -545,6 +557,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="MessageEvent.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="JsArray.rgs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

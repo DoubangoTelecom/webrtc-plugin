@@ -5,7 +5,6 @@
 #include "ExRTCPeerConnection.h"
 #include "ExRTCSessionDescription.h"
 
-#include "ATLBrowserCallback.h"
 #include "AsyncEvent.h"
 #include "Utils.h"
 #include "Plugin.h"
@@ -17,78 +16,119 @@
 #include "RTCStats.h"
 
 //
-//	ExPromise
+//	ExPromiseChild
 //
 
-ExPromise::ExPromise(ExPromiseType eType)
+ExPromiseChild::ExPromiseChild(ATLBrowserCallback* bcb_onFulfilled, ATLBrowserCallback* bcb_onRejected)
 	: ExPromiseBase()
-	, m_eType(eType)
-
+	, m_bcb_onFulfilled(bcb_onFulfilled ? dynamic_cast<ATLBrowserCallback*>(bcb_onFulfilled->RetainObject()) : nullptr)
+	, m_bcb_onRejected(bcb_onRejected ? dynamic_cast<ATLBrowserCallback*>(bcb_onRejected->RetainObject()) : nullptr)
+	, m_bcb_pending_onFulfilled(nullptr)
+	, m_bcb_pending_onRejected(nullptr)
+	, m_raised_onFulfilled(false)
+	, m_raised_onRejected(false)
 {
-
+	if (m_bcb_onFulfilled) {
+		m_bcb_onFulfilled->SetCbInvoked([this](CComVariant& retVal) { 
+			if (m_bcb_pending_onFulfilled) {
+				raiseOnFulfilled(m_bcb_pending_onFulfilled);
+			}
+		});
+	}
+	if (m_bcb_onRejected) {
+		m_bcb_onRejected->SetCbInvoked([this](CComVariant& retVal) {
+			if (m_bcb_pending_onRejected) {
+				raiseOnRejected(m_bcb_pending_onRejected);
+			}
+		});
+	}
 }
 
-ExPromise::~ExPromise()
+ExPromiseChild::~ExPromiseChild()
 {
-	m_callback_onRejected = nullptr;
+	if (m_bcb_onFulfilled) {
+		m_bcb_onFulfilled->SetCbInvoked(nullptr);
+	}
+	if (m_bcb_onRejected) {
+		m_bcb_onRejected->SetCbInvoked(nullptr);
+	}
 	m_callback_onFulfilled = nullptr;
+	m_callback_onRejected = nullptr;
+	RTC_SAFE_RELEASE_OBJECT(&m_bcb_onFulfilled);
+	RTC_SAFE_RELEASE_OBJECT(&m_bcb_onRejected);
+	RTC_SAFE_RELEASE_OBJECT(&m_bcb_pending_onFulfilled);
+	RTC_SAFE_RELEASE_OBJECT(&m_bcb_pending_onRejected);
 }
 
-HRESULT ExPromise::then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected /*= nullptr*/)
+std::shared_ptr<ExPromiseChild> ExPromiseChild::then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected /*= nullptr*/)
 {
 	m_callback_onFulfilled = onFulfilled;
+	RTC_SAFE_RELEASE_OBJECT(&m_bcb_pending_onFulfilled);
 	if (onRejected) {
 		m_callback_onRejected = onRejected;
+		RTC_SAFE_RELEASE_OBJECT(&m_bcb_pending_onRejected);
 	}
-	return S_OK;
-}
 
-HRESULT ExPromise::catchh(CComPtr<IDispatch> onRejected)
-{
-	m_callback_onRejected = onRejected;
-	return S_OK;
-}
-
-//
-//	ExPromiseEnumerateDevices
-//
-
-ExPromiseEnumerateDevices::ExPromiseEnumerateDevices()
-	: ExPromise(ExPromiseType_EnumerateDevices)
-{
-
-}
-
-ExPromiseEnumerateDevices::~ExPromiseEnumerateDevices()
-{
-
-}
-
-HRESULT ExPromiseEnumerateDevices::then(CComPtr<IDispatch> onFulfilled, CComPtr<IDispatch> onRejected /*= nullptr*/)
-{
-	RTC_CHECK_HR_RETURN(ExPromise::then(onFulfilled, onRejected)); // call base class implementation
-
-	HRESULT hr = S_OK;
-	if (m_callback_onFulfilled) {
-		CComQIPtr<IDispatchEx> spDevices;
-		CComPtr<IDispatch> spDispatch;
-		RTC_CHECK_HR_RETURN(hr = CPlugin::Singleton()->GetDispatch(spDispatch));
-		RTC_CHECK_HR_RETURN(hr = ExMediaDevices::enumerateDevices(spDispatch, spDevices));
-		ATLBrowserCallback* bcb = new ATLBrowserCallback(RTC_WM_ENUMERATEDEVICES_SUCESS, m_callback_onFulfilled);
-		if (bcb) {
-			bcb->AddDispatch(spDevices.Detach());
-			dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
-			RTC_SAFE_RELEASE_OBJECT(&bcb);
+	ATLBrowserCallback* bcb_onFulfilled = nullptr;
+	ATLBrowserCallback* bcb_onRejected = nullptr;
+	
+	if (m_callback_onFulfilled && m_bcb_onFulfilled) {
+		bcb_onFulfilled = new ATLBrowserCallback(RTC_WM_SUCCESS, m_callback_onFulfilled);
+		if (!raiseOnFulfilled(bcb_onFulfilled)) {
+			m_bcb_pending_onFulfilled = dynamic_cast<ATLBrowserCallback*>(bcb_onFulfilled->RetainObject());
 		}
 	}
-	return hr;
+	
+	if (m_callback_onRejected && m_bcb_onRejected) {
+		bcb_onRejected = new ATLBrowserCallback(RTC_WM_ERROR, m_callback_onRejected);
+		if (!raiseOnRejected(bcb_onRejected)) {
+			m_bcb_pending_onRejected = dynamic_cast<ATLBrowserCallback*>(bcb_onRejected->RetainObject());
+		}
+	}
+
+	std::shared_ptr<ExPromiseChild> exChild = std::make_shared<ExPromiseChild>(bcb_onFulfilled, bcb_onRejected);
+
+	RTC_SAFE_RELEASE_OBJECT(&bcb_onFulfilled);
+	RTC_SAFE_RELEASE_OBJECT(&bcb_onRejected);
+
+	return exChild;
 }
 
-HRESULT ExPromiseEnumerateDevices::catchh(CComPtr<IDispatch> onRejected)
+std::shared_ptr<ExPromiseChild> ExPromiseChild::catchh(CComPtr<IDispatch> onRejected)
 {
-	RTC_CHECK_HR_RETURN(ExPromise::catchh(onRejected)); // call base class implementation
-	//RTC_CHECK_HR_RETURN(Start());
-	return S_OK;
+	m_callback_onRejected = onRejected;
+	RTC_SAFE_RELEASE_OBJECT(&m_bcb_pending_onRejected);
+	ATLBrowserCallback* bcb_onRejected = nullptr;
+	if (m_callback_onRejected && m_bcb_onRejected) {
+		bcb_onRejected = new ATLBrowserCallback(RTC_WM_ERROR, m_callback_onRejected);
+		if (!raiseOnRejected(bcb_onRejected)) {
+			m_bcb_pending_onRejected = dynamic_cast<ATLBrowserCallback*>(bcb_onRejected->RetainObject());
+		}
+	}
+
+	std::shared_ptr<ExPromiseChild> exChild = std::make_shared<ExPromiseChild>(nullptr, bcb_onRejected);
+
+	RTC_SAFE_RELEASE_OBJECT(&bcb_onRejected);
+
+	return exChild;
 }
 
+bool ExPromiseChild::raiseOnFulfilled(ATLBrowserCallback* bcb_onFulfilled)
+{
+	if (!m_raised_onFulfilled && bcb_onFulfilled && m_bcb_onFulfilled->isInvoked()) {
+		bcb_onFulfilled->AddVariant(m_bcb_onFulfilled->ret());
+		m_raised_onFulfilled = dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb_onFulfilled);
+		return m_raised_onFulfilled;
+	}
+	return false;
+}
 
+bool ExPromiseChild::raiseOnRejected(ATLBrowserCallback* bcb_onRejected)
+{
+	if (!m_raised_onRejected && bcb_onRejected && m_bcb_onRejected->isInvoked()) {
+		bcb_onRejected->AddVariant(m_bcb_onRejected->ret());
+		m_raised_onRejected = dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb_onRejected);
+		return m_raised_onRejected;
+	}
+	return false;
+}

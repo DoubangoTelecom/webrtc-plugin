@@ -258,6 +258,7 @@
     <ClCompile Include="ErrorMessage.cxx" />
     <ClCompile Include="ExEmpty.cxx" />
     <ClCompile Include="ExErrorMessage.cxx" />
+    <ClCompile Include="ExJsArray.cxx" />
     <ClCompile Include="ExMediaDeviceInfo.cxx" />
     <ClCompile Include="ExMediaDevices.cxx" />
     <ClCompile Include="ExMediaStream.cxx" />
@@ -285,6 +286,7 @@
     <ClCompile Include="ExRTCTrackEvent.cxx" />
     <ClCompile Include="ExRTCWindow.cxx" />
     <ClCompile Include="Helper.cxx" />
+    <ClCompile Include="JsArray.cxx" />
     <ClCompile Include="MediaDeviceInfo.cxx" />
     <ClCompile Include="MediaDevices.cxx" />
     <ClCompile Include="MediaStream.cxx" />
@@ -344,6 +346,7 @@
     <ClInclude Include="ErrorMessage.h" />
     <ClInclude Include="ExEmpty.h" />
     <ClInclude Include="ExErrorMessage.h" />
+    <ClInclude Include="ExJsArray.h" />
     <ClInclude Include="ExMediaDeviceInfo.h" />
     <ClInclude Include="ExMediaDevices.h" />
     <ClInclude Include="ExMediaStream.h" />
@@ -371,6 +374,7 @@
     <ClInclude Include="ExRTCTrackEvent.h" />
     <ClInclude Include="ExRTCWindow.h" />
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="JsArray.h" />
     <ClInclude Include="MediaDeviceInfo.h" />
     <ClInclude Include="MediaDevices.h" />
     <ClInclude Include="MediaStream.h" />
@@ -411,6 +415,7 @@
   <ItemGroup>
     <None Include="Empty.rgs" />
     <None Include="ErrorMessage.rgs" />
+    <None Include="JsArray.rgs" />
     <None Include="MediaDeviceInfo.rgs" />
     <None Include="MediaDevices.rgs" />
     <None Include="MediaStream.rgs" />

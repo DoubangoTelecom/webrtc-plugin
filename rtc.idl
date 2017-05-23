@@ -112,6 +112,8 @@ interface IPromise : IDispatch{
 	[id(1), helpstring("method then")] HRESULT then([in] VARIANT onFulfilled, [in, optional] VARIANT onRejected, [out, retval] VARIANT* pThePromise);
 	// catch is reserved keyword and hacked using GetIDsOfNames wich means the id **must** be "2"
 	[id(2), helpstring("method catch")] HRESULT catchh([in, optional] VARIANT onRejected, [out, retval] VARIANT* pThePromise);
+
+	[id(10), helpstring("method toString")] HRESULT toString([out, retval] BSTR* String);
 };
 [
 	object,
@@ -533,6 +535,15 @@ interface IMessageEvent : IDispatch{
 
 
 [
+	object,
+	uuid(79DA6ABF-DD77-4C1D-93CE-E18904E5D9BD),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface IJsArray : IDispatch{
+};
+[
 	uuid(5701E57F-4D99-450D-8479-BC9871799B8D),
 	version(1.0),
 ]
@@ -744,6 +755,13 @@ library rtcLib
 	coclass MessageEvent
 	{
 		[default] interface IMessageEvent;
+	};
+	[
+		uuid(82E3A6DF-9233-4C74-9F75-F3215C679897)		
+	]
+	coclass JsArray
+	{
+		[default] interface IJsArray;
 	};
 };
 

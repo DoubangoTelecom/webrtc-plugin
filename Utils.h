@@ -133,6 +133,18 @@ public:
 		return S_OK;
 	}
 
+	static HRESULT RaiseEvent(__in CComPtr<IDispatch> evt, __in int evtId, CComVariant& variant) {
+		if (evt) {
+			ATLBrowserCallback* bcb = new ATLBrowserCallback(static_cast<unsigned>(evtId), evt);
+			if (bcb) {
+				bcb->AddVariant(variant);
+				dynamic_cast<AsyncEventDispatcher*>(CPlugin::Singleton())->RaiseCallback(bcb);
+				RTC_SAFE_RELEASE_OBJECT(&bcb);
+			}
+		}
+		return S_OK;
+	}
+
 	static HRESULT RaiseEventVoid(__in CComPtr<IDispatch> evt, __in int evtId) {
 		if (evt) {
 			ATLBrowserCallback* bcb = new ATLBrowserCallback(static_cast<unsigned>(evtId), evt);
