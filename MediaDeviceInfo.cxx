@@ -15,7 +15,7 @@ HRESULT CMediaDeviceInfo::FinalConstruct()
 
 void CMediaDeviceInfo::FinalRelease()
 {
-
+	m_ex = nullptr;
 }
 
 void CMediaDeviceInfo::SetEx(std::shared_ptr<ExMediaDeviceInfo> ex)

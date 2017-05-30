@@ -6,7 +6,7 @@ Buffer::Buffer(const void* ptr, size_t size)
 {
 	m_pPtr = malloc(size + 1);
 	if (!m_pPtr) {
-		RTC_DEBUG_ERROR("Failed to allocate buffer with size=%lu", size);
+		RTC_DEBUG_ERROR("Failed to allocate buffer with size=%zu", size);
 		return;
 	}
 	((char*)m_pPtr)[size] = '\0';

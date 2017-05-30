@@ -522,18 +522,6 @@ interface IMessageEvent : IDispatch{
 	[propget, id(2), helpstring("property origin")] HRESULT origin([out, retval] BSTR* DOMString);
 	[propget, id(3), helpstring("property lastEventId")] HRESULT lastEventId([out, retval] BSTR* DOMString);
 };
-
-
-
-
-
-
-
-
-
-
-
-
 [
 	object,
 	uuid(79DA6ABF-DD77-4C1D-93CE-E18904E5D9BD),
@@ -543,6 +531,20 @@ interface IMessageEvent : IDispatch{
 ]
 interface IJsArray : IDispatch{
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 [
 	uuid(5701E57F-4D99-450D-8479-BC9871799B8D),
 	version(1.0),

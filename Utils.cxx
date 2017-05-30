@@ -92,6 +92,11 @@ BOOL Utils::VariantIsJsBLOB(__in const VARIANT &var)
 	return FALSE;
 }
 
+BOOL Utils::VariantIsDispatch(__in const VARIANT &var)
+{
+	return var.vt == VT_DISPATCH;
+}
+
 HRESULT Utils::VariantToInteger(VARIANT var, long &integer)
 {
 	if (Utils::VariantIsBSTR(var)) {
@@ -371,19 +376,21 @@ HRESULT Utils::BuildMediaConstraintsUnKnown(const std::string& name, __in VARIAN
 {
 	MediaConstraintSet::iterator it;
 	std::shared_ptr<MediaConstraintSet> curr;
-	RTC_CHECK_HR_RETURN(Utils::BuildMediaConstraints(varConstraints, curr));
-	if (curr) {
-		if ((it = curr->find("exact")) != curr->end()) {
-			if (!mandatory) {
-				mandatory = std::make_shared<MediaConstraintSet>();
+	HRESULT hr = Utils::BuildMediaConstraints(varConstraints, curr); // Do not return error when building unknown constraints fail
+	if (SUCCEEDED(hr)) {
+		if (curr) {
+			if ((it = curr->find("exact")) != curr->end()) {
+				if (!mandatory) {
+					mandatory = std::make_shared<MediaConstraintSet>();
+				}
+				mandatory->insert(std::pair<std::string, std::string>(name, it->second));
 			}
-			mandatory->insert(std::pair<std::string, std::string>(name, it->second));
-		}
-		else if ((it = curr->find("ideal")) != curr->end()) {
-			if (!optional) {
-				optional = std::make_shared<MediaConstraintSet>();
+			else if ((it = curr->find("ideal")) != curr->end()) {
+				if (!optional) {
+					optional = std::make_shared<MediaConstraintSet>();
+				}
+				optional->insert(std::pair<std::string, std::string>(name, it->second));
 			}
-			optional->insert(std::pair<std::string, std::string>(name, it->second));
 		}
 	}
 	return S_OK;
@@ -409,31 +416,46 @@ HRESULT Utils::BuildMediaConstraintsWellKnown(const std::string& name, __in VARI
 		RTC_DEBUG_ERROR("Not implemented: %s", name.c_str());
 		return S_FALSE;
 	}
-	
-	MediaConstraintSet::iterator it0, it1;
-	std::shared_ptr<MediaConstraintSet> curr;
-	RTC_CHECK_HR_RETURN(Utils::BuildMediaConstraints(varConstraints, curr));
-	if (curr) {
-		if ((it0 = curr->find("min")) != curr->end() && (it1 = curr->find("max")) != curr->end()) {
+
+	if (Utils::VariantIsDispatch(varConstraints)) { // Expecting something like: 'width: {exact: 320}' or 'width: {min: 320, max: 1920}'
+		MediaConstraintSet::iterator it0, it1;
+		std::shared_ptr<MediaConstraintSet> curr;
+		RTC_CHECK_HR_RETURN(Utils::BuildMediaConstraints(varConstraints, curr));
+		if (curr) {
+			if ((it0 = curr->find("min")) != curr->end() && (it1 = curr->find("max")) != curr->end()) {
+				if (!optional) {
+					optional = std::make_shared<MediaConstraintSet>();
+				}
+				optional->insert(std::pair<std::string, std::string>(nameMin, it0->second));
+				optional->insert(std::pair<std::string, std::string>(nameMax, it1->second));
+			}
+			else if ((it0 = curr->find("exact")) != curr->end()) {
+				if (!mandatory) {
+					mandatory = std::make_shared<MediaConstraintSet>();
+				}
+				mandatory->insert(std::pair<std::string, std::string>(nameMin, it0->second));
+				mandatory->insert(std::pair<std::string, std::string>(nameMax, it0->second));
+			}
+			else if ((it0 = curr->find("ideal")) != curr->end()) {
+				if (!optional) {
+					optional = std::make_shared<MediaConstraintSet>();
+				}
+				optional->insert(std::pair<std::string, std::string>(nameMin, it0->second));
+				optional->insert(std::pair<std::string, std::string>(nameMax, it0->second));
+			}
+		}
+	}
+	else { // Expecting something like: 'width: 1080'
+		if (Utils::VariantIsInteger(varConstraints)) { // width, height and frameRate requires integer values
+			long v;
+			char s[25];
+			RTC_CHECK_HR_RETURN(Utils::VariantToInteger(varConstraints, v));
+			sprintf(s, "%ld", v);
 			if (!optional) {
 				optional = std::make_shared<MediaConstraintSet>();
 			}
-			optional->insert(std::pair<std::string, std::string>(nameMin, it0->second));
-			optional->insert(std::pair<std::string, std::string>(nameMax, it1->second));
-		}
-		else if ((it0 = curr->find("exact")) != curr->end()) {
-			if (!mandatory) {
-				mandatory = std::make_shared<MediaConstraintSet>();
-			}
-			mandatory->insert(std::pair<std::string, std::string>(nameMin, it0->second));
-			mandatory->insert(std::pair<std::string, std::string>(nameMax, it0->second));
-		}
-		else if ((it0 = curr->find("ideal")) != curr->end()) {
-			if (!optional) {
-				optional = std::make_shared<MediaConstraintSet>();
-			}
-			optional->insert(std::pair<std::string, std::string>(nameMin, it0->second));
-			optional->insert(std::pair<std::string, std::string>(nameMax, it0->second));
+			optional->insert(std::pair<std::string, std::string>(nameMin, s));
+			optional->insert(std::pair<std::string, std::string>(nameMax, s));
 		}
 	}
 

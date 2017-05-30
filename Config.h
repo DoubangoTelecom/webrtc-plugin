@@ -13,7 +13,7 @@
 #	define kRTC_VersionMajor 1
 #endif
 #if !defined(kRTC_VersionMinor)
-#	define kRTC_VersionMinor 1
+#	define kRTC_VersionMinor 2
 #endif
 #if !defined(kRTC_VersionMicro)
 #	define kRTC_VersionMicro 0

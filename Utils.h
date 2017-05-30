@@ -22,6 +22,7 @@ public:
 	static BOOL VariantIsFloat(__in const VARIANT &var);
 	static BOOL VariantIsBSTR(__in const VARIANT &var);
 	static BOOL VariantIsJsBLOB(__in const VARIANT &var);
+	static BOOL VariantIsDispatch(__in const VARIANT &var);
 	static HRESULT VariantToInteger(VARIANT var, long &integer);
 	static HRESULT VariantToDouble(VARIANT var, double &val);
 	static HRESULT VariantToBSTR(VARIANT var, BSTR &bstr);
