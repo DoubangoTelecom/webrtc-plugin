@@ -16,7 +16,7 @@
 #	define kRTC_VersionMinor 2
 #endif
 #if !defined(kRTC_VersionMicro)
-#	define kRTC_VersionMicro 0
+#	define kRTC_VersionMicro 1
 #endif
 #if !defined(kRTC_VersionString)
 #	define kRTC_VersionString RTC_STRING(RTC_CAT(kRTC_VersionMajor, .)) RTC_STRING(RTC_CAT(kRTC_VersionMinor, .)) RTC_STRING(kRTC_VersionMicro)

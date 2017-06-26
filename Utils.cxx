@@ -4,8 +4,11 @@
 #include "ExMediaStreamConstraints.h"
 #include "ExMediaTrackConstraints.h"
 
+// These ids will be updated with a valid value once the script is executed
 DISPID Utils::s_funcID_WE00_dataChannelSendBlob = 0;
 DISPID Utils::s_funcID_WE01_wrapArrayBufferIntoUint8Array = 0;
+DISPID Utils::s_funcID_WE02_promiseResolve = 0;
+
 bool Utils::s_b_ScriptsInstalled = false;
 
 typedef struct script {
@@ -851,11 +854,41 @@ HRESULT Utils::DataChannelSendBlob(__in CComPtr<IDispatch> spDispatch, __in CCom
 
 	CComVariant vtRet;
 	DISPPARAMS params = { 0 };
-	VARIANTARG args[2] = { CComVariant(blob), CComVariant(dataChannel) }; //!\ parameters swapped
+	VARIANTARG args[2] = { CComVariant(blob), CComVariant(dataChannel) }; //!\ parameters in reverse order
 	params.cArgs = sizeof(args) / sizeof(args[0]);
 	params.rgvarg = args;
 	RTC_CHECK_HR_RETURN(hr = spDispatch->Invoke(Utils::s_funcID_WE00_dataChannelSendBlob, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &params, &vtRet, NULL, NULL));
 
+	return S_OK;
+}
+
+// Maximum 10 arguments
+HRESULT Utils::ExecJsFunction(__in const std::string& name, __in const VARIANTARG *args, __in const size_t args_count, __out VARIANT* ret /*= NULL*/)
+{
+	assert(args_count <= 10);
+	CComVariant vRet;
+	vRet.Clear();
+	CComPtr<IDispatch> spDispatch;
+	CComPtr<IHTMLWindow2> spWindow;
+	RTC_CHECK_HR_RETURN(CPlugin::Singleton()->GetHTMLWindow2(spWindow));
+	RTC_CHECK_HR_RETURN(spWindow->QueryInterface(IID_PPV_ARGS(&spDispatch)));
+	LPOLESTR funcName = CComBSTR(name.c_str());
+	DISPID funcId;
+	RTC_CHECK_HR_RETURN(spDispatch->GetIDsOfNames(IID_NULL, &funcName, 1, LOCALE_USER_DEFAULT, &funcId));
+
+	//!\\ args in 'rgvarg' in reverse order
+	VARIANTARG reverse_args[10];
+	for (size_t i = 0; i < args_count; ++i) {
+		reverse_args[i] = args[args_count - 1 - i];
+	}
+
+	DISPPARAMS params = { 0 };
+	params.cArgs = static_cast<UINT>(args_count);
+	params.rgvarg = reverse_args;
+	RTC_CHECK_HR_RETURN(spDispatch->Invoke(funcId, IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &params, &vRet, NULL, NULL));
+	if (ret) {
+		RTC_CHECK_HR_RETURN(vRet.Detach(ret));
+	}
 	return S_OK;
 }
 
@@ -876,8 +909,16 @@ HRESULT Utils::InstallScripts(__in CComPtr<IHTMLWindow2> spWindow)
 		"});"
 		"reader.readAsArrayBuffer(blob);"
 		"}";
+	
 	static const char __script001[] = "window.WE01_wrapArrayBufferIntoUint8Array = function(arrayBuffer) { return new Uint8Array(arrayBuffer); }";
-	static script __scripts[] = { { "WE00_dataChannelSendBlob", &Utils::s_funcID_WE00_dataChannelSendBlob, __script00 },{ "WE01_wrapArrayBufferIntoUint8Array", &Utils::s_funcID_WE01_wrapArrayBufferIntoUint8Array, __script001 } };
+	
+	static const char __script002[] = "window.WE02_promiseResolve = function(valueOrPromiseOrThenable) { return Promise.resolve(valueOrPromiseOrThenable); }"; // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve
+
+	static script __scripts[] = { 
+		{ "WE00_dataChannelSendBlob", &Utils::s_funcID_WE00_dataChannelSendBlob, __script00 },
+		{ "WE01_wrapArrayBufferIntoUint8Array", &Utils::s_funcID_WE01_wrapArrayBufferIntoUint8Array, __script001 },
+		{ "WE02_promiseResolve", &Utils::s_funcID_WE02_promiseResolve, __script002 }
+	};
 
 	CComVariant ret;
 	HRESULT hr = S_OK;
@@ -901,7 +942,7 @@ HRESULT Utils::UnInstallScripts(__in CComPtr<IHTMLWindow2> spWindow)
 		return S_OK;
 	}
 
-#if 0
+#if 0 //!\\ Must not uncomment
 	if (!spWindow) {
 		RTC_CHECK_HR_RETURN(E_INVALIDARG);
 	}	

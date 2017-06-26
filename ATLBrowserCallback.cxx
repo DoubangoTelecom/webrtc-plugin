@@ -70,7 +70,7 @@ bool ATLBrowserCallback::Invoke()
 		DISPATCH_METHOD,
 		&params, &m_ret, NULL, NULL);
 	m_bInvoked = true;
-	if (m_cbInvoked) {
+	if (m_cbInvoked != nullptr) {
 		m_cbInvoked(m_ret);
 	}
 	return SUCCEEDED(hr);

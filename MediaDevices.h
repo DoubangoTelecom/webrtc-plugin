@@ -33,8 +33,10 @@ END_COM_MAP()
 	void FinalRelease();
 
 	STDMETHOD(getSupportedConstraints)(__out VARIANT* pConstraints) override;
-	STDMETHOD(getUserMedia)(__in VARIANT constraints, __out VARIANT* pPromiseMediaStream) override;
+	STDMETHOD(getUserMedia)(__in_opt VARIANT constraints, __out VARIANT* pPromiseMediaStream) override;
+	STDMETHOD(getUserMediaPromiseHook)(__in_opt VARIANT constraints, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
 	STDMETHOD(enumerateDevices)(__out VARIANT* pPromiseSequenceMediaDeviceInfo) override;
+	STDMETHOD(enumerateDevicesPromiseHook)(__in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
 
 private:
 

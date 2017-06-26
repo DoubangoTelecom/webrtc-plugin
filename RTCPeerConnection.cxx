@@ -21,6 +21,7 @@
 #include "Promise.h"
 #include "Plugin.h"
 #include "Empty.h"
+#include "ErrorMessage.h"
 
 
 #define kCreateOfferTrue				true
@@ -94,19 +95,49 @@ std::shared_ptr<ExRTCPeerConnection> CRTCPeerConnection::GetEx()
 
 STDMETHODIMP CRTCPeerConnection::createOffer(__in_opt VARIANT RTCOfferOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit)
 {
-	RTC_CHECK_HR_RETURN(createOfferAnswer(kCreateOfferTrue, RTCOfferOptions, pPromiseRTCSessionDescriptionInit));
+	const VARIANTARG args[] = { CComVariant(this), RTCOfferOptions };
+	RTC_CHECK_HR_RETURN(Utils::ExecJsFunction(
+		"__promise_RTCPeerConnection_createOfferPromiseHook",
+		args, sizeof(args) / sizeof(args[0]), pPromiseRTCSessionDescriptionInit
+	));
+	return S_OK;
+}
+
+STDMETHODIMP CRTCPeerConnection::createOfferPromiseHook(__in_opt VARIANT RTCOfferOptions, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
+{
+	RTC_CHECK_HR_RETURN(createOfferAnswer(kCreateOfferTrue, RTCOfferOptions, successCallback, errorCallback));
 	return S_OK;
 }
 
 STDMETHODIMP CRTCPeerConnection::createAnswer(__in_opt VARIANT RTCAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit)
 {
-	RTC_CHECK_HR_RETURN(createOfferAnswer(kCreateOfferFalse, RTCAnswerOptions, pPromiseRTCSessionDescriptionInit));
+	const VARIANTARG args[] = { CComVariant(this), RTCAnswerOptions };
+	RTC_CHECK_HR_RETURN(Utils::ExecJsFunction(
+		"__promise_RTCPeerConnection_createAnswerPromiseHook",
+		args, sizeof(args) / sizeof(args[0]), pPromiseRTCSessionDescriptionInit
+	));
+	return S_OK;
+}
+
+STDMETHODIMP CRTCPeerConnection::createAnswerPromiseHook(__in_opt VARIANT RTCAnswerOptions, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
+{
+	RTC_CHECK_HR_RETURN(createOfferAnswer(kCreateOfferFalse, RTCAnswerOptions, successCallback, errorCallback));
 	return S_OK;
 }
 
 STDMETHODIMP CRTCPeerConnection::setLocalDescription(__in VARIANT RTCSessionDescriptionInit, __out VARIANT* pPromiseVoid)
 {
-	RTC_CHECK_HR_RETURN(setDescription(kSetDescriptionLocalTrue, RTCSessionDescriptionInit, pPromiseVoid));
+	const VARIANTARG args[] = { CComVariant(this), RTCSessionDescriptionInit };
+	RTC_CHECK_HR_RETURN(Utils::ExecJsFunction(
+		"__promise_RTCPeerConnection_setLocalDescriptionPromiseHook",
+		args, sizeof(args) / sizeof(args[0]), pPromiseVoid
+	));
+	return S_OK;
+}
+
+STDMETHODIMP CRTCPeerConnection::setLocalDescriptionPromiseHook(__in VARIANT RTCSessionDescriptionInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
+{
+	RTC_CHECK_HR_RETURN(setDescription(kSetDescriptionLocalTrue, RTCSessionDescriptionInit, successCallback, errorCallback));
 	return S_OK;
 }
 
@@ -145,7 +176,17 @@ STDMETHODIMP CRTCPeerConnection::get_pendingLocalDescription(__out VARIANT* RTCS
 
 STDMETHODIMP CRTCPeerConnection::setRemoteDescription(__in VARIANT RTCSessionDescriptionInit, __out VARIANT* pPromiseVoid)
 {
-	RTC_CHECK_HR_RETURN(setDescription(kSetDescriptionLocalFalse, RTCSessionDescriptionInit, pPromiseVoid));
+	const VARIANTARG args[] = { CComVariant(this), RTCSessionDescriptionInit };
+	RTC_CHECK_HR_RETURN(Utils::ExecJsFunction(
+		"__promise_RTCPeerConnection_setRemoteDescriptionPromiseHook",
+		args, sizeof(args) / sizeof(args[0]), pPromiseVoid
+	));
+	return S_OK;
+}
+
+STDMETHODIMP CRTCPeerConnection::setRemoteDescriptionPromiseHook(__in VARIANT RTCSessionDescriptionInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
+{
+	RTC_CHECK_HR_RETURN(setDescription(kSetDescriptionLocalFalse, RTCSessionDescriptionInit, successCallback, errorCallback));
 	return S_OK;
 }
 
@@ -182,7 +223,17 @@ STDMETHODIMP CRTCPeerConnection::get_pendingRemoteDescription(__out VARIANT* RTC
 	return S_OK;
 }
 
-STDMETHODIMP CRTCPeerConnection::addIceCandidate(__in VARIANT Candidate, __out VARIANT* pPromiseVoid)
+STDMETHODIMP CRTCPeerConnection::addIceCandidate(__in VARIANT RTCIceCandidateInit, __out VARIANT* pPromiseVoid)
+{
+	const VARIANTARG args[] = { CComVariant(this), RTCIceCandidateInit };
+	RTC_CHECK_HR_RETURN(Utils::ExecJsFunction(
+		"__promise_RTCPeerConnection_addIceCandidatePromiseHook",
+		args, sizeof(args) / sizeof(args[0]), pPromiseVoid
+	));
+	return S_OK;	
+}
+
+STDMETHODIMP CRTCPeerConnection::addIceCandidatePromiseHook(__in VARIANT RTCIceCandidateInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
 {
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
@@ -192,16 +243,16 @@ STDMETHODIMP CRTCPeerConnection::addIceCandidate(__in VARIANT Candidate, __out V
 
 	// https://www.w3.org/TR/webrtc/#dom-rtcicecandidateinit
 	{
-		CComPtr<IDispatch>RTCIceCandidateInit = Utils::VariantToDispatch(Candidate);
-		if (RTCIceCandidateInit) {
+		CComPtr<IDispatch> spRTCIceCandidateInit = Utils::VariantToDispatch(RTCIceCandidateInit);
+		if (spRTCIceCandidateInit) {
 			BSTR bstrCandidate;
-			HRESULT hr = Utils::DispatchGetPropBSTR(RTCIceCandidateInit, L"candidate", bstrCandidate);
+			HRESULT hr = Utils::DispatchGetPropBSTR(spRTCIceCandidateInit, L"candidate", bstrCandidate);
 			if (SUCCEEDED(hr)) {
 				BSTR bstrSdpMid;
-				hr = Utils::DispatchGetPropBSTR(RTCIceCandidateInit, L"sdpMid", bstrSdpMid);
+				hr = Utils::DispatchGetPropBSTR(spRTCIceCandidateInit, L"sdpMid", bstrSdpMid);
 				if (SUCCEEDED(hr)) {
 					long longSdpMLineIndex;
-					hr = Utils::DispatchGetPropInteger(RTCIceCandidateInit, L"sdpMLineIndex", longSdpMLineIndex);
+					hr = Utils::DispatchGetPropInteger(spRTCIceCandidateInit, L"sdpMLineIndex", longSdpMLineIndex);
 					if (SUCCEEDED(hr)) {
 						std::string strCandidate, strSdpMid;
 						if (SUCCEEDED(Utils::ToString(&bstrCandidate, strCandidate) && SUCCEEDED(Utils::ToString(&bstrSdpMid, strSdpMid)))) {
@@ -215,29 +266,21 @@ STDMETHODIMP CRTCPeerConnection::addIceCandidate(__in VARIANT Candidate, __out V
 	}
 	if (!exIceCandidate.get()) {
 		// https://www.w3.org/TR/webrtc/#dom-rtcicecandidate
-		RTC_CHECK_HR_RETURN((Utils::QueryEx<IRTCIceCandidate, CRTCIceCandidate, ExRTCIceCandidate>(Candidate, exIceCandidate)));
+		RTC_CHECK_HR_RETURN((Utils::QueryEx<IRTCIceCandidate, CRTCIceCandidate, ExRTCIceCandidate>(RTCIceCandidateInit, exIceCandidate)));
 	}
 
-	CComObject<CPromise>* promiseVoid;
-	std::shared_ptr<ExRTCPeerConnection> peerconnection = m_ex;
-	std::shared_ptr<ExPromiseAtl<CEmpty, ExEmpty, CRTCError, ExRTCError> > atlPromise =
-		std::make_shared<ExPromiseAtl<CEmpty, ExEmpty, CRTCError, ExRTCError> >();
-	std::weak_ptr<ExPromiseAtl<CEmpty, ExEmpty, CRTCError, ExRTCError> > atlPromiseWeak(atlPromise);
-	auto funcCore = [peerconnection, exIceCandidate, atlPromiseWeak]() -> HRESULT {
-		auto atlPromisePtr = atlPromiseWeak.lock();
-		if (atlPromisePtr) {
-			if (peerconnection->addIceCandidate(exIceCandidate) == true) {
-				return atlPromisePtr->raiseOnFulfilled(std::make_shared<ExEmpty>());
-			}
-			else {
-				return atlPromisePtr->raiseOnRejected(std::make_shared<ExRTCError>(RTC_OperationError));
-			}
+	if (m_ex->addIceCandidate(exIceCandidate) == true) {
+		CComPtr<IDispatch> spSuccessCallback = Utils::VariantToDispatch(successCallback);
+		if (spSuccessCallback) {
+			RTC_CHECK_HR_RETURN((Utils::RaiseEventVoid(spSuccessCallback, RTC_WM_SUCCESS)));
 		}
-		return S_OK;
-	};
-	HRESULT hr = Utils::CreateInstanceWithRef(&promiseVoid, atlPromise->Bind(std::bind(funcCore))->AutoStart());
-	if (SUCCEEDED(hr)) {
-		*pPromiseVoid = CComVariant(promiseVoid);
+	}
+	else {
+		CComPtr<IDispatch> spErrorCallback = Utils::VariantToDispatch(errorCallback);
+		if (spErrorCallback) {
+			std::shared_ptr<ExErrorMessage> exError = std::make_shared<ExErrorMessage>(RTC_OperationError);
+			RTC_CHECK_HR_RETURN((Utils::RaiseEvent<CErrorMessage, ExErrorMessage>(spErrorCallback, RTC_WM_ERROR, exError)));
+		}
 	}
 	return S_OK;
 }
@@ -577,7 +620,6 @@ STDMETHODIMP CRTCPeerConnection::addTrack(__in VARIANT varMediaStreamTrack, __in
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
-#if 0
 	// TODO(dmi): not tested (blind implementation)
 	RTC_DEBUG_WARN("not tested (blind implementation)");
 	std::shared_ptr<ExMediaStreamTrack> exMediaStreamTrack;
@@ -603,9 +645,6 @@ STDMETHODIMP CRTCPeerConnection::addTrack(__in VARIANT varMediaStreamTrack, __in
 	CComObject<CRTCRtpSender>* atlSender;
 	RTC_CHECK_HR_RETURN(Utils::CreateInstanceWithRef(&atlSender, exSender));
 	*varRTCRtpSender = CComVariant(atlSender);
-#else
-	RTC_CHECK_HR_RETURN(E_NOTIMPL);
-#endif
 	return S_OK;
 
 }
@@ -617,7 +656,6 @@ STDMETHODIMP CRTCPeerConnection::removeTrack(__in VARIANT varRTCRtpSender)
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
-#if 0
 	// TODO(dmi): not tested (blind implementation)
 	RTC_DEBUG_WARN("not tested (blind implementation)");
 	std::shared_ptr<ExRTCRtpSender> exRTCRtpSender;
@@ -625,10 +663,6 @@ STDMETHODIMP CRTCPeerConnection::removeTrack(__in VARIANT varRTCRtpSender)
 	return m_ex->removeTrack(exRTCRtpSender)
 		? S_OK
 		: E_FAIL;
-#else
-	RTC_CHECK_HR_RETURN(E_NOTIMPL);
-	return S_OK;
-#endif
 }
 
 // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions
@@ -668,6 +702,16 @@ STDMETHODIMP CRTCPeerConnection::put_ontrack(__in VARIANT varEventHandler)
 // Promise<RTCStatsReport> getStats(optional MediaStreamTrack? selector = null);
 STDMETHODIMP CRTCPeerConnection::getStats(__in_opt VARIANT varMediaStreamTrack, __out VARIANT* varPromiseRTCStatsReport)
 {
+	const VARIANTARG args[] = { CComVariant(this), varMediaStreamTrack };
+	RTC_CHECK_HR_RETURN(Utils::ExecJsFunction(
+		"__promise_RTCPeerConnection_getStatsPromiseHook",
+		args, sizeof(args) / sizeof(args[0]), varPromiseRTCStatsReport
+	));
+	return S_OK;	
+}
+
+STDMETHODIMP CRTCPeerConnection::getStatsPromiseHook(__in_opt VARIANT varMediaStreamTrack, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
+{
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
@@ -676,30 +720,17 @@ STDMETHODIMP CRTCPeerConnection::getStats(__in_opt VARIANT varMediaStreamTrack, 
 	if (varMediaStreamTrack.vt == VT_DISPATCH && varMediaStreamTrack.pdispVal) { // check not null (arg is optional) and type is correct
 		RTC_CHECK_HR_RETURN((Utils::QueryEx<IMediaStreamTrack, CMediaStreamTrack, ExMediaStreamTrack>(varMediaStreamTrack, exMediaStreamTrack)));
 	}
-	std::shared_ptr<ExRTCPeerConnection> peerconnection = m_ex;
-	std::shared_ptr<ExPromiseAtl<CRTCStatsReport, ExRTCStatsReport, CRTCError, ExRTCError> > atlPromise =
-		std::make_shared<ExPromiseAtl<CRTCStatsReport, ExRTCStatsReport, CRTCError, ExRTCError> >(RTC_WM_GETSTATS_SUCESS, RTC_WM_GETSTATS_ERROR);
-	std::weak_ptr<ExPromiseAtl<CRTCStatsReport, ExRTCStatsReport, CRTCError, ExRTCError> > atlPromiseWeak(atlPromise);
-	auto funcCore = [exMediaStreamTrack, peerconnection, atlPromiseWeak]() -> HRESULT {
-		auto atlPromisePtr = atlPromiseWeak.lock();
-		if (atlPromisePtr) {
-			return peerconnection->getStats(
-				exMediaStreamTrack,
-				[=](std::shared_ptr<ExRTCStatsReport> report) { atlPromisePtr->raiseOnFulfilled(report); },
-				[=](std::shared_ptr<ExRTCError> err) { atlPromisePtr->raiseOnRejected(err); }
-			) ? S_OK : E_FAIL;
-		}
-		return S_OK;
-	};
-	CComObject<CPromise>* promiseRTCStatsReport;
-	hr = Utils::CreateInstanceWithRef(&promiseRTCStatsReport, atlPromise->Bind(std::bind(funcCore)));
-	if (SUCCEEDED(hr)) {
-		*varPromiseRTCStatsReport = CComVariant(promiseRTCStatsReport);
-	}
-	return hr;
+
+	CComPtr<IDispatch> spSuccessCallback = Utils::VariantToDispatch(successCallback);
+	CComPtr<IDispatch> spErrorCallback = Utils::VariantToDispatch(errorCallback);
+	return m_ex->getStats(
+		exMediaStreamTrack,
+		[spSuccessCallback](std::shared_ptr<ExRTCStatsReport> exReport) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCStatsReport, ExRTCStatsReport>(spSuccessCallback, RTC_WM_GETSTATS_SUCESS, exReport))); },
+		[spErrorCallback](std::shared_ptr<ExRTCError> exError) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCError, ExRTCError>(spErrorCallback, RTC_WM_GETSTATS_ERROR, exError))); }
+	) ? S_OK : E_FAIL;
 }
 
-HRESULT CRTCPeerConnection::createOfferAnswer(bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit)
+HRESULT CRTCPeerConnection::createOfferAnswer(__in bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
 {
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
@@ -708,39 +739,25 @@ HRESULT CRTCPeerConnection::createOfferAnswer(bool offer, __in_opt VARIANT RTCOf
 	std::shared_ptr<webrtc::PeerConnectionInterface::RTCOfferAnswerOptions> rtcOfferAnswerOptions;
 	RTC_CHECK_HR_RETURN(hr = Utils::BuildRTCOfferAnswerOptions(RTCOfferAnswerOptions, rtcOfferAnswerOptions));
 
-	CComObject<CPromise>* promiseRTCSessionDescription;
-	std::shared_ptr<ExRTCPeerConnection> peerconnection = m_ex;
-	std::shared_ptr<ExPromiseAtl<CRTCSessionDescription, ExRTCSessionDescription, CRTCError, ExRTCError> > atlPromise =
-		std::make_shared<ExPromiseAtl<CRTCSessionDescription, ExRTCSessionDescription, CRTCError, ExRTCError> >(offer ? RTC_WM_CREATEOFFER_SUCCESS : RTC_WM_CREATEANSWER_SUCCESS, offer ? RTC_WM_CREATEOFFER_ERROR : RTC_WM_CREATEANSWER_ERROR);
-	std::weak_ptr<ExPromiseAtl<CRTCSessionDescription, ExRTCSessionDescription, CRTCError, ExRTCError> > atlPromiseWeak(atlPromise);
-	auto funcCore = [offer, peerconnection, rtcOfferAnswerOptions, atlPromiseWeak]() -> HRESULT {
-		auto atlPromisePtr = atlPromiseWeak.lock();
-		if (atlPromisePtr) {
-			if (offer) {
-				return peerconnection->createOffer(
-					[=](std::shared_ptr<ExRTCSessionDescription> sdp) { atlPromisePtr->raiseOnFulfilled(sdp); },
-					[=](std::shared_ptr<ExRTCError> err) { atlPromisePtr->raiseOnRejected(err); },
-					rtcOfferAnswerOptions
-				) ? S_OK : E_FAIL;
-			}
-			else {
-				return peerconnection->createAnswer(
-					[=](std::shared_ptr<ExRTCSessionDescription> sdp) { atlPromisePtr->raiseOnFulfilled(sdp); },
-					[=](std::shared_ptr<ExRTCError> err) { atlPromisePtr->raiseOnRejected(err); },
-					rtcOfferAnswerOptions
-				) ? S_OK : E_FAIL;
-			}
-		}
-		return S_OK;
-	};
-	hr = Utils::CreateInstanceWithRef(&promiseRTCSessionDescription, atlPromise->Bind(std::bind(funcCore)));
-	if (SUCCEEDED(hr)) {
-		*pPromiseRTCSessionDescriptionInit = CComVariant(promiseRTCSessionDescription);
+	CComPtr<IDispatch> spSuccessCallback = Utils::VariantToDispatch(successCallback);
+	CComPtr<IDispatch> spErrorCallback = Utils::VariantToDispatch(errorCallback);
+	if (offer) {
+		return m_ex->createOffer(
+			[spSuccessCallback](std::shared_ptr<ExRTCSessionDescription> exSdp) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCSessionDescription, ExRTCSessionDescription>(spSuccessCallback, RTC_WM_CREATEOFFER_SUCCESS, exSdp))); },
+			[spErrorCallback](std::shared_ptr<ExRTCError> exError) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCError, ExRTCError>(spErrorCallback, RTC_WM_CREATEOFFER_ERROR, exError))); },
+			rtcOfferAnswerOptions
+		) ? S_OK : E_FAIL;
 	}
-	return hr;
+	else {
+		return m_ex->createAnswer(
+			[spSuccessCallback](std::shared_ptr<ExRTCSessionDescription> exSdp) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCSessionDescription, ExRTCSessionDescription>(spSuccessCallback, RTC_WM_CREATEANSWER_SUCCESS, exSdp))); },
+			[spErrorCallback](std::shared_ptr<ExRTCError> exError) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCError, ExRTCError>(spErrorCallback, RTC_WM_CREATEANSWER_ERROR, exError))); },
+			rtcOfferAnswerOptions
+		) ? S_OK : E_FAIL;
+	}
 }
 
-HRESULT CRTCPeerConnection::setDescription(__in bool local, __in_opt VARIANT RTCSessionDescriptionInit, __out VARIANT* pPromiseVoid)
+HRESULT CRTCPeerConnection::setDescription(__in bool local, __in_opt VARIANT RTCSessionDescriptionInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback)
 {
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
@@ -748,37 +765,22 @@ HRESULT CRTCPeerConnection::setDescription(__in bool local, __in_opt VARIANT RTC
 	std::shared_ptr<ExRTCSessionDescription> exSdp;
 	RTC_CHECK_HR_RETURN((Utils::QueryEx<IRTCSessionDescription, CRTCSessionDescription, ExRTCSessionDescription>(RTCSessionDescriptionInit, exSdp)));
 
-	CComObject<CPromise>* promiseVoid;
-	std::shared_ptr<ExRTCPeerConnection> peerconnection = m_ex;
-	std::shared_ptr<ExPromiseAtl<CEmpty, ExEmpty, CRTCError, ExRTCError> > atlPromise =
-		std::make_shared<ExPromiseAtl<CEmpty, ExEmpty, CRTCError, ExRTCError> >();
-	std::weak_ptr<ExPromiseAtl<CEmpty, ExEmpty, CRTCError, ExRTCError> > atlPromiseWeak(atlPromise);
-	auto funcCore = [local, peerconnection, exSdp, atlPromiseWeak]() -> HRESULT {
-		auto atlPromisePtr = atlPromiseWeak.lock();
-		if (atlPromisePtr) {
-			if (local) {
-				return peerconnection->setLocalDescription(
-					exSdp,
-					[=]() { atlPromisePtr->raiseOnFulfilled(std::make_shared<ExEmpty>()); },
-					[=](std::shared_ptr<ExRTCError> err) { atlPromisePtr->raiseOnRejected(err); }
-				) ? S_OK : E_FAIL;
-			}
-			else {
-				return peerconnection->setRemoteDescription(
-					exSdp,
-					[=]() { atlPromisePtr->raiseOnFulfilled(std::make_shared<ExEmpty>()); },
-					[=](std::shared_ptr<ExRTCError> err) { atlPromisePtr->raiseOnRejected(err); }
-				) ? S_OK : E_FAIL;
-			}
-		}
-		return S_OK;
-	};
-
-	HRESULT hr = Utils::CreateInstanceWithRef(&promiseVoid, atlPromise->Bind(std::bind(funcCore))->AutoStart());
-	if (SUCCEEDED(hr)) {
-		*pPromiseVoid = CComVariant(promiseVoid);
+	CComPtr<IDispatch> spSuccessCallback = Utils::VariantToDispatch(successCallback);
+	CComPtr<IDispatch> spErrorCallback = Utils::VariantToDispatch(errorCallback);
+	if (local) {
+		return m_ex->setLocalDescription(
+			exSdp,
+			[spSuccessCallback]() { RTC_CHECK_HR_NOP((Utils::RaiseEventVoid(spSuccessCallback, RTC_WM_SUCCESS))); },
+			[spErrorCallback](std::shared_ptr<ExRTCError> exError) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCError, ExRTCError>(spErrorCallback, RTC_WM_ERROR, exError))); }
+		) ? S_OK : E_FAIL;
 	}
-	return hr;
+	else {
+		return m_ex->setRemoteDescription(
+			exSdp,
+			[spSuccessCallback]() { RTC_CHECK_HR_NOP((Utils::RaiseEventVoid(spSuccessCallback, RTC_WM_SUCCESS))); },
+			[spErrorCallback](std::shared_ptr<ExRTCError> exError) { RTC_CHECK_HR_NOP((Utils::RaiseEvent<CRTCError, ExRTCError>(spErrorCallback, RTC_WM_ERROR, exError))); }
+		) ? S_OK : E_FAIL;
+	}
 }
 
 void CRTCPeerConnection::onnegotiationneeded()

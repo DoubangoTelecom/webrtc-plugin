@@ -44,16 +44,21 @@ END_COM_MAP()
 	std::shared_ptr<ExRTCPeerConnection> GetEx();
 
 	STDMETHOD(createOffer)(__in_opt VARIANT RTCOfferOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit) override;
-	STDMETHOD(createAnswer)(__in_opt VARIANT RTCAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit) override;
+	STDMETHOD(createOfferPromiseHook)(__in_opt VARIANT RTCOfferOptions, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
+	STDMETHOD(createAnswer)(__in_opt VARIANT RTCAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit) override;	
+	STDMETHOD(createAnswerPromiseHook)(__in_opt VARIANT RTCAnswerOptions, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
 	STDMETHOD(setLocalDescription)(__in VARIANT RTCSessionDescriptionInit, __out VARIANT* pPromiseVoid) override;
+	STDMETHOD(setLocalDescriptionPromiseHook)(__in VARIANT RTCSessionDescriptionInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
 	STDMETHOD(get_localDescription)(__out VARIANT* RTCSessionDescription) override;
 	STDMETHOD(get_currentLocalDescription)(__out VARIANT* RTCSessionDescription) override;
 	STDMETHOD(get_pendingLocalDescription)(__out VARIANT* RTCSessionDescription) override;
 	STDMETHOD(setRemoteDescription)(__in VARIANT RTCSessionDescriptionInit, __out VARIANT* pPromiseVoid) override;
+	STDMETHOD(setRemoteDescriptionPromiseHook)(__in VARIANT RTCSessionDescriptionInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
 	STDMETHOD(get_remoteDescription)(__out VARIANT* RTCSessionDescription) override;
 	STDMETHOD(get_currentRemoteDescription)(__out VARIANT* RTCSessionDescription) override;
 	STDMETHOD(get_pendingRemoteDescription)(__out VARIANT* RTCSessionDescription) override;
 	STDMETHOD(addIceCandidate)(__in VARIANT RTCIceCandidateInit, __out VARIANT* pPromiseVoid) override;
+	STDMETHOD(addIceCandidatePromiseHook)(__in VARIANT RTCIceCandidateInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
 	STDMETHOD(get_signalingState)(__out BSTR* RTCSignalingState) override;
 	STDMETHOD(get_iceGatheringState)(__out BSTR* RTCIceGatheringState) override;
 	STDMETHOD(get_iceConnectionState)(__out BSTR* RTCIceConnectionState) override;
@@ -100,11 +105,12 @@ END_COM_MAP()
 	STDMETHOD(put_ontrack)(__in VARIANT varEventHandler) override;
 	
 	// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-2
-	STDMETHOD(getStats)(__in_opt VARIANT varMediaStreamTrack, __out VARIANT* varPromiseRTCStatsReport);
+	STDMETHOD(getStats)(__in_opt VARIANT varMediaStreamTrack, __out VARIANT* varPromiseRTCStatsReport) override;
+	STDMETHOD(getStatsPromiseHook)(__in_opt VARIANT varMediaStreamTrack, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback) override;
 
 private:
-	HRESULT createOfferAnswer(__in bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __out VARIANT* pPromiseRTCSessionDescriptionInit);
-	HRESULT setDescription(__in bool local, __in_opt VARIANT RTCSessionDescriptionInit, __out VARIANT* pPromiseVoid);
+	HRESULT createOfferAnswer(__in bool offer, __in_opt VARIANT RTCOfferAnswerOptions, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback);
+	HRESULT setDescription(__in bool local, __in_opt VARIANT RTCSessionDescriptionInit, __in_opt VARIANT successCallback, __in_opt VARIANT errorCallback);
 	void onnegotiationneeded();
 	void onicecandidate(std::shared_ptr<ExRTCPeerConnectionIceEvent> e);
 	void onicecandidateerror();

@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue May 30 05:53:39 2017
+/* at Thu Jun 22 18:53:55 2017
  */
 /* Compiler settings for rtc.idl:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
@@ -973,11 +973,20 @@ EXTERN_C const IID IID_IMediaDevices;
             /* [retval][out] */ VARIANT *pConstraints) = 0;
         
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getUserMedia( 
-            /* [in] */ VARIANT constraints,
+            /* [optional][in] */ VARIANT constraints,
             /* [retval][out] */ VARIANT *pPromiseMediaStream) = 0;
         
         virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE enumerateDevices( 
             /* [retval][out] */ VARIANT *pPromiseSequenceMediaDeviceInfo) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getUserMediaPromiseHook( 
+            /* [optional][in] */ VARIANT constraints,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE enumerateDevicesPromiseHook( 
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
         
     };
     
@@ -1043,12 +1052,23 @@ EXTERN_C const IID IID_IMediaDevices;
         
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getUserMedia )( 
             IMediaDevices * This,
-            /* [in] */ VARIANT constraints,
+            /* [optional][in] */ VARIANT constraints,
             /* [retval][out] */ VARIANT *pPromiseMediaStream);
         
         /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *enumerateDevices )( 
             IMediaDevices * This,
             /* [retval][out] */ VARIANT *pPromiseSequenceMediaDeviceInfo);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getUserMediaPromiseHook )( 
+            IMediaDevices * This,
+            /* [optional][in] */ VARIANT constraints,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *enumerateDevicesPromiseHook )( 
+            IMediaDevices * This,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
         
         END_INTERFACE
     } IMediaDevicesVtbl;
@@ -1094,6 +1114,12 @@ EXTERN_C const IID IID_IMediaDevices;
 
 #define IMediaDevices_enumerateDevices(This,pPromiseSequenceMediaDeviceInfo)	\
     ( (This)->lpVtbl -> enumerateDevices(This,pPromiseSequenceMediaDeviceInfo) ) 
+
+#define IMediaDevices_getUserMediaPromiseHook(This,constraints,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> getUserMediaPromiseHook(This,constraints,successCallback,errorCallback) ) 
+
+#define IMediaDevices_enumerateDevicesPromiseHook(This,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> enumerateDevicesPromiseHook(This,successCallback,errorCallback) ) 
 
 #endif /* COBJMACROS */
 
@@ -2731,6 +2757,36 @@ EXTERN_C const IID IID_IRTCPeerConnection;
             /* [optional][in] */ VARIANT varMediaStreamTrack,
             /* [retval][out] */ VARIANT *varPromiseRTCStatsReport) = 0;
         
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE createOfferPromiseHook( 
+            /* [optional][in] */ VARIANT RTCOfferOptions,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE createAnswerPromiseHook( 
+            /* [optional][in] */ VARIANT RTCAnswerOptions,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE setLocalDescriptionPromiseHook( 
+            /* [in] */ VARIANT RTCSessionDescriptionInit,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE setRemoteDescriptionPromiseHook( 
+            /* [in] */ VARIANT RTCSessionDescriptionInit,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE addIceCandidatePromiseHook( 
+            /* [in] */ VARIANT RTCIceCandidateInit,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
+        
+        virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE getStatsPromiseHook( 
+            /* [optional][in] */ VARIANT varMediaStreamTrack,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback) = 0;
+        
     };
     
     
@@ -3009,6 +3065,42 @@ EXTERN_C const IID IID_IRTCPeerConnection;
             /* [optional][in] */ VARIANT varMediaStreamTrack,
             /* [retval][out] */ VARIANT *varPromiseRTCStatsReport);
         
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *createOfferPromiseHook )( 
+            IRTCPeerConnection * This,
+            /* [optional][in] */ VARIANT RTCOfferOptions,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *createAnswerPromiseHook )( 
+            IRTCPeerConnection * This,
+            /* [optional][in] */ VARIANT RTCAnswerOptions,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *setLocalDescriptionPromiseHook )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT RTCSessionDescriptionInit,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *setRemoteDescriptionPromiseHook )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT RTCSessionDescriptionInit,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *addIceCandidatePromiseHook )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT RTCIceCandidateInit,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
+        
+        /* [helpstring][id] */ HRESULT ( STDMETHODCALLTYPE *getStatsPromiseHook )( 
+            IRTCPeerConnection * This,
+            /* [optional][in] */ VARIANT varMediaStreamTrack,
+            /* [optional][in] */ VARIANT successCallback,
+            /* [optional][in] */ VARIANT errorCallback);
+        
         END_INTERFACE
     } IRTCPeerConnectionVtbl;
 
@@ -3200,6 +3292,24 @@ EXTERN_C const IID IID_IRTCPeerConnection;
 
 #define IRTCPeerConnection_getStats(This,varMediaStreamTrack,varPromiseRTCStatsReport)	\
     ( (This)->lpVtbl -> getStats(This,varMediaStreamTrack,varPromiseRTCStatsReport) ) 
+
+#define IRTCPeerConnection_createOfferPromiseHook(This,RTCOfferOptions,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> createOfferPromiseHook(This,RTCOfferOptions,successCallback,errorCallback) ) 
+
+#define IRTCPeerConnection_createAnswerPromiseHook(This,RTCAnswerOptions,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> createAnswerPromiseHook(This,RTCAnswerOptions,successCallback,errorCallback) ) 
+
+#define IRTCPeerConnection_setLocalDescriptionPromiseHook(This,RTCSessionDescriptionInit,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> setLocalDescriptionPromiseHook(This,RTCSessionDescriptionInit,successCallback,errorCallback) ) 
+
+#define IRTCPeerConnection_setRemoteDescriptionPromiseHook(This,RTCSessionDescriptionInit,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> setRemoteDescriptionPromiseHook(This,RTCSessionDescriptionInit,successCallback,errorCallback) ) 
+
+#define IRTCPeerConnection_addIceCandidatePromiseHook(This,RTCIceCandidateInit,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> addIceCandidatePromiseHook(This,RTCIceCandidateInit,successCallback,errorCallback) ) 
+
+#define IRTCPeerConnection_getStatsPromiseHook(This,varMediaStreamTrack,successCallback,errorCallback)	\
+    ( (This)->lpVtbl -> getStatsPromiseHook(This,varMediaStreamTrack,successCallback,errorCallback) ) 
 
 #endif /* COBJMACROS */
 

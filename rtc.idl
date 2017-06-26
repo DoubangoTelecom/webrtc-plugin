@@ -52,8 +52,13 @@ interface IPlugin : IDispatch{
 ]
 interface IMediaDevices : IDispatch{
 	[id(1), helpstring("method getSupportedConstraints")] HRESULT getSupportedConstraints([out, retval] VARIANT* pConstraints);
-	[id(2), helpstring("method getUserMedia")] HRESULT getUserMedia([in] VARIANT constraints, [out, retval] VARIANT* pPromiseMediaStream);
+	[id(2), helpstring("method getUserMedia")] HRESULT getUserMedia([in, optional] VARIANT constraints, [out, retval] VARIANT* pPromiseMediaStream);
 	[id(3), helpstring("method enumerateDevices")] HRESULT enumerateDevices([out, retval] VARIANT* pPromiseSequenceMediaDeviceInfo);
+
+	// Promise hooks
+	[id(1000), helpstring("method getUserMediaPromiseHook")] HRESULT getUserMediaPromiseHook([in, optional] VARIANT constraints, [in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
+	[id(1001), helpstring("method enumerateDevicesPromiseHook")] HRESULT enumerateDevicesPromiseHook([in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
+	
 };
 [
 	object,
@@ -249,6 +254,14 @@ interface IRTCPeerConnection : IDispatch{
 
 	// The Statistics API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-2
 	[id(70), helpstring("method getStats")] HRESULT getStats([in, optional] VARIANT varMediaStreamTrack, [out, retval] VARIANT* varPromiseRTCStatsReport);
+
+	// Promise hooks
+	[id(1000), helpstring("method createOfferPromiseHook")] HRESULT createOfferPromiseHook([in, optional] VARIANT RTCOfferOptions, [in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
+	[id(1001), helpstring("method createAnswerPromiseHook")] HRESULT createAnswerPromiseHook([in, optional] VARIANT RTCAnswerOptions, [in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
+	[id(1002), helpstring("method setLocalDescriptionPromiseHook")] HRESULT setLocalDescriptionPromiseHook([in] VARIANT RTCSessionDescriptionInit, [in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
+	[id(1003), helpstring("method setRemoteDescription")] HRESULT setRemoteDescriptionPromiseHook([in] VARIANT RTCSessionDescriptionInit, [in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
+	[id(1004), helpstring("method addIceCandidatePromiseHook")] HRESULT addIceCandidatePromiseHook([in] VARIANT RTCIceCandidateInit, [in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
+	[id(1005), helpstring("method getStatsPromiseHook")] HRESULT getStatsPromiseHook([in, optional] VARIANT varMediaStreamTrack, [in, optional] VARIANT successCallback, [in, optional] VARIANT errorCallback);
 };
 [
 	object,

@@ -54,6 +54,8 @@ public:
 
 	static HRESULT DataChannelSendBlob(__in CComPtr<IDispatch> spDispatch, __in CComPtr<IDispatch> dataChannel, __in CComPtr<IDispatch> blob);
 
+	static HRESULT ExecJsFunction(__in const std::string& name, __in const VARIANTARG *args, __in const size_t args_count, __out VARIANT* ret = NULL);
+
 	static HRESULT InstallScripts(__in CComPtr<IHTMLWindow2> spWindow);
 	static HRESULT UnInstallScripts(__in CComPtr<IHTMLWindow2> spWindow);
 
@@ -160,5 +162,6 @@ public:
 private:
 	static DISPID s_funcID_WE00_dataChannelSendBlob;
 	static DISPID s_funcID_WE01_wrapArrayBufferIntoUint8Array;
+	static DISPID s_funcID_WE02_promiseResolve;
 	static bool s_b_ScriptsInstalled;
 };
