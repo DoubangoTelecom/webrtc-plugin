@@ -762,8 +762,25 @@ HRESULT CRTCPeerConnection::setDescription(__in bool local, __in_opt VARIANT RTC
 	if (!m_ex.get()) {
 		RTC_CHECK_HR_RETURN(E_POINTER);
 	}
+
+	// LifeSize Nucleus provides a JS object "[type: string, sdp: String]" instead of "CRTCSessionDescription"
+	// -> reBuild the sdp reading the properties (works with both 'IRTCSessionDescription' and 'JS object')
 	std::shared_ptr<ExRTCSessionDescription> exSdp;
+#if 0
 	RTC_CHECK_HR_RETURN((Utils::QueryEx<IRTCSessionDescription, CRTCSessionDescription, ExRTCSessionDescription>(RTCSessionDescriptionInit, exSdp)));
+#else
+	CComPtr<IDispatch> spRTCSessionDescriptionInit = Utils::VariantToDispatch(RTCSessionDescriptionInit);
+	if (spRTCSessionDescriptionInit) {
+		BSTR bstrSdp, bstrType;
+		std::string strSdp, strType;
+		webrtc::SdpParseError error;
+		RTC_CHECK_HR_RETURN(Utils::DispatchGetPropBSTR(spRTCSessionDescriptionInit, L"sdp", bstrSdp));
+		RTC_CHECK_HR_RETURN(Utils::DispatchGetPropBSTR(spRTCSessionDescriptionInit, L"type", bstrType));
+		RTC_CHECK_HR_RETURN(Utils::ToString(&bstrSdp, strSdp));
+		RTC_CHECK_HR_RETURN(Utils::ToString(&bstrType, strType));
+		exSdp = std::make_shared<ExRTCSessionDescription>(strType, strSdp, &error);
+	}
+#endif
 
 	CComPtr<IDispatch> spSuccessCallback = Utils::VariantToDispatch(successCallback);
 	CComPtr<IDispatch> spErrorCallback = Utils::VariantToDispatch(errorCallback);
