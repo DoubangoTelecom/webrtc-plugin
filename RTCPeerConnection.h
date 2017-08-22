@@ -87,6 +87,10 @@ END_COM_MAP()
 	STDMETHOD(put_onfingerprintfailure)(__in VARIANT newVal) override;
 	STDMETHOD(get_onaddstream)(__out VARIANT* pVal) override; // Shim not part of the standard
 	STDMETHOD(put_onaddstream)(__in VARIANT newVal) override; // Shim not part of the standard
+	STDMETHOD(get_onremovestream)(__out VARIANT* pVal) override; // Shim not part of the standard
+	STDMETHOD(put_onremovestream)(__in VARIANT newVal) override; // Shim not part of the standard
+
+	
 
 	// https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
 	STDMETHOD(createDataChannel)(__in BSTR label, __in_opt VARIANT dataChannelDict, __out VARIANT* DataChannel);

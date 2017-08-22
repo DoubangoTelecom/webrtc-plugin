@@ -495,6 +495,20 @@ STDMETHODIMP CRTCPeerConnection::put_onaddstream(__in VARIANT newVal)
 	return S_OK;
 }
 
+// Shim not part of the standard
+STDMETHODIMP CRTCPeerConnection::get_onremovestream(__out VARIANT* pVal)
+{
+	*pVal = CComVariant(m_callback_onremovestream);
+	return S_OK;
+}
+
+// Shim not part of the standard
+STDMETHODIMP CRTCPeerConnection::put_onremovestream(__in VARIANT newVal)
+{
+	m_callback_onremovestream = Utils::VariantToDispatch(newVal);
+	return S_OK;
+}
+
 // https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
 // RTCDataChannel createDataChannel([TreatNullAs=EmptyString] USVString label, optional RTCDataChannelInit dataChannelDict);
 STDMETHODIMP CRTCPeerConnection::createDataChannel(__in BSTR bstrLabel, __in_opt VARIANT varDataChannelDict, __out VARIANT* varDataChannel)

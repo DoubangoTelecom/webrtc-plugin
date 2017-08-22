@@ -6,6 +6,8 @@
 #include "webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "webrtc/modules/desktop_capture/desktop_capture_options.h"
 
+#include "libyuv/convert.h"
+
 static const int64_t kNumNanoSecsPerMilliSec = 1000000;
 static const int kDefaultScreencastFps = 5;
 #	define kDoubangoSharedMemoryId 85697421
@@ -46,7 +48,7 @@ public:
 		, width_(width)
 		, height_(height)
 		, stride_(stride)
-		, size_(static_cast<size_t>((height * stride) << 2))
+		, size_(static_cast<size_t>(((height * stride) * 3) >> 1))
 		, memory_(static_cast<uint8_t*>(webrtc::AlignedMalloc(size_, 64)))
 	{
 		RTC_DCHECK_GT(width, 0);
@@ -64,11 +66,25 @@ public:
 		if (!buffer->memory_.get()) {
 			return nullptr;
 		}
+		buffer->dataY_ = buffer->memory_.get();
+		buffer->dataU_ = buffer->dataY_ + (stride * height);
+		buffer->dataV_ = buffer->dataU_ + ((stride * height) >> 2);
 		return buffer;
 	}
 
 	int stride() const { return stride_; }
-	void copy(const uint8_t* src) { memcpy(memory_.get(), src, size_); }
+	void copy(const uint8_t* src) { 
+		RTC_CHECK_EQ(libyuv::ARGBToI420(src,
+			stride_,
+			dataY_,
+			stride_,
+			dataU_,
+			(stride_ >> 1),
+			dataV_,
+			(stride_ >> 1),
+			width_,
+			height_), 0);
+	}
 
 	// The resolution of the frame in pixels. For formats where some planes are
 	// subsampled, this is the highest-resolution plane.
@@ -77,14 +93,14 @@ public:
 
 	// Returns pointer to the pixel data for a given plane. The memory is owned by
 	// the VideoFrameBuffer object and must not be freed by the caller.
-	virtual const uint8_t* DataY() const override { return memory_.get(); }
-	virtual const uint8_t* DataU() const override { return memory_.get(); }
-	virtual const uint8_t* DataV() const override { return memory_.get(); }
+	virtual const uint8_t* DataY() const override { return dataY_; }
+	virtual const uint8_t* DataU() const override { return dataU_; }
+	virtual const uint8_t* DataV() const override { return dataV_; }
 
 	// Returns the number of bytes between successive rows for a given plane.
 	virtual int StrideY() const override { return stride_; }
-	virtual int StrideU() const override { return stride_; }
-	virtual int StrideV() const override { return stride_; }
+	virtual int StrideU() const override { return (stride_ >> 1); }
+	virtual int StrideV() const override { return (stride_ >> 1); }
 
 	// Return the handle of the underlying video frame. This is used when the
 	// frame is backed by a texture.
@@ -93,8 +109,7 @@ public:
 	// Returns a new memory-backed frame buffer converted from this buffer's
 	// native handle.
 	virtual rtc::scoped_refptr<VideoFrameBuffer> NativeToI420Buffer() override { 
-		RTC_NOTREACHED();
-		return nullptr;
+		return this;
 	};
 
 private:
@@ -103,6 +118,9 @@ private:
 	int stride_;
 	size_t size_;
 	const std::unique_ptr<uint8_t, webrtc::AlignedFreeDeleter> memory_;
+	uint8_t* dataY_;
+	uint8_t* dataU_;
+	uint8_t* dataV_;
 };
 
 //
@@ -328,8 +346,8 @@ private:
 					return;
 				}
 
-				if (!video_buffer_.get() || !curr_frame_.get() || video_buffer_->width() != desktopFrame->size().width() || video_buffer_->height() != desktopFrame->size().height() || video_buffer_->stride() != desktopFrame->stride() >> 2) {
-					video_buffer_ = DoubangoARGBVideoFrameBuffer::Create(desktopFrame->size().width(), desktopFrame->size().height(), desktopFrame->stride() >> 2);
+				if (!video_buffer_.get() || !curr_frame_.get() || video_buffer_->width() != desktopFrame->size().width() || video_buffer_->height() != desktopFrame->size().height() || video_buffer_->stride() != desktopFrame->stride()) {
+					video_buffer_ = DoubangoARGBVideoFrameBuffer::Create(desktopFrame->size().width(), desktopFrame->size().height(), desktopFrame->stride());
 					curr_frame_ = std::make_shared<webrtc::VideoFrame>(video_buffer_, 0, 0, webrtc::VideoRotation::kVideoRotation_0);
 					if (!curr_frame_) {
 						return;

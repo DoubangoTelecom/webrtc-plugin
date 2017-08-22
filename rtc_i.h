@@ -4,10 +4,10 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Tue Jun 27 05:42:58 2017
+/* at Tue Aug 22 14:17:47 2017
  */
 /* Compiler settings for rtc.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
+    Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.00.0603 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -2710,6 +2710,12 @@ EXTERN_C const IID IID_IRTCPeerConnection;
         virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onaddstream( 
             /* [in] */ VARIANT newVal) = 0;
         
+        virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_onremovestream( 
+            /* [retval][out] */ VARIANT *pVal) = 0;
+        
+        virtual /* [helpstring][id][propput] */ HRESULT STDMETHODCALLTYPE put_onremovestream( 
+            /* [in] */ VARIANT newVal) = 0;
+        
         virtual /* [helpstring][id][propget] */ HRESULT STDMETHODCALLTYPE get_sctp( 
             /* [retval][out] */ VARIANT *varRTCSctpTransport) = 0;
         
@@ -3005,6 +3011,14 @@ EXTERN_C const IID IID_IRTCPeerConnection;
             IRTCPeerConnection * This,
             /* [in] */ VARIANT newVal);
         
+        /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_onremovestream )( 
+            IRTCPeerConnection * This,
+            /* [retval][out] */ VARIANT *pVal);
+        
+        /* [helpstring][id][propput] */ HRESULT ( STDMETHODCALLTYPE *put_onremovestream )( 
+            IRTCPeerConnection * This,
+            /* [in] */ VARIANT newVal);
+        
         /* [helpstring][id][propget] */ HRESULT ( STDMETHODCALLTYPE *get_sctp )( 
             IRTCPeerConnection * This,
             /* [retval][out] */ VARIANT *varRTCSctpTransport);
@@ -3253,6 +3267,12 @@ EXTERN_C const IID IID_IRTCPeerConnection;
 
 #define IRTCPeerConnection_put_onaddstream(This,newVal)	\
     ( (This)->lpVtbl -> put_onaddstream(This,newVal) ) 
+
+#define IRTCPeerConnection_get_onremovestream(This,pVal)	\
+    ( (This)->lpVtbl -> get_onremovestream(This,pVal) ) 
+
+#define IRTCPeerConnection_put_onremovestream(This,newVal)	\
+    ( (This)->lpVtbl -> put_onremovestream(This,newVal) ) 
 
 #define IRTCPeerConnection_get_sctp(This,varRTCSctpTransport)	\
     ( (This)->lpVtbl -> get_sctp(This,varRTCSctpTransport) ) 

@@ -235,6 +235,8 @@ interface IRTCPeerConnection : IDispatch{
 	[propput, id(38), helpstring("property onfingerprintfailure")] HRESULT onfingerprintfailure([in] VARIANT newVal);
 	[propget, id(39), helpstring("property onaddstream (Shim not part of the standard)")] HRESULT onaddstream([out, retval] VARIANT* pVal);
 	[propput, id(39), helpstring("property onaddstream (Shim not part of the standard)")] HRESULT onaddstream([in] VARIANT newVal);
+	[propget, id(40), helpstring("property onremovestream (Shim not part of the standard)")] HRESULT onremovestream([out, retval] VARIANT* pVal);
+	[propput, id(40), helpstring("property onremovestream (Shim not part of the standard)")] HRESULT onremovestream([in] VARIANT newVal);
 
 	// The Peer-to-peer data API: https://www.w3.org/TR/webrtc/#rtcpeerconnection-interface-extensions-1
 	[propget, id(50), helpstring("property sctp")] HRESULT sctp([out, retval] VARIANT* varRTCSctpTransport);
