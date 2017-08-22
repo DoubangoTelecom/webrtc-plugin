@@ -26,6 +26,7 @@
  - [Dtmf](https://doubango.org/rtc-plugin/samples/src/content/peerconnection/dtmf/)
  - [Bandwidth](https://doubango.org/rtc-plugin/samples/src/content/peerconnection/bandwidth/)
  - [Adjust constraints, view stats](https://doubango.org/rtc-plugin/samples/src/content/peerconnection/constraints/)
+ - [Video call + ScreenShare (LifeSize)](https://doubango.org/rtc-plugin/samples/src/content/peerconnection/screen-share/)
 
 ### RTCDataChannel ###
  - [Transmit text](https://doubango.org/rtc-plugin/samples/src/content/datachannel/basic/)
